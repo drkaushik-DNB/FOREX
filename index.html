@@ -249,7 +249,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     </div>
     <div class="tl" id="tl" aria-hidden="true"></div>
     <div class="sess" id="sess"></div>
-    <p class="note" id="sessNote">Times shown in your local time and adjust automatically for daylight saving in London, New York and Sydney. Gold and forex move most during the London–New York overlap; the Asian session is usually quieter.</p>
+    <p class="note" id="sessNote">All times are in IST (Indian Standard Time) and adjust automatically for daylight saving in London, New York and Sydney. Gold and forex move most during the London–New York overlap; the Asian session is usually quieter.</p>
   </section>
 
   <section class="panel" aria-label="High-impact US news">
@@ -484,7 +484,7 @@ function loadLib(){ // try backup CDNs if the first one was blocked
   sc.onerror=()=>{libLoading=false;if(!loadLib()&&!LWC)$("tv").innerHTML='<p class="note" style="padding:16px">The chart library could not load. Check your connection and reload.</p>'};
   document.head.appendChild(sc);return true}const OV={e20:true,e50:true,e200:true,bb:false,st:false,mk:true,lv:true,pv:false,sw:false};let PANE="rsi";
 let ch=null,sub=null,S={},SS={},chartKey="",lastDraw=null,syncing=false,priceLines=[];
-const tz=-new Date().getTimezoneOffset()*60; // show candles in the viewer's local time
+const tz=19800; // chart axis always in IST (UTC+5:30)
 const pts=(cs,arr)=>{const o=[];arr.forEach((v,i)=>{if(isFinite(v))o.push({time:cs[i].t+tz,value:v})});return o};
 function themeOpts(){const fg=css("--muted"),line=css("--line"),bg=css("--panel");return{
   layout:{background:{type:"solid",color:bg},textColor:fg,fontFamily:css("--mono"),fontSize:11},
@@ -584,7 +584,7 @@ async function loadLive(){
     const cs=await fetchFeed(f);if(want!==MK+TF)return true;
     if(cs&&cs.length>=210){candles=cs;source="live";
       $("srcLabel").textContent=`Live ${m.name} (${f.label}, ${f.x}) · ${TF.toUpperCase()}`;
-      status("live","Live · updated "+new Date().toLocaleTimeString());render(candles);curFeed=f;loadMTF(f);startStream(f);loadDaily(f);return true}
+      status("live","Live · updated "+new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST");render(candles);curFeed=f;loadMTF(f);startStream(f);loadDaily(f);return true}
   }
   return false;
 }
@@ -600,7 +600,7 @@ const TVSYM={XAUUSD:"OANDA:XAUUSD",BTCUSD:"BITSTAMP:BTCUSD",EURUSD:"OANDA:EURUSD
 const TVINT={"1m":"1","5m":"5","15m":"15","30m":"30","1h":"60","4h":"240","1d":"D"};
 let tvwKey="",tvwTimer=null;
 // Android often reports the old name "Asia/Calcutta", which TradingView ignores (falls back to UTC)
-function tvZone(){let z="";try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}return(!z||z==="Asia/Calcutta")?"Asia/Kolkata":z}
+function tvZone(){return"Asia/Kolkata"} // always IST
 function isDark(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
 function tvWidget(){
   const dark=isDark(),key=MK+TF+dark;if(key===tvwKey)return;tvwKey=key;
@@ -677,7 +677,7 @@ function renderNews(){
   ev.forEach(e=>{const el=document.createElement("div");const live=Math.abs(e.t-now)<=30*60000,sn=!live&&e.t>now&&e.t-now<864e5;
     el.className="nv"+(live?" live":sn?" soon":"");
     el.innerHTML=`<span></span><span class="when"></span>`;el.children[0].textContent=e.n+(e.est?" (usual date)":"");
-    el.children[1].textContent=new Date(e.t).toLocaleString([], {weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
+    el.children[1].textContent=new Date(e.t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",hour12:false})+" IST"+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
     box.appendChild(el)});
 }
 /* ---------- liquidity ---------- */
@@ -763,7 +763,8 @@ function sessWindow(s,now){
     const wd=new Intl.DateTimeFormat("en-US",{weekday:"short",timeZone:"UTC"}).format(base);if(!WD[wd])continue;
     const o=zoned(s.tz,y,mo,d,s.o),c=zoned(s.tz,y,mo,d,s.c);if(c>now)return{o,c,open:o<=now}}
 }
-const hm=ms=>new Date(ms).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+const hm=ms=>new Date(ms).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:false});
+const istDay=ms=>Math.floor((ms+19800e3)/864e5);
 const dur=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?`${h}h ${m%60}m`:`${m}m`};
 function renderSessions(){
   const now=Date.now(),ny=partsIn("America/New_York",new Date(now)),nyH=+ny.hour;
@@ -774,12 +775,12 @@ function renderSessions(){
   $("sess").innerHTML="";
   W.forEach(w=>{const el=document.createElement("div");el.className="sc";const st=w.open?"buy":"wait";
     el.innerHTML=`<div class="row"><span class="nm"></span><span class="pill ${st}">${w.open?"OPEN":"CLOSED"}</span></div><div class="lab"></div><div class="t"></div><div class="cd"></div>`;
-    el.querySelector(".nm").textContent=w.s.n;el.querySelector(".lab").textContent=`${w.s.grp} session · ${String(w.s.o).padStart(2,"0")}:00–${w.s.c}:00 local`;
+    el.querySelector(".nm").textContent=w.s.n;el.querySelector(".lab").textContent=`${w.s.grp} session · IST`;
     el.querySelector(".t").textContent=`${hm(w.o)} – ${hm(w.c)}`;
-    el.querySelector(".cd").textContent=w.open?`Closes in ${dur(w.c-now)}`:`Opens in ${dur(w.o-now)}${new Date(w.o).toDateString()!==new Date(now).toDateString()?" ("+new Date(w.o).toLocaleDateString([], {weekday:"short"})+")":""}`;
+    el.querySelector(".cd").textContent=w.open?`Closes in ${dur(w.c-now)}`:`Opens in ${dur(w.o-now)}${istDay(w.o)!==istDay(now)?" ("+new Date(w.o).toLocaleDateString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short"})+")":""}`;
     $("sess").appendChild(el)});
   // 24h timeline in viewer's local day
-  const tl=$("tl");tl.innerHTML="";const d0=new Date(now);d0.setHours(0,0,0,0);const start=d0.getTime(),span=864e5;
+  const tl=$("tl");tl.innerHTML="";const span=864e5,start=istDay(now)*span-19800e3; // IST midnight
   const pct=t=>100*(t-start)/span;
   SESS.forEach((s,i)=>{for(const k of [-1,0,1]){const t=partsIn(s.tz,new Date(start+k*span+12*36e5));const o=zoned(s.tz,+t.year,+t.month,+t.day,s.o),c=zoned(s.tz,+t.year,+t.month,+t.day,s.c);
     const a=Math.max(0,pct(o)),b=Math.min(100,pct(c));if(b<=a)continue;const bar=document.createElement("div");bar.className="b";bar.style.cssText=`left:${a}%;width:${b-a}%;top:${4+i*18}px;background:${s.col}`;bar.textContent=s.n;tl.appendChild(bar)}});

@@ -122,7 +122,7 @@ for (const mk of Object.keys(MKS)) {
 
 if (SIG.length > 1500) SIG = SIG.slice(-1500);
 const changed = JSON.stringify(SIG) !== before;
-const stale = !store.lastRun || now - store.lastRun > 55 * 60 * 1000 || JSON.stringify(store.errors || []) !== JSON.stringify(errors); // heartbeat at most hourly
+const stale = process.env.GITHUB_EVENT_NAME === "workflow_dispatch" || !store.lastRun || now - store.lastRun > 55 * 60 * 1000 || JSON.stringify(store.errors || []) !== JSON.stringify(errors); // heartbeat at most hourly
 if (changed || stale) {
   fs.mkdirSync("data", { recursive: true });
   fs.writeFileSync(FILE, JSON.stringify({ lastRun: now, rules: DEF, status, errors, signals: SIG }, null, 1));

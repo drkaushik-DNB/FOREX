@@ -486,10 +486,14 @@ function loadLib(){ // try backup CDNs if the first one was blocked
 let ch=null,sub=null,S={},SS={},chartKey="",lastDraw=null,syncing=false,priceLines=[];
 const tz=19800; // chart axis always in IST (UTC+5:30)
 const pts=(cs,arr)=>{const o=[];arr.forEach((v,i)=>{if(isFinite(v))o.push({time:cs[i].t+tz,value:v})});return o};
+// chart times are already shifted to IST, so read them as UTC and print 12-hour
+function clock12(d){let h=d.getUTCHours(),m=String(d.getUTCMinutes()).padStart(2,"0");const ap=h<12?"AM":"PM";h=h%12||12;return`${h}:${m} ${ap}`}
+function tick12(t,type){const d=new Date(t*1000);if(type===0)return String(d.getUTCFullYear());if(type===1)return d.toLocaleDateString("en-IN",{timeZone:"UTC",month:"short"});if(type===2)return d.toLocaleDateString("en-IN",{timeZone:"UTC",day:"numeric",month:"short"});return clock12(d)}
 function themeOpts(){const fg=css("--muted"),line=css("--line"),bg=css("--panel");return{
   layout:{background:{type:"solid",color:bg},textColor:fg,fontFamily:css("--mono"),fontSize:11},
   grid:{vertLines:{color:line},horzLines:{color:line}},
-  rightPriceScale:{borderColor:line},timeScale:{borderColor:line,timeVisible:true,secondsVisible:false,rightOffset:6},
+  rightPriceScale:{borderColor:line},timeScale:{borderColor:line,timeVisible:true,secondsVisible:false,rightOffset:6,tickMarkFormatter:tick12},
+  localization:{timeFormatter:t=>{const d=new Date(t*1000);return d.toLocaleDateString("en-IN",{timeZone:"UTC",day:"numeric",month:"short"})+" "+clock12(d)}},
   crosshair:{mode:LWC?LWC.CrosshairMode.Normal:0}}}
 function buildCharts(){
   if(!LWC||ch)return !!ch;
@@ -677,7 +681,7 @@ function renderNews(){
   ev.forEach(e=>{const el=document.createElement("div");const live=Math.abs(e.t-now)<=30*60000,sn=!live&&e.t>now&&e.t-now<864e5;
     el.className="nv"+(live?" live":sn?" soon":"");
     el.innerHTML=`<span></span><span class="when"></span>`;el.children[0].textContent=e.n+(e.est?" (usual date)":"");
-    el.children[1].textContent=new Date(e.t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",hour12:false})+" IST"+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
+    el.children[1].textContent=new Date(e.t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase())+" IST"+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
     box.appendChild(el)});
 }
 /* ---------- liquidity ---------- */
@@ -763,7 +767,7 @@ function sessWindow(s,now){
     const wd=new Intl.DateTimeFormat("en-US",{weekday:"short",timeZone:"UTC"}).format(base);if(!WD[wd])continue;
     const o=zoned(s.tz,y,mo,d,s.o),c=zoned(s.tz,y,mo,d,s.c);if(c>now)return{o,c,open:o<=now}}
 }
-const hm=ms=>new Date(ms).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:false});
+const hm=ms=>new Date(ms).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase());
 const istDay=ms=>Math.floor((ms+19800e3)/864e5);
 const dur=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?`${h}h ${m%60}m`:`${m}m`};
 function renderSessions(){
@@ -784,7 +788,7 @@ function renderSessions(){
   const pct=t=>100*(t-start)/span;
   SESS.forEach((s,i)=>{for(const k of [-1,0,1]){const t=partsIn(s.tz,new Date(start+k*span+12*36e5));const o=zoned(s.tz,+t.year,+t.month,+t.day,s.o),c=zoned(s.tz,+t.year,+t.month,+t.day,s.c);
     const a=Math.max(0,pct(o)),b=Math.min(100,pct(c));if(b<=a)continue;const bar=document.createElement("div");bar.className="b";bar.style.cssText=`left:${a}%;width:${b-a}%;top:${4+i*18}px;background:${s.col}`;bar.textContent=s.n;tl.appendChild(bar)}});
-  for(let h=0;h<=24;h+=6){const e=document.createElement("span");e.className="hr";e.style.left=Math.min(97,Math.max(3,100*h/24))+"%";e.textContent=String(h).padStart(2,"0")+":00";tl.appendChild(e)}
+  for(let h=0;h<=24;h+=6){const e=document.createElement("span");e.className="hr";e.style.left=Math.min(97,Math.max(3,100*h/24))+"%";e.textContent=h%24===0?"12 AM":h===12?"12 PM":h<12?h+" AM":(h-12)+" PM";tl.appendChild(e)}
   const n=document.createElement("div");n.className="now";n.style.left=pct(now)+"%";tl.appendChild(n);
 }
 renderSessions();renderNews();setInterval(()=>{renderSessions();renderNews()},30000);
@@ -800,7 +804,8 @@ function showTick(px,bid,ask){
   if(px!=null){const el=$("price");if(lastPx!=null&&px!==lastPx){el.classList.remove("up","dn");void el.offsetWidth;el.classList.add(px>lastPx?"up":"dn");clearTimeout(pxT);pxT=setTimeout(()=>el.classList.remove("up","dn"),350)}
     lastPx=px;el.textContent="$"+fmt(px)}
   if(bid!=null){lastBA=[bid,ask];lastQuoteMs=Date.now()}
-  const ms=t=>t?new Date(t).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour12:false})+"."+String(new Date(t).getMilliseconds()).padStart(3,"0"):"—";
+  const ms=t=>{if(!t)return"—";const p={};new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Kolkata",hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true}).formatToParts(new Date(t)).forEach(x=>p[x.type]=x.value);
+    return`${p.hour}:${p.minute}:${p.second}.${String(new Date(t).getMilliseconds()).padStart(3,"0")} ${p.dayPeriod}`};
   $("ba").innerHTML=(lastBA?`<span>Bid ${fmt(lastBA[0])}</span><span>Ask ${fmt(lastBA[1])}</span><span>Spread ${fmt(lastBA[1]-lastBA[0])}</span>`:"")+`<span>Last trade ${ms(lastTradeMs)}</span><span>Last quote ${ms(lastQuoteMs)}</span>`;
 }
 function startStream(f){
@@ -853,7 +858,7 @@ fillCfg();
 function toCSV(rows){return rows.map(r=>r.map(v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(",")).join("\n")}
 async function copyText(t,btn){try{await navigator.clipboard.writeText(t);toast("Copied. Paste it into Excel or Google Sheets.")}catch(e){toast("Copy was blocked here. Use Download CSV instead.")}}
 function downloadCSV(name,t){try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){toast("Download isn't available here. Use Copy as CSV.")}}
-const istTime=t=>new Date(t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",hour12:false});
+const istTime=t=>new Date(t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase());
 const fmtM=(mk,v)=>{if(!isFinite(v))return"—";const d=Math.abs(v)<20?MARKETS[mk].dp:2;return(+v).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d})};
 
 /* ---------- live signal log (forward test) ---------- */

@@ -45,7 +45,7 @@ async function candles(mk, tf) {
   try { return { src: "kraken", cs: await kraken(MKS[mk].kraken, tf) }; }
   catch (e) { console.log(`  ${mk} ${tf}: ${e.message}, trying Binance`); }
   try { return { src: "binance", cs: await binance(MKS[mk].binance, tf) }; }
-  catch (e) { console.log(`  ${mk} ${tf}: ${e.message}`); return null; }
+  catch (e) { console.log(`  ${mk} ${tf}: ${e.message}`); errors.push(`${mk} ${tf}: ${e.message}`); return null; }
 }
 
 function fxWeekend(now) {
@@ -62,6 +62,7 @@ let store = { signals: [] };
 try { store = JSON.parse(fs.readFileSync(FILE, "utf8")); } catch {}
 const before = JSON.stringify(store.signals);
 let SIG = store.signals || [];
+const status = {}, errors = [];
 
 for (const mk of Object.keys(MKS)) {
   const E = engineFor(mk);
@@ -114,15 +115,16 @@ for (const mk of Object.keys(MKS)) {
         console.log(`  NEW ${v} ${mk} ${tf} at ${price}`);
       }
     }
+    (status[mk] ||= {})[tf] = { signal: v, raw: e.verdict, score: +e.score.toFixed(3), price, src: data[tf].src };
     console.log(`${mk} ${tf}: ${e.verdict} -> ${v} (score ${(e.score * 100).toFixed(0)}%, ${data[tf].src})`);
   }
 }
 
 if (SIG.length > 1500) SIG = SIG.slice(-1500);
 const changed = JSON.stringify(SIG) !== before;
-const stale = !store.lastRun || now - store.lastRun > 55 * 60 * 1000; // heartbeat at most hourly
+const stale = !store.lastRun || now - store.lastRun > 55 * 60 * 1000 || JSON.stringify(store.errors || []) !== JSON.stringify(errors); // heartbeat at most hourly
 if (changed || stale) {
   fs.mkdirSync("data", { recursive: true });
-  fs.writeFileSync(FILE, JSON.stringify({ lastRun: now, rules: DEF, signals: SIG }, null, 1));
+  fs.writeFileSync(FILE, JSON.stringify({ lastRun: now, rules: DEF, status, errors, signals: SIG }, null, 1));
   console.log(changed ? "Signals changed, saved." : "Heartbeat saved.");
 } else console.log("No change.");

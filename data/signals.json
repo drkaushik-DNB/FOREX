@@ -1,5 +1,5 @@
 {
- "lastRun": 1792948825300,
+ "lastRun": 1792948983859,
  "rules": {
   "th": 35,
   "adx": 20,
@@ -7,5 +7,100 @@
   "rr": 2,
   "hold": 50
  },
+ "status": {
+  "XAUUSD": {
+   "15m": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": 0.257,
+    "price": 4003.5,
+    "src": "kraken"
+   },
+   "1h": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": 0.125,
+    "price": 4003.5,
+    "src": "kraken"
+   },
+   "4h": {
+    "signal": "WAIT",
+    "raw": "SELL",
+    "score": -0.375,
+    "price": 4003.5,
+    "src": "kraken"
+   }
+  },
+  "BTCUSD": {
+   "15m": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": 0.419,
+    "price": 80745.6,
+    "src": "kraken"
+   },
+   "1h": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": -0.297,
+    "price": 80741.9,
+    "src": "kraken"
+   },
+   "4h": {
+    "signal": "WAIT",
+    "raw": "SELL",
+    "score": -0.554,
+    "price": 80741.9,
+    "src": "kraken"
+   }
+  },
+  "EURUSD": {
+   "15m": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": -0.163,
+    "price": 1.11992,
+    "src": "kraken"
+   },
+   "1h": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": -0.243,
+    "price": 1.11992,
+    "src": "kraken"
+   },
+   "4h": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": -0.291,
+    "price": 1.11985,
+    "src": "kraken"
+   }
+  },
+  "GBPUSD": {
+   "15m": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": 0.044,
+    "price": 1.33675,
+    "src": "kraken"
+   },
+   "1h": {
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": -0.059,
+    "price": 1.33675,
+    "src": "kraken"
+   },
+   "4h": {
+    "signal": "WAIT",
+    "raw": "BUY",
+    "score": 0.474,
+    "price": 1.33675,
+    "src": "kraken"
+   }
+  }
+ },
+ "errors": [],
  "signals": []
 }

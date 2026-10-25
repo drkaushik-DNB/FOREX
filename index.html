@@ -163,7 +163,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <button class="btn" id="refresh">Refresh now</button>
     <button class="btn" id="toggleCsv">Paste your own candles</button>
     <button class="btn" id="alertBtn" aria-pressed="false">Sound alerts: Off</button>
-    <button class="btn" id="notifBtn" aria-pressed="false">Phone alerts: Off</button>
+    <button class="btn" id="notifBtn" aria-pressed="false" hidden>Phone alerts: Off</button>
     <button class="btn" id="installBtn" hidden>Install app</button>
   </div>
 
@@ -910,11 +910,10 @@ renderJournal();
 /* ---------- phone notifications + installable app ---------- */
 let notifOn=store.get("notif",false),swReg=null;
 if("serviceWorker" in navigator){try{navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{})}catch(e){}}
-if("Notification" in window){if(Notification.permission!=="granted")notifOn=false}else notifOn=false;setNotifBtn();
+if("Notification" in window){$("notifBtn").hidden=false;if(Notification.permission!=="granted")notifOn=false;setNotifBtn()}
 function setNotifBtn(){$("notifBtn").setAttribute("aria-pressed",notifOn);$("notifBtn").textContent=`Phone alerts: ${notifOn?"On":"Off"}`}
 $("notifBtn").onclick=async()=>{
   if(notifOn){notifOn=false;store.set("notif",false);setNotifBtn();return}
-  if(!("Notification" in window)){toast("This browser can't show notifications. Open the page in Chrome, or install it as an app from Chrome's menu.");return}
   let perm="denied";try{perm=await Notification.requestPermission()}catch(e){}
   if(perm==="granted"){notifOn=true;store.set("notif",true);setNotifBtn();notify("Phone alerts are on","You'll be told when a signal opens or closes while this page is open.")}
   else toast("Notifications are blocked. Allow them for this site in your browser settings, then try again.")};

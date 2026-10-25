@@ -88,6 +88,10 @@ select{font:.9rem var(--mono);padding:8px;border:1px solid var(--line);border-ra
 .jr .del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.78rem;text-decoration:underline}
 #notifBtn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
 details summary{font-size:1rem}
+table.scan td,table.scan th{text-align:center} table.scan td:first-child,table.scan th:first-child{text-align:left}
+table.scan td.cell{cursor:pointer} table.scan td.cell:hover{background:var(--bg)}
+table.scan td.cur{outline:2px solid var(--accent);outline-offset:-2px}
+table.scan .sc{display:block;font-size:.68rem;color:var(--muted);margin-top:2px}
 .tvw{height:520px;margin-top:8px;border:1px solid var(--line);border-radius:8px;overflow:hidden;min-width:0}
 .tvw .tradingview-widget-container,.tvw .tradingview-widget-container__widget{height:100%;width:100%}
 @media (max-width:760px){.tvw{height:440px}}
@@ -173,6 +177,14 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <textarea id="csv" placeholder="Date,Open,High,Low,Close&#10;2026.10.20 00:00,4164.2,4171.8,4150.1,4158.9&#10;..."></textarea>
     <div class="bar" style="margin-top:8px"><button class="btn" id="loadCsv">Analyse pasted data</button><span class="note" id="csvMsg"></span></div>
   </div>
+
+  <section class="panel" aria-label="Market scanner">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
+      <h2>Market scanner</h2><span class="status" id="scanStat">Waiting for live data…</span>
+    </div>
+    <div class="tbl"><table class="scan" id="scanT"><thead><tr><th>Market</th><th>5M</th><th>15M</th><th>1H</th><th>4H</th><th>1D</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">Signal for every market and timeframe, with the higher-timeframe check applied. Tap a cell to open it below. Refreshes every 3 minutes; the news filter isn't applied here.</p>
+  </section>
 
   <div class="top">
     <section class="panel verdict" aria-label="Signal">
@@ -277,6 +289,17 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <div class="bt" id="logStats"></div>
     <div class="tbl"><table id="logT"><thead><tr><th>Time (IST)</th><th>Market</th><th>Side</th><th>Entry</th><th>Stop</th><th>Target</th><th>Result</th></tr></thead><tbody></tbody></table></div>
     <div class="bar" style="margin-top:10px"><button class="btn" id="logCopy">Copy as CSV</button><button class="btn" id="logDl">Download CSV</button><button class="btn" id="logClear">Clear log</button></div>
+  </section>
+
+  <section class="panel" aria-label="24/7 signal log">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
+      <h2>24/7 signal log</h2>
+      <div class="seg small" role="group" aria-label="24/7 log filter" id="ghF"><button data-f="here" aria-pressed="true">This market</button><button data-f="all">All</button></div>
+    </div>
+    <p class="note" id="ghNote">Recorded by a GitHub job every 15 minutes for Gold, BTC, EUR/USD and GBP/USD on 15M, 1H and 4H, even when your phone is off. Uses Kraken prices and the same rules and settings defaults as this page (higher-timeframe check on, news filter off, no signals while gold and forex are closed for the weekend).</p>
+    <div class="bt" id="ghStats"></div>
+    <div class="tbl"><table id="ghT"><thead><tr><th>Time (IST)</th><th>Market</th><th>Side</th><th>Entry</th><th>Stop</th><th>Target</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+    <div class="bar" style="margin-top:10px"><button class="btn" id="ghRefresh">Refresh</button><button class="btn" id="ghCopy">Copy as CSV</button><button class="btn" id="ghDl">Download CSV</button></div>
   </section>
 
   <section class="panel" aria-label="Trade journal">
@@ -576,6 +599,8 @@ function sample(){
 const TVSYM={XAUUSD:"OANDA:XAUUSD",BTCUSD:"BITSTAMP:BTCUSD",EURUSD:"OANDA:EURUSD",GBPUSD:"OANDA:GBPUSD"};
 const TVINT={"1m":"1","5m":"5","15m":"15","30m":"30","1h":"60","4h":"240","1d":"D"};
 let tvwKey="",tvwTimer=null;
+// Android often reports the old name "Asia/Calcutta", which TradingView ignores (falls back to UTC)
+function tvZone(){let z="";try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}return(!z||z==="Asia/Calcutta")?"Asia/Kolkata":z}
 function isDark(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
 function tvWidget(){
   const dark=isDark(),key=MK+TF+dark;if(key===tvwKey)return;tvwKey=key;
@@ -584,7 +609,7 @@ function tvWidget(){
   const inner=document.createElement("div");inner.className="tradingview-widget-container__widget";wrap.appendChild(inner);
   const sc=document.createElement("script");sc.type="text/javascript";sc.async=true;
   sc.src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-  sc.innerHTML=JSON.stringify({autosize:true,symbol:TVSYM[MK],interval:TVINT[TF],timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||"Etc/UTC",
+  sc.innerHTML=JSON.stringify({autosize:true,symbol:TVSYM[MK],interval:TVINT[TF],timezone:tvZone(),
     theme:dark?"dark":"light",style:"1",locale:"en",allow_symbol_change:true,hide_side_toolbar:false,withdateranges:true,
     studies:["STD;RSI"],support_host:"https://www.tradingview.com"});
   wrap.appendChild(sc);box.appendChild(wrap);
@@ -906,6 +931,70 @@ $("jFill").onclick=()=>{if(!last)return;$("jMk").value=MK;$("jDir").value=last.v
 function jCSV(){return toCSV([["time_ist","market","side","entry","stop","target","lots","result","pnl_usd","notes"],...JR.map(t=>[istTime(t.id),t.mk,t.dir,t.en,t.sl,t.tp,t.lot,t.res,t.pnl,t.note])])}
 $("jCopy").onclick=()=>copyText(jCSV());$("jDl").onclick=()=>downloadCSV("trade-journal.csv",jCSV());
 renderJournal();
+
+/* ---------- market scanner ---------- */
+const SCAN_TF=["5m","15m","1h","4h","1d"];let SCAN={},scanBusy=false,scanAt=0;
+async function runScan(){
+  if(scanBusy||document.hidden)return;scanBusy=true;$("scanStat").textContent="Scanning…";let got=0;
+  for(const mk of Object.keys(MARKETS)){
+    const tfData={};
+    for(const f of MARKETS[mk].feeds){
+      for(const tf of SCAN_TF){if(tfData[tf])continue;const cs=await fetchFeed(f,tf);if(cs&&cs.length>=210)tfData[tf]=cs}
+      if(Object.keys(tfData).length===SCAN_TF.length)break;
+    }
+    const raw={};SCAN_TF.forEach(tf=>{if(tfData[tf]){const Z=series(tfData[tf]);raw[tf]=evalAt(Z,tfData[tf].length-1);got++}});
+    SCAN[mk]={};
+    SCAN_TF.forEach(tf=>{const e=raw[tf];if(!e){SCAN[mk][tf]=null;return}let v=e.verdict;
+      const hs=HTF[tf].map(h=>raw[h]);
+      if(v!=="WAIT"&&hs.length&&!hs.every(h=>h&&(v==="BUY"?h.score>=.1:h.score<=-.1)))v="WAIT";
+      SCAN[mk][tf]={v,raw:e.verdict,score:e.score}});
+    renderScan();
+  }
+  scanAt=Date.now();scanBusy=false;
+  $("scanStat").textContent=got?`Updated ${new Date(scanAt).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit"})} IST`:"Live data unavailable here. Open the hosted page.";
+}
+function renderScan(){
+  const tb=$("scanT").querySelector("tbody");tb.innerHTML="";
+  Object.keys(MARKETS).forEach(mk=>{const tr=document.createElement("tr");tr.innerHTML=`<td><b>${MARKETS[mk].name}</b></td>`;
+    SCAN_TF.forEach(tf=>{const td=document.createElement("td");td.className="cell"+(mk===MK&&tf===TF?" cur":"");const c=SCAN[mk]&&SCAN[mk][tf];
+      if(!c){td.innerHTML=`<span class="note">${SCAN[mk]?"—":"…"}</span>`}
+      else{const cls=c.v==="BUY"?"buy":c.v==="SELL"?"sell":"wait";
+        td.innerHTML=`<span class="pill ${cls}">${c.v}</span><span class="sc">${c.score>=0?"+":""}${Math.round(c.score*100)}%${c.v==="WAIT"&&c.raw!=="WAIT"?" · "+c.raw.toLowerCase()+" unconfirmed":""}</span>`}
+      td.title=`${MARKETS[mk].name} ${tf.toUpperCase()}`;td.onclick=()=>{
+        const mb=[...$("mkt").children].find(b=>b.dataset.m===mk),tb2=[...$("tf").children].find(b=>b.dataset.tf===tf);
+        if(mk!==MK&&mb)mb.click();if(tf!==TF&&tb2)tb2.click();renderScan();$("price").scrollIntoView({behavior:"smooth",block:"center"})};
+      tr.appendChild(td)});tb.appendChild(tr)});
+}
+renderScan();setTimeout(runScan,2500);setInterval(runScan,180000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-scanAt>180000)runScan()});
+$("mkt").addEventListener("click",()=>setTimeout(renderScan,0));$("tf").addEventListener("click",()=>setTimeout(renderScan,0));
+
+/* ---------- 24/7 log from the GitHub job ---------- */
+const GH_URL="https://raw.githubusercontent.com/drkaushik-DNB/FOREX/main/data/signals.json";
+let GH=[],ghMeta=null,ghFilter="here";
+async function loadGH(){
+  try{const r=await fetch(GH_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();GH=Array.isArray(j.signals)?j.signals:[];ghMeta=j;renderGH()}
+  catch(e){$("ghStats").innerHTML="";$("ghT").querySelector("tbody").innerHTML=`<tr><td colspan="7" style="text-align:left;color:var(--muted)">The 24/7 log can't be reached from here. It loads on your hosted page once the GitHub job has run.</td></tr>`}
+}
+function renderGH(){
+  const list=GH.filter(s=>ghFilter==="all"||s.mk===MK).slice().sort((a,b)=>b.t0-a.t0);
+  const closed=list.filter(s=>s.st!=="open"),w=closed.filter(s=>s.r>0).length,tot=closed.reduce((x,s)=>x+s.r,0);
+  const tfs=[...new Set(list.map(s=>s.tf))];
+  $("ghStats").innerHTML=`<div><span class="lab">Signals</span><b>${list.length}</b><span class="note">${list.length-closed.length} open</span></div>
+    <div><span class="lab">Win rate</span><b class="${closed.length?(w/closed.length>=1/3?"good":"bad"):""}">${closed.length?Math.round(100*w/closed.length)+"%":"—"}</b><span class="note">${w} of ${closed.length} closed</span></div>
+    <div><span class="lab">Total result</span><b class="${tot>=0?"good":"bad"}">${closed.length?(tot>=0?"+":"")+tot.toFixed(1)+"R":"—"}</b><span class="note">before spread</span></div>
+    <div><span class="lab">Last check</span><b style="font-size:.95rem">${ghMeta&&ghMeta.lastRun?istTime(ghMeta.lastRun):"—"}</b><span class="note">by GitHub, about every 15 min</span></div>`;
+  const tb=$("ghT").querySelector("tbody");tb.innerHTML="";
+  if(!list.length){tb.innerHTML=`<tr><td colspan="7" style="text-align:left;color:var(--muted)">No signals recorded yet${ghFilter==="here"?" for "+M().name:""}. The job checks every 15 minutes.</td></tr>`;return}
+  list.slice(0,50).forEach(s=>{const tr=document.createElement("tr");
+    const res=s.st==="open"?`<span class="pill wait">OPEN</span>`:`<span class="pill ${s.r>0?"buy":"sell"}">${s.st} ${s.r>=0?"+":""}${s.r.toFixed(1)}R</span>`;
+    tr.innerHTML=`<td>${istTime(s.t0)}</td><td>${MARKETS[s.mk]?MARKETS[s.mk].name:s.mk} ${s.tf.toUpperCase()}</td><td style="color:var(--${s.d>0?"buy":"sell"})">${s.d>0?"BUY":"SELL"}</td><td>${fmtM(s.mk,s.en)}</td><td>${fmtM(s.mk,s.sl)}</td><td>${fmtM(s.mk,s.tp)}</td><td>${res}</td>`;tb.appendChild(tr)});
+}
+function ghCSV(){return toCSV([["time_ist","market","timeframe","side","entry","stop","target","result","R","exit_price","exit_time_ist"],...GH.map(s=>[istTime(s.t0),s.mk,s.tf,s.d>0?"BUY":"SELL",s.en,s.sl,s.tp,s.st,s.r!=null?(+s.r).toFixed(2):"",s.px??"",s.tx?istTime(s.tx):""])])}
+$("ghF").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;ghFilter=b.dataset.f;[...$("ghF").children].forEach(x=>x.setAttribute("aria-pressed",x===b));renderGH()});
+$("ghRefresh").onclick=loadGH;$("ghCopy").onclick=()=>copyText(ghCSV());$("ghDl").onclick=()=>downloadCSV("signal-log-24x7.csv",ghCSV());
+$("mkt").addEventListener("click",()=>setTimeout(renderGH,0));
+loadGH();setInterval(loadGH,300000);
 
 /* ---------- phone notifications + installable app ---------- */
 let notifOn=store.get("notif",false),swReg=null;

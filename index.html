@@ -64,6 +64,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .ohlc{font:.75rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;min-height:1.2em;display:flex;flex-wrap:wrap;gap:4px 12px}
 .ohlc b{color:var(--fg);font-weight:600}
 footer a{color:inherit}
+.tvw{height:520px;margin-top:8px;border:1px solid var(--line);border-radius:8px;overflow:hidden;min-width:0}
+.tvw .tradingview-widget-container,.tvw .tradingview-widget-container__widget{height:100%;width:100%}
+@media (max-width:760px){.tvw{height:440px}}
 .legend{display:flex;flex-wrap:wrap;gap:12px;font:.75rem var(--mono);color:var(--muted);margin-top:8px}
 .legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:5px;vertical-align:middle;background:var(--c)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
@@ -187,6 +190,14 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
       <div class="ctool"><span class="note">Drag to scroll back · pinch or mouse-wheel to zoom · double-click the price axis to reset</span><button class="btn small" id="fit">Reset view</button></div>
     </section>
   </div>
+
+  <section class="panel" aria-label="Real spot chart">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
+      <h2>Real spot chart</h2><span class="status" id="tvwSym"></span>
+    </div>
+    <p class="note">Broker-quoted prices from TradingView. Use this chart for your exact entry, stop and target; the signal above is calculated from the live feed, which can differ slightly from spot.</p>
+    <div id="tvw" class="tvw"></div>
+  </section>
 
   <section class="panel" aria-label="Trading sessions">
     <div class="row" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
@@ -440,7 +451,7 @@ $("ovl").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)r
 $("pane").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;PANE=b.dataset.p;[...$("pane").children].forEach(x=>x.setAttribute("aria-pressed",x===b));
   if(lastDraw)drawChart(lastDraw.cs,lastDraw.a,lastDraw.bt)});
 $("fit").onclick=()=>{if(!ch||!lastDraw)return;const n=lastDraw.cs.length;ch.timeScale().setVisibleLogicalRange({from:Math.max(0,n-150),to:n+5});ch.priceScale("right").applyOptions({autoScale:true})};
-new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+new MutationObserver(()=>{retheme();tvWidget()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 
 /* ---------- data ---------- */
 const TFS={"1m":60,"5m":300,"15m":900,"30m":1800,"1h":3600,"4h":14400,"1d":86400};
@@ -465,7 +476,7 @@ async function loadLive(){
     const cs=await fetchFeed(f);if(want!==MK+TF)return true;
     if(cs&&cs.length>=210){candles=cs;source="live";
       $("srcLabel").textContent=`Live ${m.name} (${f.label}, ${f.x}) · ${TF.toUpperCase()}`;
-      status("live","Live · updated "+new Date().toLocaleTimeString());render(candles);loadMTF(f);return true}
+      status("live","Live · updated "+new Date().toLocaleTimeString());render(candles);curFeed=f;loadMTF(f);startStream(f);return true}
   }
   return false;
 }
@@ -476,8 +487,27 @@ function sample(){
   for(let i=0;i<500;i++){const drift=(i<300?0.02:-0.1)*m.vol;const o=p;p=p+drift+(rnd()-.5)*2*m.vol;const h=Math.max(o,p)+rnd()*.8*m.vol,l=Math.min(o,p)-rnd()*.8*m.vol;out.push({o,h,l,c:p})}
   return stamp(out);
 }
+/* ---------- free TradingView widget with real spot prices ---------- */
+const TVSYM={XAUUSD:"OANDA:XAUUSD",BTCUSD:"BITSTAMP:BTCUSD",EURUSD:"OANDA:EURUSD",GBPUSD:"OANDA:GBPUSD"};
+const TVINT={"1m":"1","5m":"5","15m":"15","30m":"30","1h":"60","4h":"240","1d":"D"};
+let tvwKey="",tvwTimer=null;
+function isDark(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
+function tvWidget(){
+  const dark=isDark(),key=MK+TF+dark;if(key===tvwKey)return;tvwKey=key;
+  const box=$("tvw");box.innerHTML="";$("tvwSym").textContent=`${TVSYM[MK]} · ${TF.toUpperCase()}`;
+  const wrap=document.createElement("div");wrap.className="tradingview-widget-container";
+  const inner=document.createElement("div");inner.className="tradingview-widget-container__widget";wrap.appendChild(inner);
+  const sc=document.createElement("script");sc.type="text/javascript";sc.async=true;
+  sc.src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+  sc.innerHTML=JSON.stringify({autosize:true,symbol:TVSYM[MK],interval:TVINT[TF],timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||"Etc/UTC",
+    theme:dark?"dark":"light",style:"1",locale:"en",allow_symbol_change:true,hide_side_toolbar:false,withdateranges:true,
+    studies:["STD;RSI"],support_host:"https://www.tradingview.com"});
+  wrap.appendChild(sc);box.appendChild(wrap);
+  clearTimeout(tvwTimer);tvwTimer=setTimeout(()=>{if(!box.querySelector("iframe"))box.innerHTML='<p class="note" style="padding:16px">The TradingView chart can\'t load here. It appears on your hosted GitHub page, or open <a href="https://www.tradingview.com/chart/?symbol='+encodeURIComponent(TVSYM[MK])+'" target="_blank" rel="noopener">'+TVSYM[MK]+' on TradingView</a>.</p>'},8000);
+}
 async function load(){
-  if(source==="csv"){render(candles);return}
+  tvWidget();
+  if(source==="csv"){stopStream();render(candles);return}
   const ok=await loadLive();
   if(!ok){candles=sample();source="sample";$("srcLabel").textContent=`${M().name} · example data (not real prices)`;
     status("off","Live feed blocked here. Showing example data. Paste your own candles or host this page.");render(candles)}
@@ -507,9 +537,9 @@ $("refresh").onclick=()=>{if(source==="csv")source="live";load()};
 $("toggleCsv").onclick=()=>{$("csvBox").hidden=!$("csvBox").hidden};
 $("loadCsv").onclick=()=>{const cs=parseCsv($("csv").value);
   if(cs.length<210){$("csvMsg").textContent=`Read ${cs.length} rows. Need at least 210.`;return}
-  candles=cs;source="csv";$("csvMsg").textContent=`Loaded ${cs.length} candles.`;$("srcLabel").textContent="Your pasted data";status("live","Analysing pasted data");render(cs)};
+  stopStream();candles=cs;source="csv";$("csvMsg").textContent=`Loaded ${cs.length} candles.`;$("srcLabel").textContent="Your pasted data";status("live","Analysing pasted data");render(cs)};
 ["acct","riskPct"].forEach(id=>$(id).addEventListener("input",calcRisk));
-matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>setTimeout(retheme,50));
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>setTimeout(()=>{retheme();tvWidget()},50));
 /* ---------- multi-timeframe ---------- */
 const HTF={"1m":["15m","1h"],"5m":["1h","4h"],"15m":["1h","4h"],"30m":["4h","1d"],"1h":["4h","1d"],"4h":["1d"],"1d":[]};
 let mtf=null;
@@ -648,7 +678,24 @@ function renderSessions(){
 renderSessions();renderNews();setInterval(()=>{renderSessions();renderNews()},30000);
 
 load();
-timer=setInterval(()=>{if(source==="live")load()},60000);
+/* ---------- real-time ticks (Binance WebSocket); Kraken feeds fall back to polling ---------- */
+let ws=null,wsKey="",renderT=null,curFeed=null;
+function stopStream(){if(ws){ws.onclose=null;try{ws.close()}catch(e){}ws=null}wsKey=""}
+function scheduleRender(){if(renderT)return;renderT=setTimeout(()=>{renderT=null;if(source==="live")render(candles)},1500)}
+function startStream(f){
+  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();if(f.x!=="binance")return;
+  wsKey=key;
+  try{ws=new WebSocket(`wss://data-stream.binance.vision/ws/${f.s.toLowerCase()}@kline_${TF}`)}catch(e){wsKey="";return}
+  ws.onmessage=ev=>{let k;try{k=JSON.parse(ev.data).k}catch(e){return}if(!k||wsKey!==MK+TF+f.s||source!=="live")return;
+    const c={t:Math.floor(k.t/1000),o:+k.o,h:+k.h,l:+k.l,c:+k.c},last=candles[candles.length-1];
+    if(last&&last.t===c.t)candles[candles.length-1]=c;else if(!last||c.t>last.t){candles.push(c);if(candles.length>600)candles.shift()}
+    $("price").textContent="$"+fmt(c.c);status("live","Live tick · "+new Date().toLocaleTimeString());scheduleRender()};
+  ws.onclose=()=>{if(wsKey!==key)return;ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},5000)};
+}
+const streaming=()=>ws&&ws.readyState===1;
+// without a stream (Kraken pairs, or WebSocket blocked) poll every 10 s; with one, refresh higher timeframes every minute
+timer=setInterval(()=>{if(source==="live"&&!streaming())load()},10000);
+setInterval(()=>{if(source==="live"&&streaming()&&curFeed)loadMTF(curFeed)},60000);
 })();
 </script>
 

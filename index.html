@@ -40,7 +40,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 @media (max-width:760px){.top{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
 .verdict{display:grid;gap:12px;align-content:start}
-.price{font:600 2rem var(--mono);font-variant-numeric:tabular-nums}
+.price{font:600 2rem var(--mono);font-variant-numeric:tabular-nums;transition:color .4s}
+.price.up{color:var(--buy);transition:none}.price.dn{color:var(--sell);transition:none}
+.ba{font:.75rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
+.hright{display:grid;justify-items:end;gap:4px}
+.clock{display:flex;align-items:baseline;gap:6px;font:600 1.15rem var(--mono);font-variant-numeric:tabular-nums}
+.clock small{font:600 .7rem var(--mono);color:var(--muted);letter-spacing:.05em}
+@media (max-width:520px){.hright{justify-items:start}}
 .chg{font:.85rem var(--mono)}
 .sig{border-radius:8px;padding:14px;display:grid;gap:4px}
 .sig.buy{background:var(--buy-bg);color:var(--buy)} .sig.sell{background:var(--sell-bg);color:var(--sell)} .sig.wait{background:var(--wait-bg);color:var(--wait)}
@@ -121,7 +127,10 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
       <h1 id="title">XAU<span>/</span>USD Signal Desk</h1>
       <div class="sub">9-indicator confluence engine · ATR-based stops · position sizing</div>
     </div>
-    <div class="status" id="status"><span class="dot" id="dot"></span><span id="statusText">Starting…</span></div>
+    <div class="hright">
+      <div class="clock" aria-label="Indian Standard Time"><span id="clk">--:--:--</span><small id="clkd">IST</small></div>
+      <div class="status" id="status"><span class="dot" id="dot"></span><span id="statusText">Starting…</span></div>
+    </div>
   </header>
 
   <div class="bar">
@@ -151,6 +160,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
         <div class="lab" id="srcLabel">Gold price</div>
         <div class="price" id="price">—</div>
         <div class="chg" id="chg"></div>
+        <div class="ba" id="ba"></div>
       </div>
       <div class="sig wait" id="sig"><b id="sigTxt">WAIT</b><small id="sigWhy">Loading data…</small></div>
       <div class="chips" id="chips"></div>
@@ -682,17 +692,35 @@ load();
 let ws=null,wsKey="",renderT=null,curFeed=null;
 function stopStream(){if(ws){ws.onclose=null;try{ws.close()}catch(e){}ws=null}wsKey=""}
 function scheduleRender(){if(renderT)return;renderT=setTimeout(()=>{renderT=null;if(source==="live")render(candles)},1500)}
+// three streams at once: every trade, every best bid/ask change, and the candle
+let lastBA=null,lastTradeMs=0,lastQuoteMs=0,lastPx=null,tickCount=0,tickWin=Date.now(),pxT=null;
+function showTick(px,bid,ask){
+  if(px!=null){const el=$("price");if(lastPx!=null&&px!==lastPx){el.classList.remove("up","dn");void el.offsetWidth;el.classList.add(px>lastPx?"up":"dn");clearTimeout(pxT);pxT=setTimeout(()=>el.classList.remove("up","dn"),350)}
+    lastPx=px;el.textContent="$"+fmt(px)}
+  if(bid!=null){lastBA=[bid,ask];lastQuoteMs=Date.now()}
+  const ms=t=>t?new Date(t).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour12:false})+"."+String(new Date(t).getMilliseconds()).padStart(3,"0"):"—";
+  $("ba").innerHTML=(lastBA?`<span>Bid ${fmt(lastBA[0])}</span><span>Ask ${fmt(lastBA[1])}</span><span>Spread ${fmt(lastBA[1]-lastBA[0])}</span>`:"")+`<span>Last trade ${ms(lastTradeMs)}</span><span>Last quote ${ms(lastQuoteMs)}</span>`;
+}
 function startStream(f){
-  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();if(f.x!=="binance")return;
-  wsKey=key;
-  try{ws=new WebSocket(`wss://data-stream.binance.vision/ws/${f.s.toLowerCase()}@kline_${TF}`)}catch(e){wsKey="";return}
-  ws.onmessage=ev=>{let k;try{k=JSON.parse(ev.data).k}catch(e){return}if(!k||wsKey!==MK+TF+f.s||source!=="live")return;
-    const c={t:Math.floor(k.t/1000),o:+k.o,h:+k.h,l:+k.l,c:+k.c},last=candles[candles.length-1];
-    if(last&&last.t===c.t)candles[candles.length-1]=c;else if(!last||c.t>last.t){candles.push(c);if(candles.length>600)candles.shift()}
-    $("price").textContent="$"+fmt(c.c);status("live","Live tick · "+new Date().toLocaleTimeString());scheduleRender()};
+  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();$("ba").innerHTML="";lastBA=null;lastTradeMs=lastQuoteMs=0;if(f.x!=="binance")return;
+  wsKey=key;const sym=f.s.toLowerCase();
+  try{ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`)}catch(e){wsKey="";return}
+  ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}if(!m||!m.data||wsKey!==MK+TF+f.s||source!=="live")return;
+    const d=m.data,st=m.stream||"",last=candles[candles.length-1];tickCount++;
+    if(st.endsWith("@trade")){const p=+d.p;lastTradeMs=d.T||Date.now();if(last){last.c=p;last.h=Math.max(last.h,p);last.l=Math.min(last.l,p)}showTick(p)}
+    else if(st.endsWith("@bookTicker")){showTick(null,+d.b,+d.a)}
+    else if(d.k){const k=d.k,c={t:Math.floor(k.t/1000),o:+k.o,h:+k.h,l:+k.l,c:+k.c};
+      if(last&&last.t===c.t)candles[candles.length-1]=c;else if(!last||c.t>last.t){candles.push(c);if(candles.length>600)candles.shift()}}
+    const now=Date.now(),rate=Math.round(tickCount*60000/Math.max(1000,now-tickWin));if(now-tickWin>60000){tickWin=now;tickCount=0}
+    status("live",`Streaming · ${rate} updates/min`);scheduleRender()};
   ws.onclose=()=>{if(wsKey!==key)return;ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},5000)};
 }
 const streaming=()=>ws&&ws.readyState===1;
+/* ---------- live IST clock ---------- */
+const clkF=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+const clkD=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short"});
+function tickClock(){const n=new Date();$("clk").textContent=clkF.format(n).toUpperCase();$("clkd").textContent=clkD.format(n)+" · IST"}
+tickClock();setInterval(tickClock,1000);
 // without a stream (Kraken pairs, or WebSocket blocked) poll every 10 s; with one, refresh higher timeframes every minute
 timer=setInterval(()=>{if(source==="live"&&!streaming())load()},10000);
 setInterval(()=>{if(source==="live"&&streaming()&&curFeed)loadMTF(curFeed)},60000);

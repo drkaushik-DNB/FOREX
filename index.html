@@ -238,7 +238,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
   <footer>Made by Dr. Kaushik · indicators calculated in your browser · not financial advice · charts by <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts</a></footer>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
@@ -360,7 +360,13 @@ function calcRisk(){
 }
 function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
 /* ---------- TradingView-style chart (Lightweight Charts) ---------- */
-const LWC=window.LightweightCharts;const OV={e20:true,e50:true,e200:true,bb:false,st:false,mk:true,lv:true};let PANE="rsi";
+let LWC=window.LightweightCharts,libTries=0,libLoading=false;
+const LIBS=["https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js","https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.min.js"];
+function loadLib(){ // try backup CDNs if the first one was blocked
+  if(libLoading||libTries>=LIBS.length)return false;libLoading=true;const sc=document.createElement("script");sc.src=LIBS[libTries++];
+  sc.onload=()=>{libLoading=false;LWC=window.LightweightCharts;if(LWC){$("tv").innerHTML="";if(lastDraw)drawChart(lastDraw.cs,lastDraw.a,lastDraw.bt)}else loadLib()};
+  sc.onerror=()=>{libLoading=false;if(!loadLib()&&!LWC)$("tv").innerHTML='<p class="note" style="padding:16px">The chart library could not load. Check your connection and reload.</p>'};
+  document.head.appendChild(sc);return true}const OV={e20:true,e50:true,e200:true,bb:false,st:false,mk:true,lv:true};let PANE="rsi";
 let ch=null,sub=null,S={},SS={},chartKey="",lastDraw=null,syncing=false,priceLines=[];
 const tz=-new Date().getTimezoneOffset()*60; // show candles in the viewer's local time
 const pts=(cs,arr)=>{const o=[];arr.forEach((v,i)=>{if(isFinite(v))o.push({time:cs[i].t+tz,value:v})});return o};
@@ -395,7 +401,7 @@ function showOHLC(k){
 }
 function drawChart(cs,a,bt){
   lastDraw={cs,a,bt};
-  if(!buildCharts()){$("tv").innerHTML='<p class="note" style="padding:16px">The chart library could not load. Check your connection and reload.</p>';return}
+  if(!buildCharts()){if(!libLoading&&!loadLib())$("tv").innerHTML='<p class="note" style="padding:16px">The chart library could not load. Check your connection and reload.</p>';else $("tv").innerHTML='<p class="note" style="padding:16px">Loading chart…</p>';return}
   const Z=a.Z,dp=M().dp;
   S.c.applyOptions({priceFormat:{type:"price",precision:dp,minMove:1/10**dp}});
   S.c.setData(cs.map(k=>({time:k.t+tz,open:k.o,high:k.h,low:k.l,close:k.c})));

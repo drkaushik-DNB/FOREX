@@ -1,5 +1,5 @@
 {
- "lastRun": 1792954141696,
+ "lastRun": 1792957710110,
  "rules": {
   "th": 35,
   "adx": 20,
@@ -12,22 +12,22 @@
    "15m": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": 0.22,
-    "price": 4004.36,
+    "score": 0.095,
+    "price": 4004.06,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": 0.091,
-    "price": 4004.36,
+    "score": 0.096,
+    "price": 4004.06,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.375,
-    "price": 4004.36,
+    "price": 4004.06,
     "src": "kraken"
    }
   },
@@ -35,45 +35,45 @@
    "15m": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": 0.151,
-    "price": 80593.2,
+    "score": -0.023,
+    "price": 80488.2,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
-    "raw": "WAIT",
-    "score": -0.207,
-    "price": 80593.2,
+    "raw": "SELL",
+    "score": -0.492,
+    "price": 80488.2,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.554,
-    "price": 80593.2,
+    "price": 80487.3,
     "src": "kraken"
    }
   },
   "EURUSD": {
    "15m": {
     "signal": "WAIT",
-    "raw": "WAIT",
-    "score": -0.07,
-    "price": 1.11997,
+    "raw": "BUY",
+    "score": 0.679,
+    "price": 1.12059,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": -0.24,
-    "price": 1.11997,
+    "score": -0.148,
+    "price": 1.12059,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "WAIT",
     "score": -0.291,
-    "price": 1.11997,
+    "price": 1.12059,
     "src": "kraken"
    }
   },
@@ -81,22 +81,22 @@
    "15m": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": -0.045,
-    "price": 1.33662,
+    "score": -0.11,
+    "price": 1.33644,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": 0.018,
-    "price": 1.33662,
+    "score": -0.091,
+    "price": 1.33644,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.474,
-    "price": 1.33662,
+    "price": 1.33644,
     "src": "kraken"
    }
   }

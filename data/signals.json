@@ -1,5 +1,5 @@
 {
- "lastRun": 1792969296663,
+ "lastRun": 1792971159917,
  "rules": {
   "th": 35,
   "adx": 20,
@@ -11,23 +11,23 @@
   "XAUUSD": {
    "15m": {
     "signal": "WAIT",
-    "raw": "BUY",
-    "score": 0.494,
-    "price": 4009.15,
+    "raw": "WAIT",
+    "score": -0.074,
+    "price": 4004.92,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "WAIT",
     "score": -0.082,
-    "price": 4009.15,
+    "price": 4004.92,
     "src": "kraken"
    },
    "4h": {
     "signal": "SELL",
     "raw": "SELL",
     "score": -0.469,
-    "price": 4009.15,
+    "price": 4004.92,
     "src": "kraken"
    }
   },
@@ -35,30 +35,30 @@
    "15m": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": -0.521,
-    "price": 80357.9,
+    "score": -0.811,
+    "price": 79941.6,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.594,
-    "price": 80359.1,
+    "price": 79937.6,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.639,
-    "price": 80359.1,
+    "price": 79935.6,
     "src": "kraken"
    }
   },
   "EURUSD": {
    "15m": {
     "signal": "WAIT",
-    "raw": "BUY",
-    "score": 0.366,
+    "raw": "WAIT",
+    "score": 0.077,
     "price": 1.1209,
     "src": "kraken"
    },
@@ -81,22 +81,22 @@
    "15m": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": -0.091,
-    "price": 1.33692,
+    "score": -0.36,
+    "price": 1.33676,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "WAIT",
     "score": 0.033,
-    "price": 1.33692,
+    "price": 1.33676,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.398,
-    "price": 1.33692,
+    "price": 1.33676,
     "src": "kraken"
    }
   }
@@ -133,9 +133,12 @@
    "risk": 163.767766,
    "rr": 2,
    "hold": 50,
-   "st": "open",
+   "st": "WIN",
    "src": "kraken",
-   "score": -0.675
+   "score": -0.675,
+   "r": 2,
+   "px": 80188.364468,
+   "tx": 1792971159917
   }
  ]
 }

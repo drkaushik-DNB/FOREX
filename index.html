@@ -285,7 +285,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
       <h2>Live signal log</h2>
       <div class="seg small" role="group" aria-label="Log filter" id="logF"><button data-f="here" aria-pressed="true">This market</button><button data-f="all">All</button></div>
     </div>
-    <p class="note">Every live BUY or SELL is recorded here with its stop and target, then marked WIN or LOSS when price reaches one of them. This is the real forward test. Saved on this phone and browser only.</p>
+    <p class="note">Every live BUY or SELL on 5M and above is recorded here with its stop and target, then marked WIN or LOSS when price reaches one of them. 1M signals are not logged. This is the real forward test. Saved on this phone and browser only.</p>
     <div class="bt" id="logStats"></div>
     <div class="tbl"><table id="logT"><thead><tr><th>Time (IST)</th><th>Market</th><th>Side</th><th>Entry</th><th>Stop</th><th>Target</th><th>Result</th></tr></thead><tbody></tbody></table></div>
     <div class="bar" style="margin-top:10px"><button class="btn" id="logCopy">Copy as CSV</button><button class="btn" id="logDl">Download CSV</button><button class="btn" id="logClear">Clear log</button></div>
@@ -869,7 +869,7 @@ function trackSignals(a,cs){
     if(res){s.st=res[0];s.r=res[1];s.px=res[2];s.tx=now;s.note=res[3]||"";changed=true;
       notify(`${s.st} · ${MARKETS[s.mk].name} ${s.tf.toUpperCase()} ${s.d>0?"BUY":"SELL"}`,`Closed at ${fmtM(s.mk,s.px)} (${s.r>=0?"+":""}${s.r.toFixed(1)}R)${s.note?" · signal reversed":""}`)}
   });
-  if(a.verdict!=="WAIT"){
+  if(a.verdict!=="WAIT"&&TF!=="1m"){ // 1M is too noisy to log; earlier 1M entries are still closed out normally
     const d=a.verdict==="BUY"?1:-1,open=SIG.find(s=>s.st==="open"&&s.mk===MK&&s.tf===TF);
     const recent=SIG.find(s=>s.mk===MK&&s.tf===TF&&s.d===d&&now-s.t0<CFG.hold*TFS[TF]*1000);
     if(!open&&!recent){

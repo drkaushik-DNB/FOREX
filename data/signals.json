@@ -1,5 +1,5 @@
 {
- "lastRun": 1792974996833,
+ "lastRun": 1792978041354,
  "rules": {
   "th": 35,
   "adx": 20,
@@ -10,24 +10,24 @@
  "status": {
   "XAUUSD": {
    "15m": {
-    "signal": "SELL",
-    "raw": "SELL",
-    "score": -0.517,
-    "price": 3996.69,
+    "signal": "WAIT",
+    "raw": "WAIT",
+    "score": -0.184,
+    "price": 3997.67,
     "src": "kraken"
    },
    "1h": {
-    "signal": "WAIT",
-    "raw": "WAIT",
-    "score": -0.191,
-    "price": 3996.69,
+    "signal": "SELL",
+    "raw": "SELL",
+    "score": -0.558,
+    "price": 3997.67,
     "src": "kraken"
    },
    "4h": {
     "signal": "SELL",
     "raw": "SELL",
     "score": -0.462,
-    "price": 3996.69,
+    "price": 3997.67,
     "src": "kraken"
    }
   },
@@ -35,22 +35,22 @@
    "15m": {
     "signal": "SELL",
     "raw": "SELL",
-    "score": -0.498,
-    "price": 80129.9,
+    "score": -0.802,
+    "price": 79966.4,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "SELL",
-    "score": -0.76,
-    "price": 80130.5,
+    "score": -0.776,
+    "price": 79962.7,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.816,
-    "price": 80144.1,
+    "price": 79960.3,
     "src": "kraken"
    }
   },
@@ -58,45 +58,45 @@
    "15m": {
     "signal": "WAIT",
     "raw": "BUY",
-    "score": 0.562,
-    "price": 1.12149,
+    "score": 0.537,
+    "price": 1.12186,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "BUY",
-    "score": 0.586,
-    "price": 1.12149,
+    "score": 0.501,
+    "price": 1.12186,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "WAIT",
     "score": -0.226,
-    "price": 1.12149,
+    "price": 1.12186,
     "src": "kraken"
    }
   },
   "GBPUSD": {
    "15m": {
-    "signal": "WAIT",
-    "raw": "WAIT",
-    "score": 0.146,
-    "price": 1.33758,
+    "signal": "BUY",
+    "raw": "BUY",
+    "score": 0.51,
+    "price": 1.33827,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "WAIT",
-    "score": 0.256,
-    "price": 1.33758,
+    "score": 0.267,
+    "price": 1.33827,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.551,
-    "price": 1.33758,
+    "price": 1.33827,
     "src": "kraken"
    }
   }
@@ -153,9 +153,46 @@
    "risk": 6.666919,
    "rr": 2,
    "hold": 50,
+   "st": "LOSS",
+   "src": "kraken",
+   "score": -0.517,
+   "r": -1,
+   "px": 4003.356919,
+   "tx": 1792978041354
+  },
+  {
+   "id": 1792978041355,
+   "mk": "XAUUSD",
+   "tf": "1h",
+   "d": -1,
+   "t0": 1792978041354,
+   "tc": 1792976400,
+   "en": 3997.67,
+   "sl": 4004.808422,
+   "tp": 3983.393156,
+   "risk": 7.138422,
+   "rr": 2,
+   "hold": 50,
    "st": "open",
    "src": "kraken",
-   "score": -0.517
+   "score": -0.558
+  },
+  {
+   "id": 1792978041354,
+   "mk": "GBPUSD",
+   "tf": "15m",
+   "d": 1,
+   "t0": 1792978041354,
+   "tc": 1792977300,
+   "en": 1.33827,
+   "sl": 1.337403,
+   "tp": 1.340004,
+   "risk": 0.000867,
+   "rr": 2,
+   "hold": 50,
+   "st": "open",
+   "src": "kraken",
+   "score": 0.51
   }
  ]
 }

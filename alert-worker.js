@@ -17,6 +17,9 @@ const MARKETS = {
 };
 const fmt = (mk, v) => Number(v).toFixed(Math.abs(v) < 20 ? MARKETS[mk].dp : 2);
 
+// repeating alerts: after the first touch, the price must move a little past the level (0.03%)
+// before it can fire again, so small wobbles around the level don't send a burst of notifications
+const alertTarget = (a) => a.p + (a.n ? a.dir * a.p * 0.0003 : 0);
 const getAlerts = async (env) => (await env.ALERTS.get("alerts", { type: "json" })) || [];
 const putAlerts = (env, list) => env.ALERTS.put("alerts", JSON.stringify(list));
 
@@ -56,18 +59,24 @@ async function check(env) {
     const d = data[a.mk];
     if (!d) { keep.push(a); continue; }
     let hi = d.now, lo = d.now;
-    for (const k of d.rows) if ((k.t + 60) * 1000 > a.id) { hi = Math.max(hi, k.h); lo = Math.min(lo, k.l); } // only after the alert was set
-    if (a.dir > 0 ? hi >= a.p : lo <= a.p) {
+    // only candles after the alert was set (or after it last fired, for repeating alerts)
+    for (const k of d.rows) if (a.since ? k.t * 1000 >= a.since : (k.t + 60) * 1000 > a.id) { hi = Math.max(hi, k.h); lo = Math.min(lo, k.l); }
+    const target = alertTarget(a);
+    if (a.dir > 0 ? hi >= target : lo <= target) {
       fired++;
       const nm = MARKETS[a.mk].name;
-      await push(env, `Price alert · ${nm}`, `${nm} ${a.dir > 0 ? "rose to" : "fell to"} ${fmt(a.mk, a.p)}. Now ${fmt(a.mk, d.now)}.`,
+      await push(env, `${a.rep ? "Repeat alert" : "Price alert"} · ${nm}`,
+        `${nm} ${a.dir > 0 ? (a.n ? "rose back above" : "rose to") : (a.n ? "fell back below" : "fell to")} ${fmt(a.mk, a.p)}. Now ${fmt(a.mk, d.now)}.`,
         a.dir > 0 ? "chart_with_upwards_trend" : "chart_with_downwards_trend");
+      if (a.rep) { // stay active and wait for the next crossing the other way
+        keep.push({ ...a, dir: -a.dir, n: (a.n || 0) + 1, since: Math.ceil(Date.now() / 60000) * 60000 });
+      }
     } else keep.push(a);
   }
   if (fired) {
-    // re-read so an alert added during this check is not lost
-    const latest = await getAlerts(env), done = new Set(list.filter((a) => !keep.includes(a)).map((a) => a.id));
-    await putAlerts(env, latest.filter((a) => !done.has(a.id)));
+    // re-read so an alert added or removed during this check is respected
+    const latest = await getAlerts(env), mine = new Map(keep.map((a) => [a.id, a])), seen = new Set(list.map((a) => a.id));
+    await putAlerts(env, latest.filter((a) => !seen.has(a.id) || mine.has(a.id)).map((a) => mine.get(a.id) || a));
   }
 }
 
@@ -99,7 +108,9 @@ export default {
       const list = await getAlerts(env);
       if (list.length >= 50) return json({ error: "Too many alerts (50 max)" }, 400);
       const id = +a.id || Date.now();
-      if (!list.some((x) => x.id === id)) list.push({ id, mk: a.mk, p: +a.p, dir: +a.dir });
+      const clean = { id, mk: a.mk, p: +a.p, dir: +a.dir, rep: a.rep ? 1 : 0, n: +a.n || 0, since: +a.since || 0 };
+      const i = list.findIndex((x) => x.id === id);
+      if (i >= 0) list[i] = clean; else list.push(clean); // same id = update (the page fired it first)
       await putAlerts(env, list);
       return json(list);
     }

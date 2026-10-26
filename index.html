@@ -73,6 +73,7 @@ footer a{color:inherit}
 .pa{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
 .paf{display:flex;gap:8px} .paf input{flex:1;min-width:0}
 .pal{display:grid;gap:6px}
+.parep{display:flex;gap:8px;align-items:center;font-size:.8rem;color:var(--muted);cursor:pointer} .parep input{width:auto;margin:0}
 .par{display:flex;justify-content:space-between;align-items:center;gap:8px;font:.82rem var(--mono);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
 .par .del{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font:inherit;font-size:.75rem}
 .bga{display:grid;gap:6px;font-size:.8rem}
@@ -228,6 +229,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
           <input id="paIn" type="number" step="any" inputmode="decimal" placeholder="Price level" required>
           <button class="btn primary" type="submit">Add alert</button>
         </form>
+        <label class="parep" for="paRep"><input id="paRep" type="checkbox"> Repeat: alert every time the price crosses this level</label>
         <div id="paList" class="pal"></div>
         <div id="bgA" class="bga" hidden></div>
       </div>
@@ -935,17 +937,23 @@ function renderAlerts(){
   if(!list.length){box.innerHTML=`<span class="note">No alerts for ${M().name}. Enter a price and tap Add alert.</span>`;return}
   list.sort((a,b)=>b.p-a.p).forEach(a=>{const el=document.createElement("div");el.className="par";
     el.innerHTML=`<span></span><button class="del" type="button">Remove</button>`;
-    el.children[0].textContent=`${a.dir>0?"▲ Rises to":"▼ Falls to"} ${fmt(a.p)}`;
+    el.children[0].textContent=a.rep?`🔁 Every cross of ${fmt(a.p)} · next ${a.dir>0?"▲ up":"▼ down"}${a.n?` · fired ${a.n}×`:""}`:`${a.dir>0?"▲ Rises to":"▼ Falls to"} ${fmt(a.p)}`;
     el.children[1].onclick=()=>{PA=PA.filter(x=>x.id!==a.id);store.set("alerts",PA);renderAlerts();if(bgOn())bgCall("DELETE","/alerts?id="+a.id).catch(()=>{})};box.appendChild(el)});
   const others=PA.filter(a=>a.mk!==MK).length;
   if(others){const n=document.createElement("span");n.className="note";n.textContent=`+ ${others} alert${others>1?"s":""} on other markets (checked every 3 minutes).`;box.appendChild(n)}
 }
 function checkPriceAlerts(mk,px,slow){
   if(source!=="live"&&!slow)return;if(!isFinite(px))return;let hit=false;
-  PA.forEach(a=>{if(a.mk!==mk||a.done)return;if((a.dir>0&&px>=a.p)||(a.dir<0&&px<=a.p)){a.done=1;hit=true;
-    const nm=MARKETS[mk].name,msg=`${nm} ${a.dir>0?"rose to":"fell to"} ${fmtP(mk,a.p)}`;
-    toast("🔔 "+msg);if(audio)beep(a.dir>0);if(bgOn())bgCall("DELETE","/alerts?id="+a.id).catch(()=>{});
-    notify(`Price alert · ${nm}`,`${msg}. Now ${fmtP(mk,px)}.`,true)}});
+  PA.forEach(a=>{if(a.mk!==mk||a.done)return;
+    // repeating alerts must move 0.03% past the level after the first touch, so wobbles don't spam
+    const target=a.p+(a.n?a.dir*a.p*0.0003:0);
+    if((a.dir>0&&px>=target)||(a.dir<0&&px<=target)){hit=true;
+      const nm=MARKETS[mk].name,msg=`${nm} ${a.dir>0?(a.n?"rose back above":"rose to"):(a.n?"fell back below":"fell to")} ${fmtP(mk,a.p)}`;
+      toast("🔔 "+msg);if(audio)beep(a.dir>0);
+      notify(`${a.rep?"Repeat alert":"Price alert"} · ${nm}`,`${msg}. Now ${fmtP(mk,px)}.`,true);
+      if(a.rep){a.dir=-a.dir;a.n=(a.n||0)+1;a.since=Math.ceil(Date.now()/60000)*60000;
+        if(bgOn())bgCall("POST","/alerts",a).catch(()=>{})}   // tell the server so it doesn't send the same one
+      else{a.done=1;if(bgOn())bgCall("DELETE","/alerts?id="+a.id).catch(()=>{})}}});
   if(hit){PA=PA.filter(a=>!a.done);store.set("alerts",PA);renderAlerts()}
 }
 const fmtP=(mk,v)=>{const d=Math.abs(v)<20?MARKETS[mk].dp:2;return(+v).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d})};
@@ -954,9 +962,9 @@ $("paForm").addEventListener("submit",async e=>{e.preventDefault();
   const p=parseFloat($("paIn").value),now=lastPx??(last&&last.p);
   if(!isFinite(p)||!isFinite(now)){toast("Wait for the live price to load, then try again.");return}
   if(p===now){toast("That is the current price. Enter a level above or below it.");return}
-  const na={id:Date.now(),mk:MK,p,dir:p>now?1:-1};PA.push(na);store.set("alerts",PA);$("paIn").value="";renderAlerts();
+  const rp=$("paRep").checked,na={id:Date.now(),mk:MK,p,dir:p>now?1:-1,rep:rp?1:0,n:0,since:0};PA.push(na);store.set("alerts",PA);$("paIn").value="";renderAlerts();
   if(bgOn())bgCall("POST","/alerts",na).then(()=>bgSync()).catch(()=>setBg("down"));
-  toast(`Alert set: ${M().name} ${p>now?"rises to":"falls to"} ${fmt(p)}`);
+  toast(rp?`Repeat alert set: every time ${M().name} crosses ${fmt(p)}`:`Alert set: ${M().name} ${p>now?"rises to":"falls to"} ${fmt(p)}`);
   if(!audio){try{audio=new (window.AudioContext||window.webkitAudioContext)()}catch(err){}}
   if("Notification" in window&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(err){}}});
 $("mkt").addEventListener("click",()=>setTimeout(renderAlerts,0));

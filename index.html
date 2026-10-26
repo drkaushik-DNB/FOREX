@@ -963,7 +963,7 @@ $("mkt").addEventListener("click",()=>setTimeout(renderAlerts,0));
 renderAlerts();
 
 /* ---------- screen-off alerts: your Cloudflare alert server checks every minute and pushes to the ntfy app ---------- */
-const ALERT_SERVER="";
+const ALERT_SERVER="https://gsd-alerts.vagluke.workers.dev";
 let bgKey=store.get("alertkey","");
 const bgOn=()=>!!(ALERT_SERVER&&bgKey);
 async function bgCall(method,path,body){

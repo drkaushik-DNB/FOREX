@@ -23,6 +23,8 @@ jobs:
           node-version: 20
       - name: Check markets and update the log
         run: node scripts/signal-job.mjs
+      - name: Update high-impact news calendar
+        run: node scripts/calendar-job.mjs || echo "calendar update failed, keeping old data"
       - name: Save results
         run: |
           git config user.name "signal-bot"

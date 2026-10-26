@@ -135,6 +135,10 @@ details summary{cursor:pointer;font-weight:600}
 .nv{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.85rem}
 .nv .when{font:.8rem var(--mono);color:var(--muted)}
 .nv.soon{border-color:var(--accent)} .nv.live{border-color:var(--sell);background:var(--sell-bg)}
+.nv .nm{display:flex;gap:8px;align-items:baseline;min-width:0}
+.cur{font:600 .7rem var(--mono);padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);flex:none}
+.nv.rel .cur{border-color:var(--accent);color:var(--accent)} .nv:not(.rel){opacity:.72}
+.nv .fp{font:.72rem var(--mono);color:var(--muted)}
 #alertBtn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
 .sig.flash{animation:flash 1s ease 3}
 @keyframes flash{50%{box-shadow:0 0 0 4px var(--accent)}}
@@ -252,12 +256,16 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <p class="note" id="sessNote">All times are in IST (Indian Standard Time) and adjust automatically for daylight saving in London, New York and Sydney. Gold and forex move most during the London–New York overlap; the Asian session is usually quieter.</p>
   </section>
 
-  <section class="panel" aria-label="High-impact US news">
+  <section class="panel" aria-label="High-impact news">
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
-      <h2>High-impact US news</h2><span class="status" id="newsNow"></span>
+      <h2>High-impact news</h2><span class="status" id="newsNow"></span>
+    </div>
+    <div class="bar" style="margin-top:8px">
+      <div class="seg small" role="group" aria-label="News filter" id="newsF"><button data-f="all" aria-pressed="true">All countries</button><button data-f="rel">Affects this market</button></div>
+      <span class="note" id="newsRel"></span>
     </div>
     <div class="news" id="news"></div>
-    <p class="note">Gold, EUR/USD, GBP/USD and BTC can jump sharply on these releases. The signal switches to WAIT from 30 minutes before until 30 minutes after each one. Dates: Federal Reserve FOMC calendar and BLS CPI schedule; NFP is shown on the first Friday of each month, which is its usual slot, so confirm on an economic calendar.</p>
+    <p class="note" id="newsSrc">High-impact releases from every major economy: US, Eurozone, UK, Japan, China, Australia, Canada, New Zealand and Switzerland. Highlighted rows can move the selected market, and the signal switches to WAIT from 30 minutes before until 30 minutes after them. Source: ForexFactory calendar, refreshed hourly.</p>
   </section>
 
   <section class="panel" aria-label="Backtest">
@@ -681,19 +689,35 @@ const NEWS=[
   ...["2026-11-10","2026-12-10","2027-01-13","2027-02-11","2027-03-10","2027-04-13","2027-05-12","2027-06-10","2027-07-14","2027-08-11","2027-09-14","2027-10-14","2027-11-10","2027-12-10"].map(d=>({d,h:8,m:30,n:"US CPI inflation"}))
 ];
 function nfpDates(now){const out=[],t=new Date(now);for(let k=0;k<4;k++){const y=t.getUTCFullYear(),mo=t.getUTCMonth()+k;const f=new Date(Date.UTC(y,mo,1));while(f.getUTCDay()!==5)f.setUTCDate(f.getUTCDate()+1);out.push({d:f.toISOString().slice(0,10),h:8,m:30,n:"US jobs report (NFP)",est:true})}return out}
+// live calendar (all countries) saved hourly by the GitHub job; the fixed US list is only a fallback
+const CAL_URL="https://raw.githubusercontent.com/drkaushik-DNB/FOREX/main/data/calendar.json";
+let CAL=null,newsFilter="all";
+async function loadCal(){try{const r=await fetch(CAL_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const j=await r.json();
+  if(j&&Array.isArray(j.events)&&j.events.length){CAL=j;renderNews()}}catch(e){}}
+const REL={XAUUSD:["USD","CNY","ALL"],BTCUSD:["USD"],EURUSD:["EUR","USD"],GBPUSD:["GBP","USD"]};
+const relevant=e=>(REL[MK]||["USD"]).includes(e.cur);
 function newsEvents(now){
-  return [...NEWS,...nfpDates(now)].map(e=>{const [y,mo,d]=e.d.split("-").map(Number);return{...e,t:zoned("America/New_York",y,mo,d,e.h)+e.m*60000}})
-    .filter(e=>e.t>now-36e5*2).sort((a,b)=>a.t-b.t);
+  const fixed=[...NEWS,...nfpDates(now)].map(e=>{const [y,mo,d]=e.d.split("-").map(Number);return{...e,cur:"USD",t:zoned("America/New_York",y,mo,d,e.h)+e.m*60000}});
+  let ev=fixed;
+  if(CAL){const end=Math.max(...CAL.events.map(e=>e.t));ev=[...CAL.events.map(e=>({...e})),...fixed.filter(e=>e.t>end+864e5)]}
+  // merge releases from the same country at the same minute into one row
+  const g=new Map();ev.filter(e=>e.t>now-36e5*2).forEach(e=>{const k=e.t+"|"+e.cur;const x=g.get(k);
+    if(x){if(!x.n.includes(e.n))x.n+=" · "+e.n}else g.set(k,{...e})});
+  return [...g.values()].sort((a,b)=>a.t-b.t);
 }
-function newsLock(now){return newsEvents(now).find(e=>Math.abs(e.t-now)<=30*60000)||null}
+function newsLock(now){return newsEvents(now).find(e=>relevant(e)&&Math.abs(e.t-now)<=30*60000)||null}
 function renderNews(){
-  const now=Date.now(),ev=newsEvents(now).slice(0,4),box=$("news");box.innerHTML="";
-  const lock=newsLock(now),soon=ev.find(e=>e.t>now&&e.t-now<864e5);
+  const now=Date.now(),all=newsEvents(now),ev=all.filter(e=>newsFilter==="all"||relevant(e)).slice(0,8),box=$("news");box.innerHTML="";
+  const lock=newsLock(now),soon=all.find(e=>relevant(e)&&e.t>now&&e.t-now<864e5);
+  $("newsRel").textContent=`${M().name} reacts to: ${(REL[MK]||[]).map(c=>c==="ALL"?"global":c).join(", ")}`;
+  if(!ev.length)box.innerHTML='<p class="note">No high-impact releases scheduled in the coming days.</p>';
   $("newsNow").innerHTML=lock?`<span class="dot off"></span>News window: no new trades`:soon?`<span class="dot"></span>${soon.n} in ${dur(soon.t-now)}`:`<span class="dot live"></span>No major release in the next 24 hours`;
-  ev.forEach(e=>{const el=document.createElement("div");const live=Math.abs(e.t-now)<=30*60000,sn=!live&&e.t>now&&e.t-now<864e5;
-    el.className="nv"+(live?" live":sn?" soon":"");
-    el.innerHTML=`<span></span><span class="when"></span>`;el.children[0].textContent=e.n+(e.est?" (usual date)":"");
-    el.children[1].textContent=new Date(e.t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase())+" IST"+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
+  ev.forEach(e=>{const el=document.createElement("div");const rel=relevant(e),live=rel&&Math.abs(e.t-now)<=30*60000,sn=rel&&!live&&e.t>now&&e.t-now<864e5;
+    el.className="nv"+(rel?" rel":"")+(live?" live":sn?" soon":"");
+    el.innerHTML=`<span class="nm"><span class="cur"></span><span class="tt"></span></span><span class="when"></span>`;
+    el.querySelector(".cur").textContent=e.cur==="ALL"?"GLOBAL":e.cur;
+    el.querySelector(".tt").textContent=e.n+(e.est?" (usual date)":"")+(e.f?` · forecast ${e.f}`:"")+(e.p?` · prev ${e.p}`:"");
+    el.querySelector(".when").textContent=new Date(e.t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase())+" IST"+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
     box.appendChild(el)});
 }
 /* ---------- liquidity ---------- */
@@ -719,7 +743,7 @@ function applyFilters(a){
   // news
   const lock=newsLock(now);
   if(lock){chips.push({c:"sell",t:`News: ${lock.n}`});if(a.verdict!=="WAIT"){a.why=`${a.verdict} setup, but ${lock.n} is within 30 minutes. Wait for the spike to settle.`;a.verdict="WAIT"}}
-  else{const nx=newsEvents(now).find(e=>e.t>now);if(nx&&nx.t-now<864e5)chips.push({c:"warn",t:`${nx.n} in ${dur(nx.t-now)}`})}
+  else{const nx=newsEvents(now).find(e=>e.t>now&&relevant(e));if(nx&&nx.t-now<864e5)chips.push({c:"warn",t:`${nx.n} in ${dur(nx.t-now)}`})}
   // liquidity (crypto trades 24/7, so the weekend note only applies to gold and forex)
   const lq=liquidity(now);
   if(!(lq.lvl==="closed"&&MK==="BTCUSD"))chips.push({c:lq.lvl==="high"?"buy":lq.lvl==="low"||lq.lvl==="closed"?"warn":"",t:lq.txt});
@@ -804,6 +828,9 @@ function renderSessions(){
   const n=document.createElement("div");n.className="now";n.style.left=pct(now)+"%";tl.appendChild(n);
 }
 renderSessions();renderNews();setInterval(()=>{renderSessions();renderNews()},30000);
+loadCal();setInterval(loadCal,30*60000);
+$("newsF").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;newsFilter=b.dataset.f;[...$("newsF").children].forEach(x=>x.setAttribute("aria-pressed",x===b));renderNews()});
+$("mkt").addEventListener("click",()=>setTimeout(renderNews,0));
 
 load();
 /* ---------- real-time ticks (Binance WebSocket); Kraken feeds fall back to polling ---------- */

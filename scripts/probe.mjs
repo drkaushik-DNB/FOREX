@@ -1,10 +1,21 @@
 import fs from "node:fs";
-const out=[];
-for(let i=0;i<24;i++){
-  const row={t:new Date().toISOString()};
-  try{const r=await fetch("https://api.gold-api.com/price/XAU");row.ga_status=r.status;const j=await r.json();row.ga=j.price;row.ga_upd=j.updatedAt}catch(e){row.ga_err=e.message}
-  try{const r=await fetch("https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD");const j=await r.json();const p=j[0].spreadProfilePrices[0];row.sq=+((p.bid+p.ask)/2).toFixed(3)}catch(e){row.sq_err=e.message}
-  try{const r=await fetch("https://data-api.binance.vision/api/v3/ticker/bookTicker?symbol=PAXGUSDT");const j=await r.json();row.paxg=+((+j.bidPrice + +j.askPrice)/2).toFixed(2)}catch(e){row.px_err=e.message}
-  out.push(row);await new Promise(r=>setTimeout(r,5000));
+const urls={
+ binance_fut_xau:"https://fapi.binance.com/fapi/v1/ticker/bookTicker?symbol=XAUUSDT",
+ binance_fut_paxg:"https://fapi.binance.com/fapi/v1/ticker/bookTicker?symbol=PAXGUSDT",
+ bybit_xau:"https://api.bybit.com/v5/market/tickers?category=linear&symbol=XAUUSDT",
+ bybit_xaut:"https://api.bybit.com/v5/market/tickers?category=linear&symbol=XAUTUSDT",
+ okx_xau:"https://www.okx.com/api/v5/market/ticker?instId=XAU-USDT-SWAP",
+ okx_xaut:"https://www.okx.com/api/v5/market/ticker?instId=XAUT-USDT",
+ bitget_xau:"https://api.bitget.com/api/v2/mix/market/ticker?productType=USDT-FUTURES&symbol=XAUUSDT",
+ gate_xaut:"https://api.gateio.ws/api/v4/spot/tickers?currency_pair=XAUT_USDT",
+ kraken_fut:"https://futures.kraken.com/derivatives/api/v3/tickers/PF_XAUUSD",
+ hyperliquid:"https://api.hyperliquid.xyz/info",
+ swissquote:"https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD",
+};
+const out={};
+for(const [k,u] of Object.entries(urls)){
+  try{const opt={headers:{Origin:"https://drkaushik-dnb.github.io"}};if(k==="hyperliquid"){opt.method="POST";opt.headers["Content-Type"]="application/json";opt.body=JSON.stringify({type:"allMids"})}
+    const r=await fetch(u,opt);const t=await r.text();let body=t;if(k==="hyperliquid"){try{const j=JSON.parse(t);body=JSON.stringify(Object.fromEntries(Object.entries(j).filter(([a])=>/XAU|GOLD|PAXG/i.test(a))))}catch{}}
+    out[k]={status:r.status,acao:r.headers.get("access-control-allow-origin"),body:body.slice(0,300)}}catch(e){out[k]={err:e.message}}
 }
-fs.mkdirSync("data",{recursive:true});fs.writeFileSync("data/probe.json",JSON.stringify(out,null,0));
+fs.mkdirSync("data",{recursive:true});fs.writeFileSync("data/probe.json",JSON.stringify(out,null,1));

@@ -78,6 +78,8 @@ footer a{color:inherit}
 .par .del{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font:inherit;font-size:.75rem}
 .bga{display:grid;gap:6px;font-size:.8rem}
 .bga .del{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font:inherit}
+.bm{font-size:.78rem;margin-top:2px} .bm .del{border:0;background:none;color:var(--accent);cursor:pointer;text-decoration:underline;font:inherit;padding:0}
+#bmForm{margin-top:6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tbl{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font:.78rem var(--mono);font-variant-numeric:tabular-nums}
@@ -206,6 +208,8 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
         <div class="price" id="price">—</div>
         <div class="chg" id="chg"></div>
         <div class="ba" id="ba"></div>
+        <div class="bm"><button class="del" type="button" id="bmOpen">Match my broker</button><span class="note" id="bmStat"></span></div>
+        <form class="paf" id="bmForm" hidden><label for="bmIn" class="sr">Price on your broker now</label><input id="bmIn" type="number" step="any" inputmode="decimal" placeholder="Price on your broker now"><button class="btn" type="submit">Match</button><button class="btn" type="button" id="bmReset">Reset</button></form>
       </div>
       <div class="sig wait" id="sig"><b id="sigTxt">WAIT</b><small id="sigWhy">Loading data…</small></div>
       <div class="chips" id="chips"></div>
@@ -324,6 +328,7 @@ const MARKETS={
 const OANDA_PROXY="";
 if(OANDA_PROXY){[["XAUUSD","XAU_USD","XAU/USD spot"],["EURUSD","EUR_USD","EUR/USD spot"],["GBPUSD","GBP_USD","GBP/USD spot"]]
   .forEach(([mk,s,label])=>MARKETS[mk].feeds.unshift({x:"oanda",s,label}))}
+Object.entries(MARKETS).forEach(([mk,m])=>m.feeds.forEach(f=>f.mk=mk));
 const M=()=>MARKETS[MK];
 const store={get(k,d){try{const v=localStorage.getItem("gsd_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("gsd_"+k,JSON.stringify(v))}catch(e){}}};
 const DEF={th:35,adx:20,slm:1.5,rr:2,hold:50};
@@ -549,7 +554,7 @@ async function fetchFeedRaw(f,tf=TF){
 // gold: shift the feed so it sits on the real spot price (spot from gold-api.com, refreshed every 30 s)
 const GOLD_SPOT_URL="https://api.gold-api.com/price/XAU";
 const OFF={},OFFS={},RAW={};let spotNow=null;
-const adjOf=f=>f&&f.adj&&OFF[f.s]!=null?OFF[f.s]:0;
+const adjOf=f=>(f&&f.adj&&OFF[f.s]!=null?OFF[f.s]:0)-(f&&BOFF[f.mk]||0); // spot match, then your broker match
 async function fetchFeed(f,tf=TF){
   const cs=await fetchFeedRaw(f,tf);if(!cs||!f.adj)return cs;
   if(tf===TF||!RAW[f.s])RAW[f.s]={v:cs[cs.length-1].c,at:Date.now()};
@@ -996,6 +1001,21 @@ function setBg(st){const b=$("bgA");if(!ALERT_SERVER){b.hidden=true;return}b.hid
 }
 setBg();bgSync();setInterval(bgSync,60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)bgSync()});
+
+/* ---------- match my broker: shift the analysis chart by the gap to your broker's price ---------- */
+let BOFF=store.get("brokeroff",{});
+function bmStatus(){const b=BOFF[MK];$("bmStat").textContent=b?` · matched to your broker (${b>0?"+":""}${fmt(b)})`:"";$("bmOpen").textContent=b?"Re-match broker":"Match my broker"}
+function setBroker(v){const old=BOFF[MK]||0;if(v)BOFF[MK]=v;else delete BOFF[MK];store.set("brokeroff",BOFF);const d=(BOFF[MK]||0)-old;
+  if(d&&candles.length&&source==="live"){candles.forEach(k=>{k.o+=d;k.h+=d;k.l+=d;k.c+=d});if(lastBA)lastBA=[lastBA[0]+d,lastBA[1]+d];if(lastPx!=null)lastPx+=d;render(candles);if(lastPx!=null)showTick(lastPx)}
+  bmStatus();runScan()}
+$("bmOpen").onclick=()=>{$("bmForm").hidden=!$("bmForm").hidden;if(!$("bmForm").hidden){$("bmIn").value="";$("bmIn").focus()}};
+$("bmForm").addEventListener("submit",e=>{e.preventDefault();const p=parseFloat($("bmIn").value),cur=lastPx??(last&&last.p);
+  if(!isFinite(p)||!isFinite(cur)){toast("Wait for the live price to load, then try again.");return}
+  const base=cur-(BOFF[MK]||0),v=p-base;
+  if(Math.abs(v)>Math.abs(base)*0.02){toast("That is more than 2% away from the live price. Check the market and the number.");return}
+  setBroker(v);$("bmForm").hidden=true;toast(`Matched to your broker: ${v>=0?"+":""}${fmt(v)}`)});
+$("bmReset").onclick=()=>{setBroker(0);$("bmForm").hidden=true;toast("Broker match removed")};
+$("mkt").addEventListener("click",()=>setTimeout(()=>{bmStatus();$("bmForm").hidden=true},0));bmStatus();
 
 /* ---------- live IST clock ---------- */
 const clkF=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});

@@ -800,6 +800,10 @@ function stopStream(){if(ws){ws.onclose=null;try{ws.close()}catch(e){}ws=null}ws
 function scheduleRender(){if(renderT)return;renderT=setTimeout(()=>{renderT=null;if(source==="live")render(candles)},1500)}
 // three streams at once: every trade, every best bid/ask change, and the candle
 let lastBA=null,lastTradeMs=0,lastQuoteMs=0,lastPx=null,tickCount=0,tickWin=Date.now(),pxT=null;
+// move the last candle on the chart with every tick (once per screen frame, ~16 ms)
+let chartRaf=0;
+function chartTick(){if(chartRaf||!S.c||!candles.length)return;chartRaf=requestAnimationFrame(()=>{chartRaf=0;const k=candles[candles.length-1];
+  try{S.c.update({time:k.t+tz,open:k.o,high:k.h,low:k.l,close:k.c})}catch(e){}})}
 function showTick(px,bid,ask){
   if(px!=null){const el=$("price");if(lastPx!=null&&px!==lastPx){el.classList.remove("up","dn");void el.offsetWidth;el.classList.add(px>lastPx?"up":"dn");clearTimeout(pxT);pxT=setTimeout(()=>el.classList.remove("up","dn"),350)}
     lastPx=px;el.textContent="$"+fmt(px)}
@@ -814,12 +818,13 @@ function startStream(f){
   try{ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`)}catch(e){wsKey="";return}
   ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}if(!m||!m.data||wsKey!==MK+TF+f.s||source!=="live")return;
     const d=m.data,st=m.stream||"",last=candles[candles.length-1];tickCount++;
-    if(st.endsWith("@trade")){const p=+d.p;lastTradeMs=d.T||Date.now();if(last){last.c=p;last.h=Math.max(last.h,p);last.l=Math.min(last.l,p)}showTick(p)}
-    else if(st.endsWith("@bookTicker")){showTick(null,+d.b,+d.a)}
+    // price shown = middle of best bid and ask: it moves on every quote change, far more often than trades
+    if(st.endsWith("@trade")){const p=+d.p;lastTradeMs=d.T||Date.now();if(last){last.h=Math.max(last.h,p);last.l=Math.min(last.l,p)}if(!lastBA){if(last)last.c=p;showTick(p)}else showTick(null)}
+    else if(st.endsWith("@bookTicker")){const b=+d.b,a=+d.a,mid=(b+a)/2;if(last&&isFinite(mid)){last.c=mid;last.h=Math.max(last.h,mid);last.l=Math.min(last.l,mid)}showTick(mid,b,a)}
     else if(d.k){const k=d.k,c={t:Math.floor(k.t/1000),o:+k.o,h:+k.h,l:+k.l,c:+k.c};
       if(last&&last.t===c.t)candles[candles.length-1]=c;else if(!last||c.t>last.t){candles.push(c);if(candles.length>600)candles.shift()}}
     const now=Date.now(),rate=Math.round(tickCount*60000/Math.max(1000,now-tickWin));if(now-tickWin>60000){tickWin=now;tickCount=0}
-    status("live",`Streaming · ${rate} updates/min`);scheduleRender()};
+    status("live",`Streaming · ${rate} updates/min`);chartTick();scheduleRender()};
   ws.onclose=()=>{if(wsKey!==key)return;ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},5000)};
 }
 const streaming=()=>ws&&ws.readyState===1;

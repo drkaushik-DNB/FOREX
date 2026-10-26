@@ -260,7 +260,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
 
   <section class="panel" aria-label="Real spot chart">
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
-      <h2>Real spot chart</h2><span class="status" id="tvwSym"></span>
+      <h2>Real spot chart</h2><span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="seg small" role="group" aria-label="Chart source" id="tvSrc"><button data-s="VANTAGE" aria-pressed="true">Vantage</button><button data-s="OANDA">OANDA</button></span><span class="status" id="tvwSym"></span></span>
     </div>
     <p class="note">Broker-quoted prices from TradingView. Use this chart for your exact entry, stop and target; gold on the chart above is matched to this spot price, usually within about $1–2.</p>
     <div id="tvw" class="tvw"></div>
@@ -589,14 +589,19 @@ function sample(){
   return stamp(out);
 }
 /* ---------- free TradingView widget with real spot prices ---------- */
-const TVSYM={XAUUSD:"OANDA:XAUUSD",BTCUSD:"BINANCE:BTCUSDT",EURUSD:"OANDA:EURUSD",GBPUSD:"OANDA:GBPUSD"};
+setTimeout(()=>{[...$("tvSrc").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===TVBROKER));
+  $("tvSrc").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;TVBROKER=b.dataset.s;store.set("tvbroker",TVBROKER);
+    [...$("tvSrc").children].forEach(x=>x.setAttribute("aria-pressed",x===b));tvWidget()})},0);
+// broker feed for the spot chart: Vantage by default, OANDA as the backup (BTC always from Binance)
+let TVBROKER=store.get("tvbroker","VANTAGE");
+const TVSYM=new Proxy({},{get:(_,mk)=>mk==="BTCUSD"?"BINANCE:BTCUSDT":`${TVBROKER}:${mk}`});
 const TVINT={"1m":"1","5m":"5","15m":"15","30m":"30","1h":"60","4h":"240","1d":"D"};
 let tvwKey="",tvwTimer=null;
 // Android often reports the old name "Asia/Calcutta", which TradingView ignores (falls back to UTC)
 function tvZone(){return"Asia/Kolkata"} // always IST
 function isDark(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
 function tvWidget(){
-  const dark=isDark(),key=MK+TF+dark;if(key===tvwKey)return;tvwKey=key;
+  const dark=isDark(),key=MK+TF+dark+TVBROKER;if(key===tvwKey)return;tvwKey=key;
   const box=$("tvw");box.innerHTML="";$("tvwSym").textContent=`${TVSYM[MK]} · ${TF.toUpperCase()}`;
   const wrap=document.createElement("div");wrap.className="tradingview-widget-container";
   const inner=document.createElement("div");inner.className="tradingview-widget-container__widget";wrap.appendChild(inner);

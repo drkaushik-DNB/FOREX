@@ -1,5 +1,5 @@
 {
- "lastRun": 1792984544843,
+ "lastRun": 1792985299272,
  "rules": {
   "th": 35,
   "adx": 20,
@@ -13,21 +13,21 @@
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.613,
-    "price": 4017.79,
+    "price": 4019.05,
     "src": "kraken"
    },
    "1h": {
     "signal": "SELL",
     "raw": "SELL",
     "score": -0.424,
-    "price": 4017.79,
+    "price": 4019.05,
     "src": "kraken"
    },
    "4h": {
     "signal": "SELL",
     "raw": "SELL",
     "score": -0.462,
-    "price": 4017.79,
+    "price": 4019.05,
     "src": "kraken"
    }
   },
@@ -36,21 +36,21 @@
     "signal": "SELL",
     "raw": "SELL",
     "score": -0.64,
-    "price": 79630.4,
+    "price": 79568.1,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.74,
-    "price": 79630.4,
+    "price": 79565.2,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "SELL",
     "score": -0.816,
-    "price": 79630.4,
+    "price": 79568,
     "src": "kraken"
    }
   },
@@ -59,21 +59,21 @@
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.602,
-    "price": 1.12203,
+    "price": 1.1221,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.519,
-    "price": 1.12203,
+    "price": 1.12211,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "WAIT",
     "score": -0.226,
-    "price": 1.12203,
+    "price": 1.12211,
     "src": "kraken"
    }
   },
@@ -82,21 +82,21 @@
     "signal": "BUY",
     "raw": "BUY",
     "score": 0.505,
-    "price": 1.33818,
+    "price": 1.33807,
     "src": "kraken"
    },
    "1h": {
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.413,
-    "price": 1.33818,
+    "price": 1.33807,
     "src": "kraken"
    },
    "4h": {
     "signal": "WAIT",
     "raw": "BUY",
     "score": 0.551,
-    "price": 1.33818,
+    "price": 1.33807,
     "src": "kraken"
    }
   }

@@ -1,0 +1,167 @@
+{
+ "fetchedAt": 1792985321610,
+ "source": "ForexFactory",
+ "events": [
+  {
+   "t": 1793147400000,
+   "cur": "AUD",
+   "n": "CPI m/m",
+   "f": "0.7%",
+   "p": "0.4%"
+  },
+  {
+   "t": 1793147400000,
+   "cur": "AUD",
+   "n": "CPI y/y",
+   "f": "4.2%",
+   "p": "4.0%"
+  },
+  {
+   "t": 1793147400000,
+   "cur": "AUD",
+   "n": "Trimmed Mean CPI m/m",
+   "f": "0.3%",
+   "p": "0.2%"
+  },
+  {
+   "t": 1793149200000,
+   "cur": "NZD",
+   "n": "Official Cash Rate",
+   "f": "3.00%",
+   "p": "2.75%"
+  },
+  {
+   "t": 1793149200000,
+   "cur": "NZD",
+   "n": "RBNZ Rate Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793152800000,
+   "cur": "NZD",
+   "n": "RBNZ Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793190600000,
+   "cur": "GBP",
+   "n": "Annual Budget Release",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793195100000,
+   "cur": "CAD",
+   "n": "BOC Monetary Policy Report",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793195100000,
+   "cur": "CAD",
+   "n": "BOC Rate Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793195100000,
+   "cur": "CAD",
+   "n": "Overnight Rate",
+   "f": "2.50%",
+   "p": "2.25%"
+  },
+  {
+   "t": 1793197800000,
+   "cur": "CAD",
+   "n": "BOC Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793210400000,
+   "cur": "USD",
+   "n": "Federal Funds Rate",
+   "f": "4.00%",
+   "p": "4.00%"
+  },
+  {
+   "t": 1793210400000,
+   "cur": "USD",
+   "n": "FOMC Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793212200000,
+   "cur": "USD",
+   "n": "FOMC Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793277000000,
+   "cur": "USD",
+   "n": "Advance GDP q/q",
+   "f": "3.2%",
+   "p": "1.5%"
+  },
+  {
+   "t": 1793277000000,
+   "cur": "USD",
+   "n": "Core PCE Price Index m/m",
+   "f": "0.3%",
+   "p": "0.2%"
+  },
+  {
+   "t": 1793279700000,
+   "cur": "EUR",
+   "n": "Main Refinancing Rate",
+   "f": "2.65%",
+   "p": "2.65%"
+  },
+  {
+   "t": 1793279700000,
+   "cur": "EUR",
+   "n": "Monetary Policy Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793281500000,
+   "cur": "EUR",
+   "n": "ECB Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793327400000,
+   "cur": "JPY",
+   "n": "BOJ Policy Rate",
+   "f": "<1.25%",
+   "p": "<1.25%"
+  },
+  {
+   "t": 1793327400000,
+   "cur": "JPY",
+   "n": "Monetary Policy Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793327460000,
+   "cur": "JPY",
+   "n": "BOJ Outlook Report",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793338200000,
+   "cur": "JPY",
+   "n": "BOJ Press Conference",
+   "f": "",
+   "p": ""
+  }
+ ]
+}

@@ -75,6 +75,8 @@ footer a{color:inherit}
 .pal{display:grid;gap:6px}
 .par{display:flex;justify-content:space-between;align-items:center;gap:8px;font:.82rem var(--mono);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
 .par .del{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font:inherit;font-size:.75rem}
+.bga{display:grid;gap:6px;font-size:.8rem}
+.bga .del{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font:inherit}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tbl{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font:.78rem var(--mono);font-variant-numeric:tabular-nums}
@@ -227,6 +229,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
           <button class="btn primary" type="submit">Add alert</button>
         </form>
         <div id="paList" class="pal"></div>
+        <div id="bgA" class="bga" hidden></div>
       </div>
     </section>
     <section class="panel chartp" aria-label="Chart">
@@ -933,7 +936,7 @@ function renderAlerts(){
   list.sort((a,b)=>b.p-a.p).forEach(a=>{const el=document.createElement("div");el.className="par";
     el.innerHTML=`<span></span><button class="del" type="button">Remove</button>`;
     el.children[0].textContent=`${a.dir>0?"▲ Rises to":"▼ Falls to"} ${fmt(a.p)}`;
-    el.children[1].onclick=()=>{PA=PA.filter(x=>x.id!==a.id);store.set("alerts",PA);renderAlerts()};box.appendChild(el)});
+    el.children[1].onclick=()=>{PA=PA.filter(x=>x.id!==a.id);store.set("alerts",PA);renderAlerts();if(bgOn())bgCall("DELETE","/alerts?id="+a.id).catch(()=>{})};box.appendChild(el)});
   const others=PA.filter(a=>a.mk!==MK).length;
   if(others){const n=document.createElement("span");n.className="note";n.textContent=`+ ${others} alert${others>1?"s":""} on other markets (checked every 3 minutes).`;box.appendChild(n)}
 }
@@ -941,7 +944,7 @@ function checkPriceAlerts(mk,px,slow){
   if(source!=="live"&&!slow)return;if(!isFinite(px))return;let hit=false;
   PA.forEach(a=>{if(a.mk!==mk||a.done)return;if((a.dir>0&&px>=a.p)||(a.dir<0&&px<=a.p)){a.done=1;hit=true;
     const nm=MARKETS[mk].name,msg=`${nm} ${a.dir>0?"rose to":"fell to"} ${fmtP(mk,a.p)}`;
-    toast("🔔 "+msg);if(audio)beep(a.dir>0);
+    toast("🔔 "+msg);if(audio)beep(a.dir>0);if(bgOn())bgCall("DELETE","/alerts?id="+a.id).catch(()=>{});
     notify(`Price alert · ${nm}`,`${msg}. Now ${fmtP(mk,px)}.`,true)}});
   if(hit){PA=PA.filter(a=>!a.done);store.set("alerts",PA);renderAlerts()}
 }
@@ -951,12 +954,35 @@ $("paForm").addEventListener("submit",async e=>{e.preventDefault();
   const p=parseFloat($("paIn").value),now=lastPx??(last&&last.p);
   if(!isFinite(p)||!isFinite(now)){toast("Wait for the live price to load, then try again.");return}
   if(p===now){toast("That is the current price. Enter a level above or below it.");return}
-  PA.push({id:Date.now(),mk:MK,p,dir:p>now?1:-1});store.set("alerts",PA);$("paIn").value="";renderAlerts();
+  const na={id:Date.now(),mk:MK,p,dir:p>now?1:-1};PA.push(na);store.set("alerts",PA);$("paIn").value="";renderAlerts();
+  if(bgOn())bgCall("POST","/alerts",na).then(()=>bgSync()).catch(()=>setBg("down"));
   toast(`Alert set: ${M().name} ${p>now?"rises to":"falls to"} ${fmt(p)}`);
   if(!audio){try{audio=new (window.AudioContext||window.webkitAudioContext)()}catch(err){}}
   if("Notification" in window&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(err){}}});
 $("mkt").addEventListener("click",()=>setTimeout(renderAlerts,0));
 renderAlerts();
+
+/* ---------- screen-off alerts: your Cloudflare alert server checks every minute and pushes to the ntfy app ---------- */
+const ALERT_SERVER="";
+let bgKey=store.get("alertkey","");
+const bgOn=()=>!!(ALERT_SERVER&&bgKey);
+async function bgCall(method,path,body){
+  const r=await fetch(ALERT_SERVER+path,{method,headers:{"X-Key":bgKey,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  if(r.status===401)throw new Error("key");if(!r.ok)throw new Error("http "+r.status);return r.json()}
+async function bgSync(){if(!bgOn())return setBg();
+  try{const list=await bgCall("GET","/alerts");if(Array.isArray(list)){PA=list;store.set("alerts",PA);renderAlerts()}setBg("ok")}
+  catch(e){setBg(e.message==="key"?"badkey":"down")}}
+function setBg(st){const b=$("bgA");if(!ALERT_SERVER){b.hidden=true;return}b.hidden=false;
+  if(!bgKey||st==="badkey"){
+    b.innerHTML=`<span class="note">${st==="badkey"?"That key didn't work. ":""}For alerts with the screen off, paste your alert key once.</span><div class="paf"><label for="bgKeyIn" class="sr">Alert key</label><input id="bgKeyIn" type="password" autocomplete="off" placeholder="Alert key"><button class="btn" id="bgKeyBtn" type="button">Connect</button></div>`;
+    $("bgKeyBtn").onclick=async()=>{bgKey=$("bgKeyIn").value.trim();if(!bgKey)return;store.set("alertkey",bgKey);
+      try{for(const a of PA)await bgCall("POST","/alerts",a)}catch(e){}bgSync()};return}
+  b.innerHTML=`<span class="note">${st==="down"?"\u26a0 Alert server not reachable right now; alerts still work while this page is open.":"\u2713 Screen-off alerts on: checked every minute, sent to the ntfy app."}</span><span><button class="del" id="bgTest" type="button">Send test notification</button> \u00b7 <button class="del" id="bgOff" type="button">Disconnect</button></span>`;
+  $("bgTest").onclick=async()=>{try{await bgCall("POST","/test");toast("Test sent. Check the ntfy app.")}catch(e){toast("Couldn't reach the alert server.")}};
+  $("bgOff").onclick=()=>{bgKey="";store.set("alertkey","");setBg()};
+}
+setBg();bgSync();setInterval(bgSync,60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)bgSync()});
 
 /* ---------- live IST clock ---------- */
 const clkF=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});

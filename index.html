@@ -365,6 +365,11 @@ const MARKETS={
   GBPUSD:{title:"GBP<span>/</span>USD",name:"Pound",dp:5,base:1.33,vol:.0015,contract:100000,unit:"GBP",
     feeds:[{x:"kraken",s:"GBPUSD",label:"GBP/USD"},{x:"binance",s:"GBPUSDT",label:"GBP/USDT"}]}
 };
+// Real spot prices from an OANDA demo account, through your own Cloudflare Worker (keeps the API key secret).
+// Leave empty to use the free exchange feeds only.
+const OANDA_PROXY="";
+if(OANDA_PROXY){[["XAUUSD","XAU_USD","XAU/USD spot"],["EURUSD","EUR_USD","EUR/USD spot"],["GBPUSD","GBP_USD","GBP/USD spot"]]
+  .forEach(([mk,s,label])=>MARKETS[mk].feeds.unshift({x:"oanda",s,label}))}
 const M=()=>MARKETS[MK];
 const store={get(k,d){try{const v=localStorage.getItem("gsd_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("gsd_"+k,JSON.stringify(v))}catch(e){}}};
 const DEF={th:35,adx:20,slm:1.5,rr:2,hold:50};
@@ -571,6 +576,12 @@ const TFS={"1m":60,"5m":300,"15m":900,"30m":1800,"1h":3600,"4h":14400,"1d":86400
 function stamp(cs){const step=TFS[TF],end=Math.floor(Date.now()/1000/step)*step;return cs.map((k,i)=>({...k,t:end-(cs.length-1-i)*step}))}
 function status(kind,txt){$("dot").className="dot "+(kind||"");$("statusText").textContent=txt}
 async function fetchFeed(f,tf=TF){
+  if(f.x==="oanda"){
+    try{const G={"1m":"M1","5m":"M5","15m":"M15","30m":"M30","1h":"H1","4h":"H4","1d":"D"}[tf];
+      const r=await fetch(`${OANDA_PROXY}/candles?instrument=${f.s}&granularity=${G}`,{cache:"no-store"});if(!r.ok)return null;
+      const j=await r.json();const cs=(j.candles||[]).map(k=>({t:Math.floor(Date.parse(k.time)/1000),o:+k.mid.o,h:+k.mid.h,l:+k.mid.l,c:+k.mid.c}));
+      return cs.length?cs:null}catch(e){return null}
+  }
   if(f.x==="binance"){
     for(const host of ["https://data-api.binance.vision","https://api.binance.com"]){
       try{const r=await fetch(`${host}/api/v3/klines?symbol=${f.s}&interval=${tf}&limit=500`,{cache:"no-store"});if(!r.ok)continue;
@@ -816,7 +827,7 @@ function showTick(px,bid,ask){
   $("ba").innerHTML=(lastBA?`<span>Bid ${fmt(lastBA[0])}</span><span>Ask ${fmt(lastBA[1])}</span><span>Spread ${fmt(lastBA[1]-lastBA[0])}</span>`:"")+`<span>Last trade ${ms(lastTradeMs)}</span><span>Last quote ${ms(lastQuoteMs)}</span>`;
 }
 function startStream(f){
-  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();$("ba").innerHTML="";lastBA=null;lastTradeMs=lastQuoteMs=0;if(f.x!=="binance")return;
+  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();$("ba").innerHTML="";lastBA=null;lastTradeMs=lastQuoteMs=0;if(f.x==="oanda"){wsKey=key;startOanda(f,key);return}if(f.x!=="binance")return;
   wsKey=key;const sym=f.s.toLowerCase();
   try{ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`)}catch(e){wsKey="";return}
   ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}if(!m||!m.data||wsKey!==MK+TF+f.s||source!=="live")return;
@@ -831,6 +842,32 @@ function startStream(f){
   ws.onclose=()=>{if(wsKey!==key)return;ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},5000)};
 }
 const streaming=()=>ws&&ws.readyState===1;
+// OANDA price stream (one JSON line per price change), read through the Worker
+function startOanda(f,key){
+  const ctrl=new AbortController(),me={readyState:0,onclose:null,close(){ctrl.abort()}};ws=me;
+  me.onclose=()=>{if(wsKey!==key)return;ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},5000)};
+  (async()=>{
+    try{
+      const r=await fetch(`${OANDA_PROXY}/stream?instruments=${f.s}`,{signal:ctrl.signal,cache:"no-store"});
+      if(!r.ok||!r.body)throw new Error("stream "+r.status);me.readyState=1;
+      const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
+      for(;;){const {value,done}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
+        while((i=buf.indexOf("\n"))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(!line)continue;
+          let m;try{m=JSON.parse(line)}catch(e){continue}
+          if(m.type!=="PRICE"||wsKey!==key||source!=="live"||!m.bids||!m.asks)continue;
+          const b=+m.bids[0].price,a=+m.asks[0].price,mid=(b+a)/2,ts=Date.parse(m.time)||Date.now();if(!isFinite(mid))continue;
+          lastTradeMs=ts;tickCount++;
+          const step=TFS[TF],bucket=Math.floor(ts/1000/step)*step,last=candles[candles.length-1];
+          if(last&&bucket>last.t){candles.push({t:bucket,o:mid,h:mid,l:mid,c:mid});if(candles.length>600)candles.shift()}
+          else if(last&&bucket===last.t){last.c=mid;last.h=Math.max(last.h,mid);last.l=Math.min(last.l,mid)}
+          showTick(mid,b,a);
+          const now=Date.now(),rate=Math.round(tickCount*60000/Math.max(1000,now-tickWin));if(now-tickWin>60000){tickWin=now;tickCount=0}
+          status("live",`Streaming spot · ${rate} updates/min`);chartTick();scheduleRender()}
+      }
+    }catch(e){}
+    me.readyState=3;if(me.onclose)me.onclose();
+  })();
+}
 /* ---------- pivots and swing levels ---------- */
 let DAILY=null;
 async function loadDaily(f){const key=MK;if(DAILY&&DAILY.key===key&&Date.now()-DAILY.at<36e5)return;

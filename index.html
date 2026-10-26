@@ -512,7 +512,7 @@ function buildCharts(){
   // keep both panes scrolled together
   const link=(from,to)=>from.timeScale().subscribeVisibleLogicalRangeChange(r=>{if(syncing||!r)return;syncing=true;to.timeScale().setVisibleLogicalRange(r);syncing=false});
   link(ch,sub);link(sub,ch);
-  ch.subscribeCrosshairMove(p=>showOHLC(p&&p.time!=null?p.seriesData.get(S.c):null));
+  ch.subscribeCrosshairMove(p=>{const k=p&&p.time!=null?p.seriesData.get(S.c):null;chartLegendBusy=!!k;showOHLC(k)});
   return true;
 }
 function showOHLC(k){
@@ -601,7 +601,7 @@ function sample(){
   return stamp(out);
 }
 /* ---------- free TradingView widget with real spot prices ---------- */
-const TVSYM={XAUUSD:"OANDA:XAUUSD",BTCUSD:"BITSTAMP:BTCUSD",EURUSD:"OANDA:EURUSD",GBPUSD:"OANDA:GBPUSD"};
+const TVSYM={XAUUSD:"OANDA:XAUUSD",BTCUSD:"BINANCE:BTCUSDT",EURUSD:"OANDA:EURUSD",GBPUSD:"OANDA:GBPUSD"};
 const TVINT={"1m":"1","5m":"5","15m":"15","30m":"30","1h":"60","4h":"240","1d":"D"};
 let tvwKey="",tvwTimer=null;
 // Android often reports the old name "Asia/Calcutta", which TradingView ignores (falls back to UTC)
@@ -802,9 +802,10 @@ function scheduleRender(){if(renderT)return;renderT=setTimeout(()=>{renderT=null
 // three streams at once: every trade, every best bid/ask change, and the candle
 let lastBA=null,lastTradeMs=0,lastQuoteMs=0,lastPx=null,tickCount=0,tickWin=Date.now(),pxT=null;
 // move the last candle on the chart with every tick (once per screen frame, ~16 ms)
-let chartRaf=0;
+let chartRaf=0,chartLegendBusy=false;
 function chartTick(){if(chartRaf||!S.c||!candles.length)return;chartRaf=requestAnimationFrame(()=>{chartRaf=0;const k=candles[candles.length-1];
   try{S.c.update({time:k.t+tz,open:k.o,high:k.h,low:k.l,close:k.c})}catch(e){if(lastDraw)drawChart(candles,lastDraw.a,lastDraw.bt)}
+  if(!chartLegendBusy)showOHLC(null);
   if(!chartTick.ok){chartTick.ok=1;try{ch.timeScale().scrollToRealTime()}catch(e){}}})}
 function showTick(px,bid,ask){
   if(px!=null){const el=$("price");if(lastPx!=null&&px!==lastPx){el.classList.remove("up","dn");void el.offsetWidth;el.classList.add(px>lastPx?"up":"dn");clearTimeout(pxT);pxT=setTimeout(()=>el.classList.remove("up","dn"),350)}

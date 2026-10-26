@@ -70,6 +70,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .ohlc{font:.75rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;min-height:1.2em;display:flex;flex-wrap:wrap;gap:4px 12px}
 .ohlc b{color:var(--fg);font-weight:600}
 footer a{color:inherit}
+.pa{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.paf{display:flex;gap:8px} .paf input{flex:1;min-width:0}
+.pal{display:grid;gap:6px}
+.par{display:flex;justify-content:space-between;align-items:center;gap:8px;font:.82rem var(--mono);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+.par .del{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font:inherit;font-size:.75rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tbl{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font:.78rem var(--mono);font-variant-numeric:tabular-nums}
 th,td{padding:7px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
@@ -213,6 +219,15 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
         <dt>Trend</dt><dd id="lTrend">—</dd>
         <dt>Volatility</dt><dd id="lVol">—</dd>
       </dl>
+      <div class="pa">
+        <div class="lab">Price alerts</div>
+        <form id="paForm" class="paf">
+          <label for="paIn" class="sr">Alert price</label>
+          <input id="paIn" type="number" step="any" inputmode="decimal" placeholder="Price level" required>
+          <button class="btn primary" type="submit">Add alert</button>
+        </form>
+        <div id="paList" class="pal"></div>
+      </div>
     </section>
     <section class="panel chartp" aria-label="Chart">
       <div class="ctool">
@@ -388,7 +403,7 @@ function backtest(Z){
 let last=null;
 function render(cs){
   if(cs.length<210){status("off",`Need at least 210 candles, got ${cs.length}`);return}
-  const a=analyse(cs);last=a;applyFilters(a);
+  const a=analyse(cs);last=a;applyFilters(a);if(source==="live")checkPriceAlerts(MK,a.p);
   $("price").textContent="$"+fmt(a.p);
   const ch=a.p-a.prev;$("chg").textContent=`${ch>=0?"+":""}${fmt(ch)} vs previous candle`;
   $("chg").style.color=ch>=0?"var(--buy)":"var(--sell)";
@@ -778,6 +793,7 @@ function chartTick(){if(chartRaf||!S.c||!candles.length)return;chartRaf=requestA
   if(!chartLegendBusy)showOHLC(null);
   if(!chartTick.ok){chartTick.ok=1;try{ch.timeScale().scrollToRealTime()}catch(e){}}})}
 function showTick(px,bid,ask){
+  if(px!=null)checkPriceAlerts(MK,px);
   if(px!=null){const el=$("price");if(lastPx!=null&&px!==lastPx){el.classList.remove("up","dn");void el.offsetWidth;el.classList.add(px>lastPx?"up":"dn");clearTimeout(pxT);pxT=setTimeout(()=>el.classList.remove("up","dn"),350)}
     lastPx=px;el.textContent="$"+fmt(px)}
   if(bid!=null){lastBA=[bid,ask];lastQuoteMs=Date.now()}
@@ -859,6 +875,7 @@ async function runScan(){
       for(const tf of SCAN_TF){if(tfData[tf])continue;const cs=await fetchFeed(f,tf);if(cs&&cs.length>=210)tfData[tf]=cs}
       if(Object.keys(tfData).length===SCAN_TF.length)break;
     }
+    {const any=tfData["5m"]||tfData["15m"];if(any&&mk!==MK)checkPriceAlerts(mk,any[any.length-1].c,true)}
     const raw={};SCAN_TF.forEach(tf=>{if(tfData[tf]){const Z=series(tfData[tf]);raw[tf]=evalAt(Z,tfData[tf].length-1);got++}});
     SCAN[mk]={};
     SCAN_TF.forEach(tf=>{const e=raw[tf];if(!e){SCAN[mk][tf]=null;return}let v=e.verdict;
@@ -897,8 +914,8 @@ $("notifBtn").onclick=async()=>{
   let perm="denied";try{perm=await Notification.requestPermission()}catch(e){}
   if(perm==="granted"){notifOn=true;store.set("notif",true);setNotifBtn();notify("Phone alerts are on","You'll be told when a BUY or SELL signal appears while this page is open.")}
   else toast("Notifications are blocked. Allow them for this site in your browser settings, then try again.")};
-async function notify(title,body){
-  if(!notifOn||!("Notification" in window)||Notification.permission!=="granted")return;
+async function notify(title,body,force){
+  if((!notifOn&&!force)||!("Notification" in window)||Notification.permission!=="granted")return;
   const opt={body,icon:"icon-192.png",badge:"icon-192.png",tag:"gsd-"+Date.now(),vibrate:[200,100,200]};
   try{const r=swReg||(navigator.serviceWorker&&await navigator.serviceWorker.getRegistration());if(r){r.showNotification(title,opt);return}}catch(e){}
   try{new Notification(title,opt)}catch(e){}
@@ -907,6 +924,39 @@ let installEvt=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;$("installBtn").hidden=false});
 $("installBtn").onclick=async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(e){}installEvt=null;$("installBtn").hidden=true};
 window.addEventListener("appinstalled",()=>{$("installBtn").hidden=true;toast("Installed. Open it from your home screen.")});
+
+/* ---------- price alerts ---------- */
+let PA=store.get("alerts",[]);
+function renderAlerts(){
+  const box=$("paList"),list=PA.filter(a=>a.mk===MK);box.innerHTML="";
+  if(!list.length){box.innerHTML=`<span class="note">No alerts for ${M().name}. Enter a price and tap Add alert.</span>`;return}
+  list.sort((a,b)=>b.p-a.p).forEach(a=>{const el=document.createElement("div");el.className="par";
+    el.innerHTML=`<span></span><button class="del" type="button">Remove</button>`;
+    el.children[0].textContent=`${a.dir>0?"▲ Rises to":"▼ Falls to"} ${fmt(a.p)}`;
+    el.children[1].onclick=()=>{PA=PA.filter(x=>x.id!==a.id);store.set("alerts",PA);renderAlerts()};box.appendChild(el)});
+  const others=PA.filter(a=>a.mk!==MK).length;
+  if(others){const n=document.createElement("span");n.className="note";n.textContent=`+ ${others} alert${others>1?"s":""} on other markets (checked every 3 minutes).`;box.appendChild(n)}
+}
+function checkPriceAlerts(mk,px,slow){
+  if(source!=="live"&&!slow)return;if(!isFinite(px))return;let hit=false;
+  PA.forEach(a=>{if(a.mk!==mk||a.done)return;if((a.dir>0&&px>=a.p)||(a.dir<0&&px<=a.p)){a.done=1;hit=true;
+    const nm=MARKETS[mk].name,msg=`${nm} ${a.dir>0?"rose to":"fell to"} ${fmtP(mk,a.p)}`;
+    toast("🔔 "+msg);if(audio)beep(a.dir>0);
+    notify(`Price alert · ${nm}`,`${msg}. Now ${fmtP(mk,px)}.`,true)}});
+  if(hit){PA=PA.filter(a=>!a.done);store.set("alerts",PA);renderAlerts()}
+}
+const fmtP=(mk,v)=>{const d=Math.abs(v)<20?MARKETS[mk].dp:2;return(+v).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d})};
+$("paIn").addEventListener("focus",()=>{if(!$("paIn").value&&last)$("paIn").value=last.p.toFixed(M().dp)});
+$("paForm").addEventListener("submit",async e=>{e.preventDefault();
+  const p=parseFloat($("paIn").value),now=lastPx??(last&&last.p);
+  if(!isFinite(p)||!isFinite(now)){toast("Wait for the live price to load, then try again.");return}
+  if(p===now){toast("That is the current price. Enter a level above or below it.");return}
+  PA.push({id:Date.now(),mk:MK,p,dir:p>now?1:-1});store.set("alerts",PA);$("paIn").value="";renderAlerts();
+  toast(`Alert set: ${M().name} ${p>now?"rises to":"falls to"} ${fmt(p)}`);
+  if(!audio){try{audio=new (window.AudioContext||window.webkitAudioContext)()}catch(err){}}
+  if("Notification" in window&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(err){}}});
+$("mkt").addEventListener("click",()=>setTimeout(renderAlerts,0));
+renderAlerts();
 
 /* ---------- live IST clock ---------- */
 const clkF=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});

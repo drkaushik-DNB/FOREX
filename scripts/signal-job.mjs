@@ -68,6 +68,17 @@ for (const mk of Object.keys(MKS)) {
   const E = engineFor(mk);
   const data = {};
   for (const tf of FETCH_TF) { const d = await candles(mk, tf); if (d) data[tf] = d; await sleep(1200); }
+  // gold: shift the PAXG candles onto the real spot price (same method as the web page)
+  if (mk === "XAUUSD") {
+    try {
+      const r = await fetch("https://api.gold-api.com/price/XAU"); const j = await r.json(); const spot = +j.price;
+      const ref = (data["15m"] || data["1h"]); const off = ref ? ref.cs[ref.cs.length - 1].c - spot : 0;
+      if (spot > 0 && Math.abs(off) < 200) {
+        for (const tf in data) data[tf].cs = data[tf].cs.map((k) => ({ t: k.t, o: k.o - off, h: k.h - off, l: k.l - off, c: k.c - off }));
+        console.log(`  gold matched to spot ${spot} (offset ${off.toFixed(2)})`);
+      }
+    } catch (e) { console.log("  gold spot unavailable: " + e.message); }
+  }
   const raw = {};
   for (const tf of FETCH_TF) {
     const d = data[tf]; if (!d) continue;

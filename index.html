@@ -243,7 +243,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
       <h2>Real spot chart</h2><span class="status" id="tvwSym"></span>
     </div>
-    <p class="note">Broker-quoted prices from TradingView. Use this chart for your exact entry, stop and target; the signal above is calculated from the live feed, which can differ slightly from spot.</p>
+    <p class="note">Broker-quoted prices from TradingView. Use this chart for your exact entry, stop and target; gold on the chart above is matched to this spot price, usually within about $1–2.</p>
     <div id="tvw" class="tvw"></div>
   </section>
 
@@ -365,7 +365,7 @@ let TF="1h", MK="XAUUSD", candles=[], source="sample", timer=null;
 const KR={"1m":1,"5m":5,"15m":15,"30m":30,"1h":60,"4h":240,"1d":1440};
 const MARKETS={
   XAUUSD:{title:"XAU<span>/</span>USD",name:"Gold",dp:2,base:4000,vol:9,contract:100,unit:"oz",
-    feeds:[{x:"binance",s:"PAXGUSDT",label:"PAXG/USDT"},{x:"kraken",s:"PAXGUSD",label:"PAXG/USD"}]},
+    feeds:[{x:"binancef",s:"XAUUSDT",label:"XAU/USDT perp",adj:1},{x:"binance",s:"PAXGUSDT",label:"PAXG/USDT",adj:1},{x:"kraken",s:"PAXGUSD",label:"PAXG/USD",adj:1}]},
   BTCUSD:{title:"BTC<span>/</span>USD",name:"Bitcoin",dp:2,base:100000,vol:400,contract:1,unit:"BTC",
     feeds:[{x:"binance",s:"BTCUSDT",label:"BTC/USDT"},{x:"kraken",s:"XBTUSD",label:"BTC/USD"}]},
   EURUSD:{title:"EUR<span>/</span>USD",name:"Euro",dp:5,base:1.16,vol:.0012,contract:100000,unit:"EUR",
@@ -583,7 +583,11 @@ new MutationObserver(()=>{retheme();tvWidget()}).observe(document.documentElemen
 const TFS={"1m":60,"5m":300,"15m":900,"30m":1800,"1h":3600,"4h":14400,"1d":86400};
 function stamp(cs){const step=TFS[TF],end=Math.floor(Date.now()/1000/step)*step;return cs.map((k,i)=>({...k,t:end-(cs.length-1-i)*step}))}
 function status(kind,txt){$("dot").className="dot "+(kind||"");$("statusText").textContent=txt}
-async function fetchFeed(f,tf=TF){
+async function fetchFeedRaw(f,tf=TF){
+  if(f.x==="binancef"){
+    try{const r=await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${f.s}&interval=${tf}&limit=500`,{cache:"no-store"});if(!r.ok)return null;
+      const j=await r.json();return Array.isArray(j)&&j.length?j.map(k=>({t:Math.floor(k[0]/1000),o:+k[1],h:+k[2],l:+k[3],c:+k[4]})):null}catch(e){return null}
+  }
   if(f.x==="oanda"){
     try{const G={"1m":"M1","5m":"M5","15m":"M15","30m":"M30","1h":"H1","4h":"H4","1d":"D"}[tf];
       const r=await fetch(`${OANDA_PROXY}/candles?instrument=${f.s}&granularity=${G}`,{cache:"no-store"});if(!r.ok)return null;
@@ -601,6 +605,30 @@ async function fetchFeed(f,tf=TF){
     const j=await r.json();if(j.error&&j.error.length)return null;const key=Object.keys(j.result).find(k=>k!=="last");
     return j.result[key].map(k=>({t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]}))}catch(e){return null}
 }
+// gold: shift the feed so it sits on the real spot price (spot from gold-api.com, refreshed every 30 s)
+const GOLD_SPOT_URL="https://api.gold-api.com/price/XAU";
+const OFF={},OFFS={},RAW={};let spotNow=null;
+const adjOf=f=>f&&f.adj&&OFF[f.s]!=null?OFF[f.s]:0;
+async function fetchFeed(f,tf=TF){
+  const cs=await fetchFeedRaw(f,tf);if(!cs||!f.adj)return cs;
+  if(tf===TF||!RAW[f.s])RAW[f.s]={v:cs[cs.length-1].c,at:Date.now()};
+  const A=adjOf(f);return A?cs.map(k=>({t:k.t,o:k.o-A,h:k.h-A,l:k.l-A,c:k.c-A})):cs;
+}
+function goldLabel(){if(MK!=="XAUUSD"||!curFeed||!curFeed.adj)return;
+  $("srcLabel").textContent=OFF[curFeed.s]!=null?`Live Gold · matched to spot · ${TF.toUpperCase()}`:`Live Gold (${curFeed.label}) · matching to spot… · ${TF.toUpperCase()}`}
+async function calibrate(){
+  if(document.hidden)return;
+  try{const r=await fetch(GOLD_SPOT_URL,{cache:"no-store"});if(!r.ok)return;const j=await r.json();
+    const p=+j.price,u=Date.parse(j.updatedAt)||Date.now();if(!(p>0)||(spotNow&&spotNow.u===u))return;spotNow={p,u};
+    for(const sym in RAW){const x=RAW[sym];if(Date.now()-x.at>120000)continue;
+      const arr=(OFFS[sym]||=[]);arr.push(x.v-p);if(arr.length>10)arr.shift();
+      const srt=[...arr].sort((a,b)=>a-b),med=srt[srt.length>>1],prev=OFF[sym];OFF[sym]=med;
+      if(MK==="XAUUSD"&&curFeed&&curFeed.s===sym&&source==="live"){const d=med-(prev??0);
+        if(Math.abs(d)>1e-9){candles.forEach(k=>{k.o-=d;k.h-=d;k.l-=d;k.c-=d});if(lastBA)lastBA=[lastBA[0]-d,lastBA[1]-d];render(candles)}
+        goldLabel()}}
+  }catch(e){}
+}
+setInterval(calibrate,15000);
 async function loadLive(){
   const m=M();if(!m.feeds.length)return false;
   status("","Fetching live data…");const want=MK+TF;
@@ -608,7 +636,7 @@ async function loadLive(){
     const cs=await fetchFeed(f);if(want!==MK+TF)return true;
     if(cs&&cs.length>=210){candles=cs;source="live";
       $("srcLabel").textContent=`Live ${m.name} (${f.label}, ${f.x}) · ${TF.toUpperCase()}`;
-      status("live","Live · updated "+new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST");render(candles);curFeed=f;loadMTF(f);startStream(f);loadDaily(f);return true}
+      status("live","Live · updated "+new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST");curFeed=f;goldLabel();render(candles);loadMTF(f);startStream(f);loadDaily(f);if(f.adj)calibrate();return true}
   }
   return false;
 }
@@ -854,15 +882,16 @@ function showTick(px,bid,ask){
   $("ba").innerHTML=(lastBA?`<span>Bid ${fmt(lastBA[0])}</span><span>Ask ${fmt(lastBA[1])}</span><span>Spread ${fmt(lastBA[1]-lastBA[0])}</span>`:"")+`<span>Last trade ${ms(lastTradeMs)}</span><span>Last quote ${ms(lastQuoteMs)}</span>`;
 }
 function startStream(f){
-  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();$("ba").innerHTML="";lastBA=null;lastTradeMs=lastQuoteMs=0;if(f.x==="oanda"){wsKey=key;startOanda(f,key);return}if(f.x!=="binance")return;
+  const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();$("ba").innerHTML="";lastBA=null;lastTradeMs=lastQuoteMs=0;if(f.x==="oanda"){wsKey=key;startOanda(f,key);return}if(f.x!=="binance"&&f.x!=="binancef")return;
   wsKey=key;const sym=f.s.toLowerCase();
-  try{ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`)}catch(e){wsKey="";return}
+  const fut=f.x==="binancef";
+  try{ws=new WebSocket(fut?`wss://fstream.binance.com/stream?streams=${sym}@aggTrade/${sym}@bookTicker/${sym}@kline_${TF}`:`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`)}catch(e){wsKey="";return}
   ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}if(!m||!m.data||wsKey!==MK+TF+f.s||source!=="live")return;
-    const d=m.data,st=m.stream||"",last=candles[candles.length-1];tickCount++;
+    const d=m.data,st=m.stream||"",last=candles[candles.length-1],A=adjOf(f);tickCount++;
     // price shown = middle of best bid and ask: it moves on every quote change, far more often than trades
-    if(st.endsWith("@trade")){const p=+d.p;lastTradeMs=d.T||Date.now();if(last){last.h=Math.max(last.h,p);last.l=Math.min(last.l,p)}if(!lastBA){if(last)last.c=p;showTick(p)}else showTick(null)}
-    else if(st.endsWith("@bookTicker")){const b=+d.b,a=+d.a,mid=(b+a)/2;if(last&&isFinite(mid)){last.c=mid;last.h=Math.max(last.h,mid);last.l=Math.min(last.l,mid)}showTick(mid,b,a)}
-    else if(d.k){const k=d.k,c={t:Math.floor(k.t/1000),o:+k.o,h:+k.h,l:+k.l,c:+k.c};
+    if(st.endsWith("@trade")||st.endsWith("@aggTrade")){const p=+d.p-A;lastTradeMs=d.T||Date.now();if(last){last.h=Math.max(last.h,p);last.l=Math.min(last.l,p)}if(!lastBA){if(last)last.c=p;showTick(p)}else showTick(null)}
+    else if(st.endsWith("@bookTicker")){if(f.adj)RAW[f.s]={v:(+d.b + +d.a)/2,at:Date.now()};const b=+d.b-A,a=+d.a-A,mid=(b+a)/2;if(last&&isFinite(mid)){last.c=mid;last.h=Math.max(last.h,mid);last.l=Math.min(last.l,mid)}showTick(mid,b,a)}
+    else if(d.k){const k=d.k,c={t:Math.floor(k.t/1000),o:+k.o-A,h:+k.h-A,l:+k.l-A,c:+k.c-A};
       if(last&&last.t===c.t)candles[candles.length-1]=c;else if(!last||c.t>last.t){candles.push(c);if(candles.length>600)candles.shift()}}
     const now=Date.now(),rate=Math.round(tickCount*60000/Math.max(1000,now-tickWin));if(now-tickWin>60000){tickWin=now;tickCount=0}
     status("live",`Streaming · ${rate} updates/min`);chartTick();scheduleRender()};

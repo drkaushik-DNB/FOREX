@@ -70,12 +70,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .ohlc{font:.75rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;min-height:1.2em;display:flex;flex-wrap:wrap;gap:4px 12px}
 .ohlc b{color:var(--fg);font-weight:600}
 footer a{color:inherit}
-.lvls{display:grid;gap:2px;font:.78rem var(--mono);font-variant-numeric:tabular-nums}
-.lv{display:grid;grid-template-columns:minmax(0,1fr) auto 80px;gap:8px;padding:4px 6px;border-radius:4px;align-items:baseline}
-.lv b{font-weight:600} .lv .note{text-align:right;font-size:.72rem}
-.lv.now{background:var(--wait-bg);font-weight:600}
-.lvd{display:inline-block;width:10px;height:2px;margin-right:6px;vertical-align:middle;background:#b0653a}
-.lvd.buy{background:var(--buy)} .lvd.sell{background:var(--sell)}
 .tbl{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font:.78rem var(--mono);font-variant-numeric:tabular-nums}
 th,td{padding:7px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
@@ -231,8 +225,8 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
           <button data-o="st" aria-pressed="false" style="--c:var(--wait)">Supertrend</button>
           <button data-o="mk" aria-pressed="true" style="--c:var(--fg)">Past signals</button>
           <button data-o="lv" aria-pressed="true" style="--c:var(--sell)">SL / TP</button>
-          <button data-o="pv" aria-pressed="true" style="--c:#b0653a">Pivots</button>
-          <button data-o="sw" aria-pressed="true" style="--c:#6b8f71">Support / resistance</button>
+          <button data-o="pv" aria-pressed="false" style="--c:#b0653a">Pivots</button>
+          <button data-o="sw" aria-pressed="false" style="--c:#6b8f71">Support / resistance</button>
         </div>
         <div class="seg small" role="group" aria-label="Lower pane" id="pane">
           <button data-p="rsi" aria-pressed="true">RSI</button><button data-p="macd">MACD</button><button data-p="stoch">Stoch</button>
@@ -241,7 +235,6 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
       <div class="ohlc" id="ohlc"></div>
       <div id="tv" class="tv" aria-label="Candlestick chart: drag to pan, pinch or scroll to zoom"></div>
       <div id="tvSub" class="tvsub" aria-label="Indicator pane"></div>
-      <div id="lvls" class="lvls"></div>
       <div class="ctool"><span class="note">Drag to scroll back · pinch or mouse-wheel to zoom · double-click the price axis to reset</span><button class="btn small" id="fit">Reset view</button></div>
     </section>
   </div>
@@ -502,7 +495,7 @@ function loadLib(){ // try backup CDNs if the first one was blocked
   if(libLoading||libTries>=LIBS.length)return false;libLoading=true;const sc=document.createElement("script");sc.src=LIBS[libTries++];
   sc.onload=()=>{libLoading=false;LWC=window.LightweightCharts;if(LWC){$("tv").innerHTML="";if(lastDraw)drawChart(lastDraw.cs,lastDraw.a,lastDraw.bt)}else loadLib()};
   sc.onerror=()=>{libLoading=false;if(!loadLib()&&!LWC)$("tv").innerHTML='<p class="note" style="padding:16px">The chart library could not load. Check your connection and reload.</p>'};
-  document.head.appendChild(sc);return true}const OV={e20:true,e50:true,e200:true,bb:false,st:false,mk:true,lv:true,pv:true,sw:true};let PANE="rsi";
+  document.head.appendChild(sc);return true}const OV={e20:true,e50:true,e200:true,bb:false,st:false,mk:true,lv:true,pv:false,sw:false};let PANE="rsi";
 let ch=null,sub=null,S={},SS={},chartKey="",lastDraw=null,syncing=false,priceLines=[];
 const tz=19800; // chart axis always in IST (UTC+5:30)
 // every series gets a point for every candle time (blank where no value yet), so the price pane and indicator pane line up exactly
@@ -522,10 +515,10 @@ function buildCharts(){
   sub=LWC.createChart($("tvSub"),{autoSize:true,...themeOpts(),timeScale:{...themeOpts().timeScale,visible:true}});
   const up=css("--buy"),dn=css("--sell");
   S.c=ch.addCandlestickSeries({upColor:up,downColor:dn,borderUpColor:up,borderDownColor:dn,wickUpColor:up,wickDownColor:dn,priceFormat:{type:"price",precision:M().dp,minMove:1/10**M().dp}});
-  const ln=(color,w=1.5,extra={})=>ch.addLineSeries({color,lineWidth:w,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,...extra});
-  S.e20=ln(css("--accent"),1.5,{title:"EMA 20"});S.e50=ln("#4a7fc1",1.5,{title:"EMA 50"});S.e200=ln("#8a59b5",2,{title:"EMA 200"});
-  S.bbU=ln(css("--muted"),1,{lineStyle:2,title:"BB upper"});S.bbM=ln(css("--muted"),1,{lineStyle:1,title:"BB mid"});S.bbL=ln(css("--muted"),1,{lineStyle:2,title:"BB lower"});
-  S.st=ln(css("--wait"),2,{lineType:1,title:"Supertrend"});
+  const ln=(color,w=1.5,extra={})=>ch.addLineSeries({color,lineWidth:w,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,...extra});
+  S.e20=ln(css("--accent"));S.e50=ln("#4a7fc1");S.e200=ln("#8a59b5",2);
+  S.bbU=ln(css("--muted"),1,{lineStyle:2});S.bbM=ln(css("--muted"),1,{lineStyle:1});S.bbL=ln(css("--muted"),1,{lineStyle:2});
+  S.st=ln(css("--wait"),2,{lineType:1});
   SS.a=sub.addLineSeries({color:css("--accent"),lineWidth:1.5,priceLineVisible:false});
   SS.b=sub.addLineSeries({color:"#4a7fc1",lineWidth:1.2,priceLineVisible:false,lastValueVisible:false});
   SS.h=sub.addHistogramSeries({priceLineVisible:false,lastValueVisible:false});
@@ -558,17 +551,11 @@ function drawChart(cs,a,bt){
   priceLines.forEach(p=>S.c.removePriceLine(p));priceLines=[];
   if(OV.lv&&a.verdict!=="WAIT"){
     const pl=(price,color,title,style=2)=>priceLines.push(S.c.createPriceLine({price,color,lineWidth:1,lineStyle:style,axisLabelVisible:true,title}));
-    pl(a.SL,css("--sell"),"Stop loss");pl(a.TP1,css("--buy"),"Target 1");pl(a.TP2,css("--buy"),"Target 2",0);
+    pl(a.SL,css("--sell"),"SL");pl(a.TP1,css("--buy"),"TP1");pl(a.TP2,css("--buy"),"TP2",0);
   }
-  const KL=[];if(OV.lv&&a.verdict!=="WAIT")KL.push({n:"Stop loss",p:a.SL,k:"sell"},{n:"Target 1",p:a.TP1,k:"buy"},{n:"Target 2",p:a.TP2,k:"buy"});
-  const lvl=(price,color,title,style,k,full)=>{if(!isFinite(price))return;priceLines.push(S.c.createPriceLine({price,color,lineWidth:1,lineStyle:style,axisLabelVisible:true,title}));KL.push({n:full||title,p:price,k})};
-  if(OV.pv){const pv=pivots(cs);if(pv){const pc="#b0653a";
-    lvl(pv.R2,css("--sell"),"R2 resistance",2,"sell","R2 · pivot resistance 2");lvl(pv.R1,css("--sell"),"R1 resistance",2,"sell","R1 · pivot resistance 1");
-    lvl(pv.P,pc,"Pivot",0,"","Pivot point (yesterday's balance)");
-    lvl(pv.S1,css("--buy"),"S1 support",2,"buy","S1 · pivot support 1");lvl(pv.S2,css("--buy"),"S2 support",2,"buy","S2 · pivot support 2")}}
-  if(OV.sw){const sw=swings(cs);sw.res.forEach((v,i)=>lvl(v,css("--sell"),`Resistance ${i+1}`,1,"sell",`Resistance ${i+1} · recent swing high`));
-    sw.sup.forEach((v,i)=>lvl(v,css("--buy"),`Support ${i+1}`,1,"buy",`Support ${i+1} · recent swing low`))}
-  renderLevels(KL,cs[cs.length-1].c);
+  const lvl=(price,color,title,style)=>{if(isFinite(price))priceLines.push(S.c.createPriceLine({price,color,lineWidth:1,lineStyle:style,axisLabelVisible:true,title}))};
+  if(OV.pv){const pv=pivots(cs);if(pv){lvl(pv.P,"#b0653a","P",0);lvl(pv.R1,"#b0653a","R1",2);lvl(pv.R2,"#b0653a","R2",2);lvl(pv.S1,"#b0653a","S1",2);lvl(pv.S2,"#b0653a","S2",2)}}
+  if(OV.sw){const sw=swings(cs);sw.res.forEach((v,i)=>lvl(v,css("--sell"),"Res "+(i+1),1));sw.sup.forEach((v,i)=>lvl(v,css("--buy"),"Sup "+(i+1),1))}
   // lower pane
   const zero=v=>({time:v.time,value:v.value});
   if(PANE==="rsi"){SS.a.setData(pts(cs,Z.R));SS.b.setData([]);SS.h.setData([]);
@@ -580,14 +567,6 @@ function drawChart(cs,a,bt){
   const key=MK+TF+source;
   if(key!==chartKey){chartKey=key;const n=cs.length;ch.timeScale().setVisibleLogicalRange({from:Math.max(0,n-150),to:n+5})}
   showOHLC(null);
-}
-// key levels as a readable list under the chart (axis labels are small on phones)
-function renderLevels(KL,price){
-  const box=$("lvls");if(!KL.length){box.innerHTML="";return}
-  const rows=[...KL,{n:"Current price",p:price,k:"now"}].sort((x,y)=>y.p-x.p);
-  box.innerHTML=`<div class="lab" style="margin-bottom:4px">Key levels</div>`+rows.map(r=>{const d=r.p-price;
-    return r.k==="now"?`<div class="lv now"><span>▶ Current price</span><b>${fmt(r.p)}</b><span></span></div>`
-      :`<div class="lv"><span><i class="lvd ${r.k}"></i>${r.n}</span><b>${fmt(r.p)}</b><span class="note">${d>=0?"+":"−"}${fmt(Math.abs(d))}</span></div>`}).join("");
 }
 let guides=[];
 function setGuides(vals){guides.forEach(g=>SS.a.removePriceLine(g));guides=vals.map(v=>SS.a.createPriceLine({price:v,color:css("--muted"),lineWidth:1,lineStyle:3,axisLabelVisible:false}))}

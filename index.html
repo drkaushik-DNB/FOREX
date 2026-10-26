@@ -200,7 +200,6 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
       </div>
       <div class="sig wait" id="sig"><b id="sigTxt">WAIT</b><small id="sigWhy">Loading data…</small></div>
       <div class="chips" id="chips"></div>
-      <div class="bt1" id="bt1"></div>
       <div>
         <div class="lab" style="margin-bottom:6px">Bull vs bear estimate</div>
         <div class="meter"><i id="needle" style="left:50%"></i></div>
@@ -268,26 +267,6 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <p class="note" id="newsSrc">High-impact releases from every major economy: US, Eurozone, UK, Japan, China, Australia, Canada, New Zealand and Switzerland. Highlighted rows can move the selected market, and the signal switches to WAIT from 30 minutes before until 30 minutes after them. Source: ForexFactory calendar, refreshed hourly.</p>
   </section>
 
-  <section class="panel" aria-label="Backtest">
-    <h2>Backtest on the loaded candles</h2>
-    <div class="bt" id="bt"></div>
-    <p class="note" id="btNote"></p>
-  </section>
-
-  <details class="panel" id="cfgPanel">
-    <summary>Strategy settings</summary>
-    <div class="risk" style="margin-top:12px">
-      <label for="cfgTh">Signal threshold (%)<input id="cfgTh" type="number" min="10" max="80" step="5"></label>
-      <label for="cfgAdx">Minimum ADX (trend strength)<input id="cfgAdx" type="number" min="0" max="50" step="1"></label>
-      <label for="cfgSlm">Stop loss (× ATR)<input id="cfgSlm" type="number" min="0.5" max="5" step="0.1"></label>
-      <label for="cfgRr">Target (× stop, R)<input id="cfgRr" type="number" min="0.5" max="5" step="0.1"></label>
-      <label for="cfgHold">Max candles in a trade<input id="cfgHold" type="number" min="5" max="200" step="5"></label>
-      <label for="cfgSpr"><span id="cfgSprLab">Spread / cost per trade</span><input id="cfgSpr" type="number" min="0" step="any"></label>
-    </div>
-    <div class="bar" style="margin-top:10px"><button class="btn" id="cfgReset">Reset to defaults</button><span class="note" id="cfgMsg"></span></div>
-    <p class="note">Changes apply at once to the signal, the levels and the backtest. Be careful: tuning settings until the backtest looks great usually just fits the past and fails live. Change one thing at a time and check it on the live signal log before trusting it. The spread is deducted from every backtest trade; set it to what your broker charges for the selected market.</p>
-  </details>
-
   <section>
     <h2>Indicator votes</h2>
     <div class="grid" id="inds"></div>
@@ -329,7 +308,7 @@ const M=()=>MARKETS[MK];
 const store={get(k,d){try{const v=localStorage.getItem("gsd_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("gsd_"+k,JSON.stringify(v))}catch(e){}}};
 const DEF={th:35,adx:20,slm:1.5,rr:2,hold:50};
 const SPREAD_DEF={XAUUSD:0.3,BTCUSD:10,EURUSD:0.0001,GBPUSD:0.00015};
-let CFG={...DEF,...store.get("cfg",{})},SPR={...SPREAD_DEF,...store.get("spread",{})};
+const CFG={...DEF},SPR={...SPREAD_DEF};
 
 /* ---------- indicator maths ---------- */
 const ema=(a,n)=>{const k=2/(n+1),o=[];let p;a.forEach((v,i)=>{p=i?v*k+p*(1-k):v;o.push(p)});return o};
@@ -425,7 +404,7 @@ function render(cs){
   a.inds.forEach(x=>{const cls=x.vote>.15?"buy":x.vote<-.15?"sell":"wait";const el=document.createElement("div");el.className="ind";
     el.innerHTML=`<div class="row"><span class="lab"></span><span class="pill ${cls}">${cls==="wait"?"NEUTRAL":cls.toUpperCase()}</span></div><div class="v"></div><div class="why"></div>`;
     el.querySelector(".lab").textContent=x.name;el.querySelector(".v").textContent=x.val;el.querySelector(".why").textContent=`${x.why} · weight ${x.w}`;$("inds").appendChild(el)});
-  const bt=backtest(a.Z);renderBacktest(bt,a);
+  const bt=backtest(a.Z); // past signals, drawn as arrows on the chart
   $("dtSL").textContent=`Stop loss (${CFG.slm}×ATR)`;$("dtTP2").textContent=`Target 2 (1:${CFG.rr})`;
   drawChart(cs,a,bt);checkAlert(a);
 }
@@ -636,7 +615,7 @@ $("tf").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)re
   [...$("tf").children].forEach(x=>x.setAttribute("aria-pressed",x===b));if(source==="csv")source="live";load()});
 $("mkt").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;MK=b.dataset.m;
   [...$("mkt").children].forEach(x=>x.setAttribute("aria-pressed",x===b));$("title").innerHTML=M().title+" Signal Desk";
-  $("csvMsg").textContent="";source="live";fillCfg();load()});
+  $("csvMsg").textContent="";source="live";load()});
 $("refresh").onclick=()=>{if(source==="csv")source="live";load()};
 $("toggleCsv").onclick=()=>{$("csvBox").hidden=!$("csvBox").hidden};
 $("loadCsv").onclick=()=>{const cs=parseCsv($("csv").value);
@@ -719,23 +698,6 @@ function applyFilters(a){
   if(lq.lvl==="low"&&a.verdict!=="WAIT")a.why+=" Low-liquidity hours: expect false moves, consider a smaller size.";
   a.dir=a.verdict==="SELL"?-1:1;a.entry=a.p;a.SL=a.p-a.dir*a.sl;a.TP1=a.p+a.dir*a.sl;a.TP2=a.p+a.dir*CFG.rr*a.sl;
   $("chips").innerHTML="";chips.forEach(x=>{const e=document.createElement("span");e.className="chip "+x.c;e.textContent=x.t;$("chips").appendChild(e)});
-}
-function renderBacktest(bt,a){
-  $("btNote").textContent=`Replays the same rules over every loaded candle: enter at the close when a signal fires, stop ${CFG.slm} × ATR, target ${CFG.rr} × the stop, exit after ${CFG.hold} candles if neither is hit, one trade at a time. A spread of ${fmt(SPR[MK]||0)} is deducted from every trade. At 1:${CFG.rr} you need to win more than ${Math.ceil(100/(1+CFG.rr))}% of trades to make money. The multi-timeframe and news filters are not applied in this replay.`;
-  const pct=v=>(v*100).toFixed(0)+"%",cls=(v,good)=>v>=good?"good":"bad";
-  $("bt").innerHTML=bt.n?`
-    <div><span class="lab">Trades</span><b>${bt.n}</b><span class="note">${bt.buy.n} buys · ${bt.sell.n} sells</span></div>
-    <div><span class="lab">Win rate</span><b class="${cls(bt.win,1/(1+CFG.rr))}">${pct(bt.win)}</b><span class="note">needs ${Math.ceil(100/(1+CFG.rr))}%+ at 1:${CFG.rr}</span></div>
-    <div><span class="lab">Buy win rate</span><b>${bt.buy.n?pct(bt.buy.w/bt.buy.n):"—"}</b><span class="note">${bt.buy.w} of ${bt.buy.n}</span></div>
-    <div><span class="lab">Sell win rate</span><b>${bt.sell.n?pct(bt.sell.w/bt.sell.n):"—"}</b><span class="note">${bt.sell.w} of ${bt.sell.n}</span></div>
-    <div><span class="lab">Total result</span><b class="${cls(bt.total,0)}">${bt.total>=0?"+":""}${bt.total.toFixed(1)}R</b><span class="note">R = 1 unit of risk</span></div>
-    <div><span class="lab">Profit factor</span><b class="${cls(bt.pf,1)}">${isFinite(bt.pf)?bt.pf.toFixed(2):"∞"}</b><span class="note">above 1 = profitable</span></div>
-    <div><span class="lab">Worst losing run</span><b>${bt.maxStreak}</b><span class="note">trades in a row</span></div>`
-    :`<div><span class="lab">Trades</span><b>0</b><span class="note">No signals fired in ${bt.bars} candles</span></div>`;
-  const side=a.raw==="BUY"?bt.buy:a.raw==="SELL"?bt.sell:null;
-  $("bt1").innerHTML=side&&side.n?`Past ${a.raw.toLowerCase()} signals here won <b>${pct(side.w/side.n)}</b> of ${side.n} trades${side.n<20?" (small sample)":""}.`
-    :bt.n?`Backtest: <b>${pct(bt.win)}</b> win rate over ${bt.n} trades, <b>${bt.total>=0?"+":""}${bt.total.toFixed(1)}R</b>.`:"Backtest: no signals fired in the loaded candles.";
-  if(source==="sample")$("bt1").innerHTML+=" Example data, not real results.";
 }
 /* ---------- alerts ---------- */
 let audio=null,alertsOn=false,lastSig=null;
@@ -886,16 +848,6 @@ function swings(cs){
   const atrNow=last?last.atr:0,merge=arr=>{const o=[];arr.forEach(v=>{if(!o.some(x=>Math.abs(x-v)<atrNow*.5))o.push(v)});return o};
   return{res:merge(hs.filter(v=>v>p).sort((a,b)=>a-b)).slice(0,2),sup:merge(ls.filter(v=>v<p).sort((a,b)=>b-a)).slice(0,2)};
 }
-
-/* ---------- strategy settings ---------- */
-function fillCfg(){$("cfgTh").value=CFG.th;$("cfgAdx").value=CFG.adx;$("cfgSlm").value=CFG.slm;$("cfgRr").value=CFG.rr;$("cfgHold").value=CFG.hold;
-  $("cfgSpr").value=SPR[MK];$("cfgSprLab").textContent=`Spread for ${M().name} (price units)`}
-function readCfg(){const v=id=>+$(id).value;const nc={th:clamp(v("cfgTh")||DEF.th,10,80),adx:clamp(isFinite(v("cfgAdx"))?v("cfgAdx"):DEF.adx,0,50),slm:clamp(v("cfgSlm")||DEF.slm,.5,5),rr:clamp(v("cfgRr")||DEF.rr,.5,5),hold:clamp(Math.round(v("cfgHold")||DEF.hold),5,200)};
-  CFG=nc;const sp=v("cfgSpr");if(isFinite(sp)&&sp>=0)SPR[MK]=sp;store.set("cfg",CFG);store.set("spread",SPR);
-  $("cfgMsg").textContent="Saved";clearTimeout(readCfg.t);readCfg.t=setTimeout(()=>$("cfgMsg").textContent="",1500);if(candles.length)render(candles)}
-["cfgTh","cfgAdx","cfgSlm","cfgRr","cfgHold","cfgSpr"].forEach(id=>$(id).addEventListener("change",readCfg));
-$("cfgReset").onclick=()=>{CFG={...DEF};SPR={...SPREAD_DEF};store.set("cfg",CFG);store.set("spread",SPR);fillCfg();if(candles.length)render(candles)};
-fillCfg();
 
 /* ---------- market scanner ---------- */
 const SCAN_TF=["5m","15m","1h","4h","1d"];let SCAN={},scanBusy=false,scanAt=0;

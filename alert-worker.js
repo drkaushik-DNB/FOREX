@@ -106,10 +106,10 @@ export default {
       const a = await req.json().catch(() => null);
       if (!a || !MARKETS[a.mk] || !(+a.p > 0) || ![1, -1].includes(+a.dir)) return json({ error: "Bad alert" }, 400);
       const list = await getAlerts(env);
-      if (list.length >= 50) return json({ error: "Too many alerts (50 max)" }, 400);
       const id = +a.id || Date.now();
       const clean = { id, mk: a.mk, p: +a.p, dir: +a.dir, rep: a.rep ? 1 : 0, n: +a.n || 0, since: +a.since || 0 };
       const i = list.findIndex((x) => x.id === id);
+      if (i < 0 && list.length >= 50) return json({ error: "Too many alerts (50 max)" }, 400);
       if (i >= 0) list[i] = clean; else list.push(clean); // same id = update (the page fired it first)
       await putAlerts(env, list);
       return json(list);

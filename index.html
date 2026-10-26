@@ -485,7 +485,8 @@ function loadLib(){ // try backup CDNs if the first one was blocked
   document.head.appendChild(sc);return true}const OV={e20:true,e50:true,e200:true,bb:false,st:false,mk:true,lv:true,pv:false,sw:false};let PANE="rsi";
 let ch=null,sub=null,S={},SS={},chartKey="",lastDraw=null,syncing=false,priceLines=[];
 const tz=19800; // chart axis always in IST (UTC+5:30)
-const pts=(cs,arr)=>{const o=[];arr.forEach((v,i)=>{if(isFinite(v))o.push({time:cs[i].t+tz,value:v})});return o};
+// every series gets a point for every candle time (blank where no value yet), so the price pane and indicator pane line up exactly
+const pts=(cs,arr)=>cs.map((k,i)=>isFinite(arr[i])?{time:k.t+tz,value:arr[i]}:{time:k.t+tz});
 // chart times are already shifted to IST, so read them as UTC and print 12-hour
 function clock12(d){let h=d.getUTCHours(),m=String(d.getUTCMinutes()).padStart(2,"0");const ap=h<12?"AM":"PM";h=h%12||12;return`${h}:${m} ${ap}`}
 function tick12(t,type){const d=new Date(t*1000);if(type===0)return String(d.getUTCFullYear());if(type===1)return d.toLocaleDateString("en-IN",{timeZone:"UTC",month:"short"});if(type===2)return d.toLocaleDateString("en-IN",{timeZone:"UTC",day:"numeric",month:"short"});return clock12(d)}
@@ -548,7 +549,7 @@ function drawChart(cs,a,bt){
     SS.a.applyOptions({color:css("--accent")});sub.priceScale("right").applyOptions({scaleMargins:{top:.1,bottom:.1}});
     setGuides([70,30])}
   else if(PANE==="macd"){SS.a.setData(pts(cs,Z.macd));SS.b.setData(pts(cs,Z.sg));
-    SS.h.setData(pts(cs,Z.hist).map((v,i,arr)=>({...v,color:v.value>=0?css("--buy"):css("--sell")})));setGuides([0])}
+    SS.h.setData(pts(cs,Z.hist).map(v=>v.value===undefined?v:{...v,color:v.value>=0?css("--buy"):css("--sell")}));setGuides([0])}
   else{SS.a.setData(pts(cs,Z.S.k));SS.b.setData(pts(cs,Z.S.d));SS.h.setData([]);setGuides([80,20])}
   const key=MK+TF+source;
   if(key!==chartKey){chartKey=key;const n=cs.length;ch.timeScale().setVisibleLogicalRange({from:Math.max(0,n-150),to:n+5})}
@@ -797,13 +798,14 @@ load();
 /* ---------- real-time ticks (Binance WebSocket); Kraken feeds fall back to polling ---------- */
 let ws=null,wsKey="",renderT=null,curFeed=null;
 function stopStream(){if(ws){ws.onclose=null;try{ws.close()}catch(e){}ws=null}wsKey=""}
-function scheduleRender(){if(renderT)return;renderT=setTimeout(()=>{renderT=null;if(source==="live")render(candles)},1500)}
+function scheduleRender(){if(renderT)return;renderT=setTimeout(()=>{renderT=null;if(source==="live")render(candles)},800)}
 // three streams at once: every trade, every best bid/ask change, and the candle
 let lastBA=null,lastTradeMs=0,lastQuoteMs=0,lastPx=null,tickCount=0,tickWin=Date.now(),pxT=null;
 // move the last candle on the chart with every tick (once per screen frame, ~16 ms)
 let chartRaf=0;
 function chartTick(){if(chartRaf||!S.c||!candles.length)return;chartRaf=requestAnimationFrame(()=>{chartRaf=0;const k=candles[candles.length-1];
-  try{S.c.update({time:k.t+tz,open:k.o,high:k.h,low:k.l,close:k.c})}catch(e){}})}
+  try{S.c.update({time:k.t+tz,open:k.o,high:k.h,low:k.l,close:k.c})}catch(e){if(lastDraw)drawChart(candles,lastDraw.a,lastDraw.bt)}
+  if(!chartTick.ok){chartTick.ok=1;try{ch.timeScale().scrollToRealTime()}catch(e){}}})}
 function showTick(px,bid,ask){
   if(px!=null){const el=$("price");if(lastPx!=null&&px!==lastPx){el.classList.remove("up","dn");void el.offsetWidth;el.classList.add(px>lastPx?"up":"dn");clearTimeout(pxT);pxT=setTimeout(()=>el.classList.remove("up","dn"),350)}
     lastPx=px;el.textContent="$"+fmt(px)}

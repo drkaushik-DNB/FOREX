@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793325436423,
+ "fetchedAt": 1793332095196,
  "source": "ForexFactory",
  "events": [
   {
@@ -153,6 +153,27 @@
    "t": 1793327460000,
    "cur": "JPY",
    "n": "BOJ Outlook Report",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793329320000,
+   "cur": "JPY",
+   "n": "BOJ Outlook Report",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793329320000,
+   "cur": "JPY",
+   "n": "BOJ Policy Rate",
+   "f": "<1.25%",
+   "p": "<1.25%"
+  },
+  {
+   "t": 1793329320000,
+   "cur": "JPY",
+   "n": "Monetary Policy Statement",
    "f": "",
    "p": ""
   },

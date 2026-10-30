@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793339144164,
+ "fetchedAt": 1793343278628,
  "source": "ForexFactory",
  "events": [
   {
@@ -179,6 +179,13 @@
   },
   {
    "t": 1793338200000,
+   "cur": "JPY",
+   "n": "BOJ Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793341800000,
    "cur": "JPY",
    "n": "BOJ Press Conference",
    "f": "",

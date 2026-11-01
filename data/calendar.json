@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793498521102,
+ "fetchedAt": 1793505086620,
  "source": "ForexFactory",
  "events": [
   {
@@ -132,27 +132,6 @@
    "t": 1793281500000,
    "cur": "EUR",
    "n": "ECB Press Conference",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793327400000,
-   "cur": "JPY",
-   "n": "BOJ Policy Rate",
-   "f": "<1.25%",
-   "p": "<1.25%"
-  },
-  {
-   "t": 1793327400000,
-   "cur": "JPY",
-   "n": "Monetary Policy Statement",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793327460000,
-   "cur": "JPY",
-   "n": "BOJ Outlook Report",
    "f": "",
    "p": ""
   },

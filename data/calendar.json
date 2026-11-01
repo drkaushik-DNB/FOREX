@@ -1,161 +1,7 @@
 {
- "fetchedAt": 1793505086620,
+ "fetchedAt": 1793508692350,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793147400000,
-   "cur": "AUD",
-   "n": "CPI m/m",
-   "f": "0.7%",
-   "p": "0.4%"
-  },
-  {
-   "t": 1793147400000,
-   "cur": "AUD",
-   "n": "CPI y/y",
-   "f": "4.2%",
-   "p": "4.0%"
-  },
-  {
-   "t": 1793147400000,
-   "cur": "AUD",
-   "n": "Trimmed Mean CPI m/m",
-   "f": "0.3%",
-   "p": "0.2%"
-  },
-  {
-   "t": 1793149200000,
-   "cur": "NZD",
-   "n": "Official Cash Rate",
-   "f": "3.00%",
-   "p": "2.75%"
-  },
-  {
-   "t": 1793149200000,
-   "cur": "NZD",
-   "n": "RBNZ Rate Statement",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793152800000,
-   "cur": "NZD",
-   "n": "RBNZ Press Conference",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793190600000,
-   "cur": "GBP",
-   "n": "Annual Budget Release",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793195100000,
-   "cur": "CAD",
-   "n": "BOC Monetary Policy Report",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793195100000,
-   "cur": "CAD",
-   "n": "BOC Rate Statement",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793195100000,
-   "cur": "CAD",
-   "n": "Overnight Rate",
-   "f": "2.50%",
-   "p": "2.25%"
-  },
-  {
-   "t": 1793197800000,
-   "cur": "CAD",
-   "n": "BOC Press Conference",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793210400000,
-   "cur": "USD",
-   "n": "Federal Funds Rate",
-   "f": "4.00%",
-   "p": "4.00%"
-  },
-  {
-   "t": 1793210400000,
-   "cur": "USD",
-   "n": "FOMC Statement",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793212200000,
-   "cur": "USD",
-   "n": "FOMC Press Conference",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793277000000,
-   "cur": "USD",
-   "n": "Advance GDP q/q",
-   "f": "3.2%",
-   "p": "1.5%"
-  },
-  {
-   "t": 1793277000000,
-   "cur": "USD",
-   "n": "Core PCE Price Index m/m",
-   "f": "0.3%",
-   "p": "0.2%"
-  },
-  {
-   "t": 1793279700000,
-   "cur": "EUR",
-   "n": "Main Refinancing Rate",
-   "f": "2.65%",
-   "p": "2.65%"
-  },
-  {
-   "t": 1793279700000,
-   "cur": "EUR",
-   "n": "Monetary Policy Statement",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793281500000,
-   "cur": "EUR",
-   "n": "ECB Press Conference",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793329320000,
-   "cur": "JPY",
-   "n": "BOJ Outlook Report",
-   "f": "",
-   "p": ""
-  },
-  {
-   "t": 1793329320000,
-   "cur": "JPY",
-   "n": "BOJ Policy Rate",
-   "f": "<1.25%",
-   "p": "<1.25%"
-  },
-  {
-   "t": 1793329320000,
-   "cur": "JPY",
-   "n": "Monetary Policy Statement",
-   "f": "",
-   "p": ""
-  },
   {
    "t": 1793338200000,
    "cur": "JPY",
@@ -167,6 +13,139 @@
    "t": 1793341800000,
    "cur": "JPY",
    "n": "BOJ Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793676600000,
+   "cur": "AUD",
+   "n": "Cash Rate",
+   "f": "4.85%",
+   "p": "4.60%"
+  },
+  {
+   "t": 1793676600000,
+   "cur": "AUD",
+   "n": "RBA Monetary Policy Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793676600000,
+   "cur": "AUD",
+   "n": "RBA Rate Statement",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793680200000,
+   "cur": "AUD",
+   "n": "RBA Press Conference",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793718960000,
+   "cur": "USD",
+   "n": "Congressional Elections",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793742300000,
+   "cur": "NZD",
+   "n": "Employment Change q/q",
+   "f": "0.4%",
+   "p": "0.5%"
+  },
+  {
+   "t": 1793742300000,
+   "cur": "NZD",
+   "n": "Unemployment Rate",
+   "f": "5.5%",
+   "p": "5.6%"
+  },
+  {
+   "t": 1793880000000,
+   "cur": "GBP",
+   "n": "BOE Monetary Policy Report",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793880000000,
+   "cur": "GBP",
+   "n": "Monetary Policy Summary",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793880000000,
+   "cur": "GBP",
+   "n": "MPC Official Bank Rate Votes",
+   "f": "7-0-2",
+   "p": "3-0-6"
+  },
+  {
+   "t": 1793880000000,
+   "cur": "GBP",
+   "n": "Official Bank Rate",
+   "f": "4.00%",
+   "p": "3.75%"
+  },
+  {
+   "t": 1793881800000,
+   "cur": "GBP",
+   "n": "BOE Gov Bailey Speaks",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1793971800000,
+   "cur": "CAD",
+   "n": "Employment Change",
+   "f": "14.5K",
+   "p": "-68.3K"
+  },
+  {
+   "t": 1793971800000,
+   "cur": "CAD",
+   "n": "Unemployment Rate",
+   "f": "6.5%",
+   "p": "6.5%"
+  },
+  {
+   "t": 1793971800000,
+   "cur": "USD",
+   "n": "Average Hourly Earnings m/m",
+   "f": "0.3%",
+   "p": "0.1%"
+  },
+  {
+   "t": 1793971800000,
+   "cur": "USD",
+   "n": "Non-Farm Employment Change",
+   "f": "63K",
+   "p": "29K"
+  },
+  {
+   "t": 1793971800000,
+   "cur": "USD",
+   "n": "Unemployment Rate",
+   "f": "4.2%",
+   "p": "4.2%"
+  },
+  {
+   "t": 1793980800000,
+   "cur": "JPY",
+   "n": "BOJ Gov Ueda Speaks",
+   "f": "",
+   "p": ""
+  },
+  {
+   "t": 1794001500000,
+   "cur": "NZD",
+   "n": "Parliamentary Elections",
    "f": "",
    "p": ""
   }

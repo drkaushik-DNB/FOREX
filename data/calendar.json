@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793655699759,
+ "fetchedAt": 1793659351595,
  "source": "ForexFactory",
  "events": [
   {
@@ -90,7 +90,7 @@
    "t": 1793971800000,
    "cur": "CAD",
    "n": "Employment Change",
-   "f": "14.5K",
+   "f": "14.6K",
    "p": "-68.3K"
   },
   {
@@ -111,7 +111,7 @@
    "t": 1793971800000,
    "cur": "USD",
    "n": "Non-Farm Employment Change",
-   "f": "63K",
+   "f": "65K",
    "p": "29K"
   },
   {

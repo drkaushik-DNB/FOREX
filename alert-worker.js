@@ -90,7 +90,8 @@ async function check(env) {
 }
 
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil((async () => { await env.ALERTS.put("lastrun", String(Date.now())); await check(env); })()); },
+  // note the check time every 10 minutes only (the free plan allows 1,000 storage writes a day)
+  async scheduled(event, env, ctx) { ctx.waitUntil((async () => { if (new Date().getUTCMinutes() % 10 === 0) await env.ALERTS.put("lastrun", String(Date.now())); await check(env); })()); },
 
   async fetch(req, env) {
     const origin = req.headers.get("Origin") || "";

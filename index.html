@@ -36,10 +36,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .status{font:.78rem var(--mono);color:var(--muted);display:flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--wait)}
 .dot.live{background:var(--buy)} .dot.off{background:var(--sell)}
-.top{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px}
-@media (max-width:760px){.top{grid-template-columns:minmax(0,1fr)}}
+.top{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.top>.chartp{order:-1}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
-.verdict{display:grid;gap:12px;align-content:start}
+.verdict{display:grid;gap:12px;align-content:start;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));align-items:start}
 .price{font:600 2rem var(--mono);font-variant-numeric:tabular-nums;transition:color .4s}
 .price.up{color:var(--buy);transition:none}.price.dn{color:var(--sell);transition:none}
 .ba{font:.75rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
@@ -59,8 +59,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .levels dt{color:var(--muted)} .levels dd{margin:0;text-align:right}
 .lab{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
 .chartp{display:grid;gap:8px}
-.tv{height:400px;min-width:0} .tvsub{height:130px;min-width:0;border-top:1px solid var(--line)}
-@media (max-width:760px){.tv{height:330px}}
+.tv{height:min(70vh,620px);min-height:380px;min-width:0} .tvsub{height:130px;min-width:0;border-top:1px solid var(--line)}
+@media (max-width:760px){.tv{height:62vh;min-height:340px}}
 .ctool{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
 .tg{display:flex;flex-wrap:wrap;gap:4px}
 .tg button{font:600 .72rem var(--mono);padding:4px 8px;border-radius:6px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
@@ -70,6 +70,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .ohlc{font:.75rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;min-height:1.2em;display:flex;flex-wrap:wrap;gap:4px 12px}
 .ohlc b{color:var(--fg);font-weight:600}
 footer a{color:inherit}
+.chartp.fs{position:fixed;inset:0;z-index:60;border-radius:0;border:0;margin:0;display:flex;flex-direction:column;gap:6px;
+  padding:calc(8px + env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+.chartp.fs .tv{flex:1;height:auto;min-height:0} .chartp.fs .tvsub{height:20%;flex:none}
+body.fsOn{overflow:hidden}
 .algo{border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;gap:8px}
 .ahd{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
 .asig{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:.85rem var(--mono)}
@@ -202,14 +206,6 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <div class="bar" style="margin-top:8px"><button class="btn" id="loadCsv">Analyse pasted data</button><span class="note" id="csvMsg"></span></div>
   </div>
 
-  <section class="panel" aria-label="Market scanner">
-    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
-      <h2>Market scanner</h2><span class="status" id="scanStat">Waiting for live data…</span>
-    </div>
-    <div class="tbl"><table class="scan" id="scanT"><thead><tr><th>Market</th><th>5M</th><th>15M</th><th>1H</th><th>4H</th><th>1D</th></tr></thead><tbody></tbody></table></div>
-    <p class="note">Signal for every market and timeframe, with the higher-timeframe check applied. Tap a cell to open it below. Refreshes every 3 minutes; the news filter isn't applied here.</p>
-  </section>
-
   <div class="top">
     <section class="panel verdict" aria-label="Signal">
       <div>
@@ -277,7 +273,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
       <div class="ohlc" id="ohlc"></div>
       <div id="tv" class="tv" aria-label="Candlestick chart: drag to pan, pinch or scroll to zoom"></div>
       <div id="tvSub" class="tvsub" aria-label="Indicator pane"></div>
-      <div class="ctool"><span class="note">Drag to scroll back · pinch or mouse-wheel to zoom · double-click the price axis to reset</span><button class="btn small" id="fit">Reset view</button></div>
+      <div class="ctool"><span class="note">Drag to scroll back · pinch or mouse-wheel to zoom · double-click the price axis to reset</span><span style="display:flex;gap:6px"><button class="btn small" id="fit">Reset view</button><button class="btn small" id="fsBtn" aria-pressed="false">⛶ Full screen</button></span></div>
     </section>
   </div>
 
@@ -313,6 +309,14 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
   <section>
     <h2>Indicator votes</h2>
     <div class="grid" id="inds"></div>
+  </section>
+
+  <section class="panel" aria-label="Market scanner">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
+      <h2>Market scanner</h2><span class="status" id="scanStat">Waiting for live data…</span>
+    </div>
+    <div class="tbl"><table class="scan" id="scanT"><thead><tr><th>Market</th><th>5M</th><th>15M</th><th>1H</th><th>4H</th><th>1D</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">Signal for every market and timeframe, with the higher-timeframe check applied. Tap a cell to open it below. Refreshes every 3 minutes; the news filter isn't applied here.</p>
   </section>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -1103,6 +1107,14 @@ $("bmForm").addEventListener("submit",e=>{e.preventDefault();const p=parseFloat(
   setBroker(v);$("bmForm").hidden=true;toast(`Matched to your broker: ${v>=0?"+":""}${fmt(v)}`)});
 $("bmReset").onclick=()=>{setBroker(0);$("bmForm").hidden=true;toast("Broker match removed")};
 $("mkt").addEventListener("click",()=>setTimeout(()=>{bmStatus();$("bmForm").hidden=true},0));bmStatus();
+
+/* ---------- full-screen chart ---------- */
+function setFS(on){const sec=document.querySelector(".chartp");sec.classList.toggle("fs",on);document.body.classList.toggle("fsOn",on);
+  $("fsBtn").setAttribute("aria-pressed",on);$("fsBtn").textContent=on?"✕ Exit full screen":"⛶ Full screen";
+  try{if(on&&sec.requestFullscreen&&!document.fullscreenElement)sec.requestFullscreen().catch(()=>{});else if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
+$("fsBtn").onclick=()=>setFS(!document.querySelector(".chartp").classList.contains("fs"));
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&document.querySelector(".chartp.fs"))setFS(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.querySelector(".chartp.fs"))setFS(false)});
 
 /* ---------- live IST clock ---------- */
 const clkF=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});

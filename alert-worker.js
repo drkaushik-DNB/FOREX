@@ -24,10 +24,19 @@ const getAlerts = async (env) => (await env.ALERTS.get("alerts", { type: "json" 
 const putAlerts = (env, list) => env.ALERTS.put("alerts", JSON.stringify(list));
 
 async function push(env, title, message, tags) {
-  await fetch(`https://ntfy.sh/${env.NTFY_TOPIC}`, {
-    method: "POST", body: message,
-    headers: { Title: title, Priority: "high", Tags: tags || "bell" },
-  });
+  const topic = String(env.NTFY_TOPIC || "").trim();
+  const headers = { Title: title, Priority: "high", Tags: tags || "bell" };
+  if (env.NTFY_TOKEN) headers.Authorization = `Bearer ${env.NTFY_TOKEN}`; // optional free ntfy account token
+  try {
+    const r = await fetch(`https://ntfy.sh/${encodeURIComponent(topic)}`, { method: "POST", body: message, headers });
+    const res = { ok: r.ok, status: r.status, at: Date.now(), info: r.ok ? "" : (await r.text()).slice(0, 200) };
+    await env.ALERTS.put("lastpush", JSON.stringify(res));
+    return res;
+  } catch (e) {
+    const res = { ok: false, status: 0, at: Date.now(), info: String(e.message || e) };
+    await env.ALERTS.put("lastpush", JSON.stringify(res));
+    return res;
+  }
 }
 
 // last few 1-minute candles (so touches between checks are caught) and the latest price
@@ -81,7 +90,7 @@ async function check(env) {
 }
 
 export default {
-  async scheduled(event, env, ctx) { ctx.waitUntil(check(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil((async () => { await env.ALERTS.put("lastrun", String(Date.now())); await check(env); })()); },
 
   async fetch(req, env) {
     const origin = req.headers.get("Origin") || "";
@@ -121,8 +130,13 @@ export default {
       return json(list);
     }
     if (url.pathname === "/test" && req.method === "POST") {
-      await push(env, "Gold Signal Desk", "Test notification: background alerts are working.", "white_check_mark");
-      return json({ ok: true });
+      const r = await push(env, "Gold Signal Desk", "Test notification: background alerts are working.", "white_check_mark");
+      return json({ ok: r.ok, ntfy: r.status, info: r.info, topicSet: !!env.NTFY_TOPIC });
+    }
+    if (url.pathname === "/status" && req.method === "GET") {
+      const lastrun = +(await env.ALERTS.get("lastrun")) || 0;
+      const lastpush = await env.ALERTS.get("lastpush", { type: "json" });
+      return json({ lastrun, lastpush, alerts: (await getAlerts(env)).length, now: Date.now() });
     }
     return json({ error: "Not found" }, 404);
   },

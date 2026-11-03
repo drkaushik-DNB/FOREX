@@ -6,22 +6,28 @@
 <style>
 /* Layout: control bar → verdict panel + chart → indicator grid → risk calculator */
 :root{
-  --bg:#e7e4de; --panel:#e7e4de; --fg:#2a2823; --muted:#716c61; --line:#d3cfc6;
-  --sh-d:#c3bfb6; --sh-l:#ffffff; --inset:#dedad3;
+  --bg:#e9e6e0; --panel:rgba(255,255,255,.55); --fg:#1f1d19; --muted:#5f5a50; --line:rgba(60,50,30,.12);
+  --sh-d:#c3bfb6; --sh-l:#ffffff; --inset:rgba(255,255,255,.35);
+  --glass:rgba(255,255,255,.5); --glass-hi:rgba(255,255,255,.78); --edge:rgba(255,255,255,.75); --drop:rgba(70,55,25,.18);
+  --amb1:#f3d9a3; --amb2:#b9d8d3; --amb3:#e7c9c0;
   --accent:#a8781e; --buy:#1f8a5b; --sell:#c2412d; --wait:#8a7f66;
-  --buy-bg:#d9ebe1; --sell-bg:#f0dcd7; --wait-bg:#e0dcd4;
+  --buy-bg:rgba(31,138,91,.14); --sell-bg:rgba(194,65,45,.13); --wait-bg:rgba(120,105,80,.12);
   --display:"Archivo",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#24231f; --panel:#24231f; --fg:#ece8dc; --muted:#a29c8b; --line:#34322c;
-  --sh-d:#171612; --sh-l:#32302a; --inset:#201f1b;
+  --bg:#0f0e0c; --panel:rgba(40,38,34,.55); --fg:#f1ede2; --muted:#a9a292; --line:rgba(255,255,255,.08);
+  --sh-d:#000; --sh-l:#333; --inset:rgba(0,0,0,.25);
+  --glass:rgba(48,45,40,.45); --glass-hi:rgba(255,255,255,.14); --edge:rgba(255,255,255,.14); --drop:rgba(0,0,0,.55);
+  --amb1:#4a3712; --amb2:#123634; --amb3:#3a1d22;
   --accent:#d6a646; --buy:#4cc28c; --sell:#ee7560; --wait:#b3a78c;
-  --buy-bg:#163226; --sell-bg:#3a1d17; --wait-bg:#2a2720; color-scheme:dark}}
+  --buy-bg:rgba(76,194,140,.16); --sell-bg:rgba(238,117,96,.16); --wait-bg:rgba(255,255,255,.06); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#24231f; --panel:#24231f; --fg:#ece8dc; --muted:#a29c8b; --line:#34322c;
-  --sh-d:#171612; --sh-l:#32302a; --inset:#201f1b;
+  --bg:#0f0e0c; --panel:rgba(40,38,34,.55); --fg:#f1ede2; --muted:#a9a292; --line:rgba(255,255,255,.08);
+  --sh-d:#000; --sh-l:#333; --inset:rgba(0,0,0,.25);
+  --glass:rgba(48,45,40,.45); --glass-hi:rgba(255,255,255,.14); --edge:rgba(255,255,255,.14); --drop:rgba(0,0,0,.55);
+  --amb1:#4a3712; --amb2:#123634; --amb3:#3a1d22;
   --accent:#d6a646; --buy:#4cc28c; --sell:#ee7560; --wait:#b3a78c;
-  --buy-bg:#163226; --sell-bg:#3a1d17; --wait-bg:#2a2720; color-scheme:dark}
+  --buy-bg:rgba(76,194,140,.16); --sell-bg:rgba(238,117,96,.16); --wait-bg:rgba(255,255,255,.06); color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--display);line-height:1.45}
 .wrap{max-width:1100px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
@@ -189,37 +195,40 @@ details summary{cursor:pointer;font-weight:600}
 footer{font-size:.75rem;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* ---------- Neumorphism (soft UI): raised surfaces, pressed states ---------- */
-:root{--raise:6px 6px 14px var(--sh-d),-6px -6px 14px var(--sh-l);--raise-s:3px 3px 7px var(--sh-d),-3px -3px 7px var(--sh-l);
-  --press:inset 3px 3px 7px var(--sh-d),inset -3px -3px 7px var(--sh-l)}
-.panel{border:0;border-radius:20px;box-shadow:var(--raise);padding:18px}
-.wrap{gap:22px}
-.btn,.tg button{border:0;border-radius:12px;background:var(--bg);box-shadow:var(--raise-s);transition:box-shadow .15s,color .15s}
-.btn:hover,.tg button:hover{color:var(--accent);border:0}
-.btn:active,.tg button:active{box-shadow:var(--press)}
-.btn.primary{background:var(--bg);color:var(--accent);box-shadow:var(--raise-s)}
-.seg{border:0;border-radius:14px;background:var(--bg);box-shadow:var(--press);padding:4px;gap:4px}
-.seg button{border-radius:10px;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--bg);color:var(--accent);box-shadow:var(--raise-s)}
-.tg{gap:8px}
-.tg button[aria-pressed="true"]{color:var(--fg);box-shadow:var(--press)}
-input,textarea,select{border:0;border-radius:12px;background:var(--bg);box-shadow:var(--press)}
-.pill-sel{border:0;box-shadow:var(--press)}
-.pill-sel select{box-shadow:none}
-.sig{border-radius:16px;box-shadow:var(--press)}
-.algo,.sc,.bt div,.par,.nv{border:0;border-radius:14px;box-shadow:var(--raise-s)}
-.chip{border:0;box-shadow:var(--raise-s);padding:4px 10px}
-.meter{box-shadow:var(--press);height:12px;border-radius:6px}
-.tl{border:0;border-radius:14px;background:var(--bg);box-shadow:var(--press)}
-.tvw{border:0;border-radius:16px;box-shadow:var(--press);padding:6px}
-.tv,.tvsub{border-radius:12px;overflow:hidden}
+/* ---------- Spatial UI: floating glass panels over an ambient backdrop ---------- */
+body{background:radial-gradient(60vmax 50vmax at 10% -10%,var(--amb1),transparent 60%),radial-gradient(55vmax 45vmax at 105% 20%,var(--amb2),transparent 60%),radial-gradient(60vmax 50vmax at 40% 110%,var(--amb3),transparent 60%),var(--bg);background-attachment:fixed}
+.panel{background:var(--glass);border:1px solid var(--edge);border-radius:28px;padding:20px;
+  -webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);
+  box-shadow:0 1px 0 var(--edge) inset,0 24px 60px -20px var(--drop),0 8px 20px -12px var(--drop)}
+.wrap{gap:24px}
+.btn,.tg button{border:1px solid var(--edge);border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:0 6px 18px -10px var(--drop);transition:transform .15s,background .15s,box-shadow .15s}
+.btn:hover,.tg button:hover{background:var(--glass-hi);border-color:var(--edge);transform:translateY(-1px)}
+.btn:active,.tg button:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);border-color:transparent;color:#fff;box-shadow:0 10px 24px -10px var(--accent)}
+.seg{border:1px solid var(--edge);border-radius:999px;background:var(--inset);padding:4px;gap:2px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.seg button{border-radius:999px;color:var(--muted);transition:background .15s,color .15s}
+.seg button[aria-pressed="true"]{background:var(--glass-hi);color:var(--fg);box-shadow:0 4px 14px -6px var(--drop),0 1px 0 var(--edge) inset}
+.tg{gap:6px}
+.tg button[aria-pressed="true"]{background:var(--glass-hi);color:var(--fg)}
+input,textarea,select{border:1px solid var(--line);border-radius:14px;background:var(--inset)}
+.pill-sel{border:1px solid var(--edge);background:var(--inset)}
+.pill-sel select{border:0;background:transparent}
+.sig{border-radius:20px;border:1px solid var(--edge)}
+.algo,.sc,.bt div,.par,.nv{border:1px solid var(--edge);border-radius:18px;background:var(--inset)}
+.chip{border:1px solid var(--edge);background:var(--inset)}
+.meter{height:10px;border-radius:6px}
+.tl{border:1px solid var(--edge);border-radius:18px;background:var(--inset)}
+.tvw{border:1px solid var(--edge);border-radius:20px;overflow:hidden}
+.tv,.tvsub{border-radius:16px;overflow:hidden}
 .tvsub{border-top:0;margin-top:6px}
-.cev{border-bottom:0;border-radius:14px;margin:4px 0;box-shadow:var(--raise-s);background:var(--bg)}
-.cev.past{box-shadow:none}
-.cday{border-bottom:0}
-.tbl{border:0;border-radius:14px;box-shadow:var(--press)}
-.ind{border:0;border-radius:16px;box-shadow:var(--raise-s)}
-.chartp.fs{box-shadow:none}
+.cev{border:1px solid transparent;border-radius:16px;margin:2px 0}
+.cev:not(.past):hover{background:var(--inset)}
+.cday{border-bottom:1px solid var(--line)}
+.tbl{border:1px solid var(--edge);border-radius:16px}
+.ind{border:1px solid var(--edge);border-radius:20px;background:var(--glass)}
+.chartp.fs{border-radius:0;background:var(--bg)}
+@media (prefers-reduced-transparency:reduce){.panel,.btn,.seg{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--bg)}}
 </style>
 
 <div class="wrap">

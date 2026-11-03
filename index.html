@@ -190,7 +190,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
   </div>
   <div class="bar">
     <div class="seg" role="group" aria-label="Timeframe" id="tf">
-      <button data-tf="1m">1M</button><button data-tf="5m">5M</button><button data-tf="15m">15M</button><button data-tf="30m">30M</button><button data-tf="1h" aria-pressed="true">1H</button><button data-tf="4h">4H</button><button data-tf="1d">1D</button>
+      <button data-tf="1m" aria-pressed="true">1M</button><button data-tf="5m">5M</button><button data-tf="15m">15M</button><button data-tf="30m">30M</button><button data-tf="1h">1H</button><button data-tf="4h">4H</button><button data-tf="1d">1D</button>
     </div>
     <button class="btn" id="refresh">Refresh now</button>
     <button class="btn" id="toggleCsv">Paste your own candles</button>
@@ -334,7 +334,7 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-let TF="1h", MK="XAUUSD", candles=[], source="sample", timer=null;
+let TF="1m", MK="XAUUSD", candles=[], source="sample", timer=null;
 const KR={"1m":1,"5m":5,"15m":15,"30m":30,"1h":60,"4h":240,"1d":1440};
 const MARKETS={
   XAUUSD:{title:"XAU<span>/</span>USD",name:"Gold",dp:2,base:4000,vol:9,contract:100,unit:"oz",

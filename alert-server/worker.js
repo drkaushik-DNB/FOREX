@@ -1,4 +1,4 @@
-// Gold Signal Desk: background price alerts (Cloudflare Worker, free plan).
+// Gold Signal Desk: background price alerts (Cloudflare Worker, free plan). Deployed from GitHub.
 // Checks your alert levels every minute, 24/7, and sends a push notification
 // through the free ntfy app, so alerts arrive even when your phone screen is off.
 //

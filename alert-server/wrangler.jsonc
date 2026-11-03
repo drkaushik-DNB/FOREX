@@ -1,0 +1,11 @@
+// Cloudflare deploys the alert server from this folder (Settings > Build > root directory: alert-server).
+// Secrets APP_KEY and NTFY_TOPIC stay in the Cloudflare dashboard and are kept on every deploy.
+{
+  "name": "gsd-alerts",
+  "main": "worker.js",
+  "compatibility_date": "2025-01-01",
+  "kv_namespaces": [{ "binding": "ALERTS", "id": "00c5b0045a254fed95b1ca21ff8e9bf5" }],
+  "triggers": { "crons": ["* * * * *"] },
+  "workers_dev": true,
+  "keep_vars": true
+}

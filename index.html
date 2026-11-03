@@ -1012,7 +1012,23 @@ function startStream(f){
   const restart=d=>{if(wsKey!==key||ws!==grp)return;grp.close();ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},d)};
   try{urls.forEach(u=>{const x=new WebSocket(u);x.onmessage=onMsg;x.onclose=()=>restart(3000);socks.push(x)})}catch(e){grp.close();ws=null;wsKey="";return}
   // watchdog: a phone that slept or a stalled connection goes quiet without closing, so reconnect after 12 s of silence
-  dog=setInterval(()=>{if(Date.now()-lastMsg>12000)restart(0)},4000);
+  let pollOk=0;dog=setInterval(()=>{if(Date.now()-lastMsg>(Date.now()-pollOk<5000?60000:12000))restart(0)},4000);
+  // backup: if the stream sends nothing for 3 s, ask for the price once a second until it comes back
+  let busy=false,pollFails=0;
+  const poll=setInterval(async()=>{
+    if(busy||Date.now()-lastMsg<3000||wsKey!==key||ws!==grp||source!=="live"||document.hidden)return;busy=true;
+    try{let b=null,a=null,src="";
+      try{const r=await fetch(fut?`https://fapi.binance.com/fapi/v1/ticker/bookTicker?symbol=${f.s}`:`https://data-api.binance.vision/api/v3/ticker/bookTicker?symbol=${f.s}`,{cache:"no-store"});
+        const j=await r.json();if(+j.bidPrice>0){const A=adjOf(f);if(f.adj)RAW[f.s]={v:(+j.bidPrice + +j.askPrice)/2,at:Date.now()};b=+j.bidPrice-A;a=+j.askPrice-A;src="Binance"}}catch(e){}
+      if(b==null&&MK==="XAUUSD"){try{const j=await (await fetch(GOLD_SPOT_URL,{cache:"no-store"})).json();if(+j.price>0){b=a=+j.price-(BOFF.XAUUSD||0);src="spot"}}catch(e){}}
+      if(b==null){pollFails++;return}pollFails=0;pollOk=Date.now();
+      if(wsKey!==key||ws!==grp)return;
+      const mid=(b+a)/2,last=candles[candles.length-1],step=TFS[TF],now=Date.now(),bucket=Math.floor(now/1000/step)*step;
+      if(last&&bucket>last.t){candles.push({t:bucket,o:last.c,h:Math.max(last.c,mid),l:Math.min(last.c,mid),c:mid});if(candles.length>600)candles.shift()}
+      else if(last){last.c=mid;last.h=Math.max(last.h,mid);last.l=Math.min(last.l,mid)}
+      lastTradeMs=now;showTick(mid,b!==a?b:null,b!==a?a:null);status("live",`Live stream blocked on this network · updating every second (${src})`);chartTick();scheduleRender()}
+    finally{busy=false}},1000);
+  const close0=grp.close;grp.close=()=>{clearInterval(poll);close0()};
   grp.kick=()=>{if(Date.now()-lastMsg>4000)restart(0)};
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&ws&&ws.kick)ws.kick()});

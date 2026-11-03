@@ -36,7 +36,7 @@ async function push(env, title, message, tags) {
       try {
         const r = await fetch(`https://api.telegram.org/bot${env.TG_TOKEN}/sendMessage`, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: chat, text: `${title}\n${message}` }),
+          body: JSON.stringify({ chat_id: chat, text: title ? `${title}\n${message}` : message }),
         });
         res = { ok: r.ok, status: r.status, via: "telegram", at: Date.now(), info: r.ok ? "" : (await r.text()).slice(0, 200) };
       } catch (e) { res = { ok: false, status: 0, via: "telegram", at: Date.now(), info: String(e.message || e) }; }
@@ -48,7 +48,8 @@ async function push(env, title, message, tags) {
 }
 async function ntfyPush(env, title, message, tags) {
   const topic = String(env.NTFY_TOPIC || "").trim();
-  const headers = { Title: title, Priority: "high", Tags: tags || "bell" };
+  const headers = { Priority: "high", Tags: tags || "bell" };
+  if (title) headers.Title = title;
   if (env.NTFY_TOKEN) headers.Authorization = `Bearer ${env.NTFY_TOKEN}`; // optional free ntfy account token
   try {
     const r = await fetch(`https://ntfy.sh/${encodeURIComponent(topic)}`, { method: "POST", body: message, headers });
@@ -98,7 +99,8 @@ async function check(env) {
       fired++;
       const nm = MARKETS[a.mk].name;
       // short format: market, which side of the level, current price
-      await push(env, nm, `${a.dir > 0 ? "Above" : "Below"} ${+Number(a.p).toFixed(MARKETS[a.mk].dp)}\nNow ${fmt(a.mk, d.now)}`,
+      // one line: "Below 3940 Now 3935.90" (gold needs no name; other markets get theirs in front)
+      await push(env, "", `${a.mk === "XAUUSD" ? "" : nm + " "}${a.dir > 0 ? "Above" : "Below"} ${+Number(a.p).toFixed(MARKETS[a.mk].dp)} Now ${fmt(a.mk, d.now)}`,
         a.dir > 0 ? "chart_with_upwards_trend" : "chart_with_downwards_trend");
       if (a.rep) { // stay active and wait for the next crossing the other way
         keep.push({ ...a, dir: -a.dir, n: (a.n || 0) + 1, since: Math.ceil(Date.now() / 60000) * 60000 });

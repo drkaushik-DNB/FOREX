@@ -1134,7 +1134,7 @@ function checkPriceAlerts(mk,px,slow){
     if((a.dir>0&&px>=target)||(a.dir<0&&px<=target)){hit=true;
       const nm=MARKETS[mk].name,msg=`${nm} ${a.dir>0?(a.n?"rose back above":"rose to"):(a.n?"fell back below":"fell to")} ${fmtP(mk,a.p)}`;
       toast("🔔 "+msg);if(audio)beep(a.dir>0);
-      notify(nm,`${a.dir>0?"Above":"Below"} ${+(+a.p).toFixed(MARKETS[mk].dp)}\nNow ${fmtP(mk,px)}`,true);
+      notify(mk==="XAUUSD"?"Gold Signal Desk":nm,`${a.dir>0?"Above":"Below"} ${+(+a.p).toFixed(MARKETS[mk].dp)} Now ${fmtP(mk,px)}`,true);
       if(a.rep){a.dir=-a.dir;a.n=(a.n||0)+1;a.since=Math.ceil(Date.now()/60000)*60000;
         if(bgOn())bgCall("POST","/alerts",a).catch(()=>{})}   // tell the server so it doesn't send the same one
       else{a.done=1;if(bgOn())bgCall("DELETE","/alerts?id="+a.id).catch(()=>{})}}});

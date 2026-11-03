@@ -155,10 +155,9 @@ async function run(env) {
     const wantGold = m.includes("XAUUSD"), others = m.filter((x) => x !== "XAUUSD");
     try {
       if (wantGold) {
-        const g = await fastGold(); budget--;
-        if (g && (off === null || Date.now() - spotAt > 25000)) { try { spot = await goldSpot(); budget--; if (spot) { off = g - spot; spotAt = Date.now(); } } catch {} }
-        if (g && off !== null) price.XAUUSD = g - off;
-        else { try { const sp = await goldSpot(); budget--; if (sp) price.XAUUSD = sp; } catch {} } // no fast source: use spot itself every tick
+        // spot gold straight from gold-api.com (OKX has no gold price and Binance blocks Cloudflare, per /probe)
+        try { const sp = await goldSpot(); if (sp) price.XAUUSD = sp; } catch {}
+        budget--;
       }
       if (others.length) { Object.assign(price, await krakenNow(others)); budget--; }
     } catch {}

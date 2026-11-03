@@ -36,7 +36,7 @@ async function push(env, title, message, tags) {
       try {
         const r = await fetch(`https://api.telegram.org/bot${env.TG_TOKEN}/sendMessage`, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: chat, text: `${EMOJI[tags] || EMOJI.bell} ${title}\n${message}` }),
+          body: JSON.stringify({ chat_id: chat, text: `${title}\n${message}` }),
         });
         res = { ok: r.ok, status: r.status, via: "telegram", at: Date.now(), info: r.ok ? "" : (await r.text()).slice(0, 200) };
       } catch (e) { res = { ok: false, status: 0, via: "telegram", at: Date.now(), info: String(e.message || e) }; }
@@ -97,8 +97,8 @@ async function check(env) {
     if (a.dir > 0 ? hi >= target : lo <= target) {
       fired++;
       const nm = MARKETS[a.mk].name;
-      await push(env, `${a.rep ? "Repeat alert" : "Price alert"} · ${nm}`,
-        `${nm} ${a.dir > 0 ? (a.n ? "rose back above" : "rose to") : (a.n ? "fell back below" : "fell to")} ${fmt(a.mk, a.p)}. Now ${fmt(a.mk, d.now)}.`,
+      // short format: market, which side of the level, current price
+      await push(env, nm, `${a.dir > 0 ? "Above" : "Below"} ${+Number(a.p).toFixed(MARKETS[a.mk].dp)}\nNow ${fmt(a.mk, d.now)}`,
         a.dir > 0 ? "chart_with_upwards_trend" : "chart_with_downwards_trend");
       if (a.rep) { // stay active and wait for the next crossing the other way
         keep.push({ ...a, dir: -a.dir, n: (a.n || 0) + 1, since: Math.ceil(Date.now() / 60000) * 60000 });

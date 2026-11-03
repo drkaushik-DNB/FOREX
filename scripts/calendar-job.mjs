@@ -1,4 +1,4 @@
-// High-impact economic calendar for Gold Signal Desk (all countries).
+// Economic calendar (high, medium and low impact, plus bank holidays) for Gold Signal Desk (all countries).
 // Runs inside the 15-minute GitHub job but only downloads about once an hour,
 // because the free ForexFactory feed rate-limits frequent requests.
 import fs from "node:fs";
@@ -27,11 +27,12 @@ for (const url of FEEDS) {
     if (!Array.isArray(list)) { console.log(`${url}: unexpected format`); continue; }
     ok++;
     for (const e of list) {
-      if (String(e.impact || "").toLowerCase() !== "high") continue;
+      const imp = { high: 3, medium: 2, low: 1, holiday: 0 }[String(e.impact || "").toLowerCase()];
+      if (imp === undefined) continue;
       const t = Date.parse(e.date);
       if (!isFinite(t)) continue;
-      got.push({ t, cur: String(e.country || "").toUpperCase(), n: String(e.title || "").slice(0, 80),
-        f: e.forecast || "", p: e.previous || "" });
+      got.push({ t, cur: String(e.country || "").toUpperCase(), n: String(e.title || "").slice(0, 80), im: imp,
+        f: e.forecast || "", p: e.previous || "", a: e.actual || "" });
     }
   } catch (err) { console.log(`${url}: ${err.message}`); }
 }
@@ -50,5 +51,5 @@ const events = [...map.values()].sort((a, b) => a.t - b.t);
 
 fs.mkdirSync("data", { recursive: true });
 fs.writeFileSync(FILE, JSON.stringify({ fetchedAt: now, source: "ForexFactory", events }, null, 1));
-console.log(`Saved ${events.length} high-impact events (${got.length} from ${ok} feed(s)).`);
+console.log(`Saved ${events.length} events (${got.length} from ${ok} feed(s)).`);
 for (const e of events.slice(0, 12)) console.log(new Date(e.t).toISOString(), e.cur, e.n);

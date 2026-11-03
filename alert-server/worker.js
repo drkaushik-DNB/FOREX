@@ -6,6 +6,7 @@
 //   KV namespace binding:  ALERTS
 //   Secrets:               APP_KEY     (the key you paste into the web page once)
 //                          NTFY_TOPIC  (your private ntfy topic name)
+//                          TG_TOKEN    (optional: Telegram bot token; alerts then go to Telegram)
 //   Cron trigger:          * * * * *   (every minute)
 
 const ORIGINS = ["https://drkaushik-dnb.github.io"];
@@ -23,7 +24,29 @@ const alertTarget = (a) => a.p + (a.n ? a.dir * a.p * 0.0003 : 0);
 const getAlerts = async (env) => (await env.ALERTS.get("alerts", { type: "json" })) || [];
 const putAlerts = (env, list) => env.ALERTS.put("alerts", JSON.stringify(list));
 
+// Telegram (preferred when TG_TOKEN is set and the chat is linked), otherwise ntfy
+const EMOJI = { chart_with_upwards_trend: "\u{1F4C8}", chart_with_downwards_trend: "\u{1F4C9}", white_check_mark: "\u2705", bell: "\u{1F514}" };
+async function tgChat(env) { return env.TG_CHAT_ID || (await env.ALERTS.get("tgchat")); }
 async function push(env, title, message, tags) {
+  if (env.TG_TOKEN) {
+    const chat = await tgChat(env);
+    let res;
+    if (!chat) res = { ok: false, status: 0, via: "telegram", at: Date.now(), info: "Telegram not linked yet: send /start to your bot, then tap Link Telegram on the page." };
+    else {
+      try {
+        const r = await fetch(`https://api.telegram.org/bot${env.TG_TOKEN}/sendMessage`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: chat, text: `${EMOJI[tags] || EMOJI.bell} ${title}\n${message}` }),
+        });
+        res = { ok: r.ok, status: r.status, via: "telegram", at: Date.now(), info: r.ok ? "" : (await r.text()).slice(0, 200) };
+      } catch (e) { res = { ok: false, status: 0, via: "telegram", at: Date.now(), info: String(e.message || e) }; }
+    }
+    await env.ALERTS.put("lastpush", JSON.stringify(res));
+    return res;
+  }
+  return ntfyPush(env, title, message, tags);
+}
+async function ntfyPush(env, title, message, tags) {
   const topic = String(env.NTFY_TOPIC || "").trim();
   const headers = { Title: title, Priority: "high", Tags: tags || "bell" };
   if (env.NTFY_TOKEN) headers.Authorization = `Bearer ${env.NTFY_TOKEN}`; // optional free ntfy account token
@@ -132,12 +155,26 @@ export default {
     }
     if (url.pathname === "/test" && req.method === "POST") {
       const r = await push(env, "Gold Signal Desk", "Test notification: background alerts are working.", "white_check_mark");
-      return json({ ok: r.ok, ntfy: r.status, info: r.info, topicSet: !!env.NTFY_TOPIC });
+      return json({ ok: r.ok, ntfy: r.status, via: r.via || "ntfy", info: r.info, topicSet: !!env.NTFY_TOPIC });
+    }
+    // link Telegram: read the latest message sent to the bot and remember that chat
+    if (url.pathname === "/tg-link" && req.method === "POST") {
+      if (!env.TG_TOKEN) return json({ ok: false, info: "Add the TG_TOKEN secret in Cloudflare first." });
+      const r = await fetch(`https://api.telegram.org/bot${env.TG_TOKEN}/getUpdates?limit=50`);
+      const j = await r.json().catch(() => ({}));
+      if (!j.ok) return json({ ok: false, info: "Telegram rejected the bot token. Check TG_TOKEN." });
+      const msgs = (j.result || []).map((u) => u.message || u.edited_message || u.channel_post).filter(Boolean);
+      const m = msgs[msgs.length - 1];
+      if (!m) return json({ ok: false, info: "No message found. Open your bot in Telegram, tap Start (or send hi), then try again." });
+      await env.ALERTS.put("tgchat", String(m.chat.id));
+      await fetch(`https://api.telegram.org/bot${env.TG_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: m.chat.id, text: "\u2705 Gold Signal Desk is linked. Price alerts will arrive here." }) });
+      return json({ ok: true, name: m.chat.first_name || m.chat.title || "" });
     }
     if (url.pathname === "/status" && req.method === "GET") {
       const lastrun = +(await env.ALERTS.get("lastrun")) || 0;
       const lastpush = await env.ALERTS.get("lastpush", { type: "json" });
-      return json({ lastrun, lastpush, alerts: (await getAlerts(env)).length, now: Date.now() });
+      return json({ lastrun, lastpush, alerts: (await getAlerts(env)).length, now: Date.now(), telegram: !!env.TG_TOKEN, tgLinked: !!(await tgChat(env)) });
     }
     return json({ error: "Not found" }, 404);
   },

@@ -1129,11 +1129,14 @@ function setBg(st){const b=$("bgA");if(!ALERT_SERVER){b.hidden=true;return}b.hid
     b.innerHTML=`<span class="note">${st==="badkey"?"That key didn't work. ":""}For alerts with the screen off, paste your alert key once.</span><div class="paf"><label for="bgKeyIn" class="sr">Alert key</label><input id="bgKeyIn" type="password" autocomplete="off" placeholder="Alert key"><button class="btn" id="bgKeyBtn" type="button">Connect</button></div>`;
     $("bgKeyBtn").onclick=async()=>{bgKey=$("bgKeyIn").value.trim();if(!bgKey)return;store.set("alertkey",bgKey);
       try{for(const a of PA)await bgCall("POST","/alerts",a)}catch(e){}bgSync()};return}
-  b.innerHTML=`<span class="note">${st==="down"?"\u26a0 Alert server not reachable right now; alerts still work while this page is open.":"\u2713 Screen-off alerts on: checked every minute, sent to the ntfy app."}</span><span><button class="del" id="bgTest" type="button">Send test notification</button> \u00b7 <button class="del" id="bgOff" type="button">Disconnect</button></span><span class="note" id="bgHealth"></span>`;
+  b.innerHTML=`<span class="note">${st==="down"?"\u26a0 Alert server not reachable right now; alerts still work while this page is open.":"\u2713 Screen-off alerts on: checked every minute, sent to your phone."}</span><span><button class="del" id="bgTest" type="button">Send test notification</button> \u00b7 <button class="del" id="bgTg" type="button">Link Telegram</button> \u00b7 <button class="del" id="bgOff" type="button">Disconnect</button></span><span class="note" id="bgHealth"></span>`;
   $("bgTest").onclick=async()=>{try{const r=await bgCall("POST","/test");
-      if(r.ok===false)toast(r.topicSet===false?"The alert server has no NTFY_TOPIC secret. Add it in Cloudflare.":`ntfy refused the message (code ${r.ntfy}). ${r.info||""}`);
+      if(r.via==="telegram")toast(r.ok?"Test sent to Telegram.":r.info||`Telegram refused the message (code ${r.ntfy}).`);
+      else if(r.ok===false)toast(r.topicSet===false?"The alert server has no NTFY_TOPIC secret. Add it in Cloudflare.":`ntfy refused the message (code ${r.ntfy}). ${r.info||""}`);
       else toast(r.ntfy?"ntfy accepted the test. If nothing arrives, check the ntfy app's topic and battery settings.":"Test sent. Check the ntfy app.");
       bgStatus()}catch(e){toast(e.message==="key"?"The alert key was rejected. Paste it again.":"Couldn't reach the alert server.")}};
+  $("bgTg").onclick=async()=>{try{const r=await bgCall("POST","/tg-link");toast(r.ok?`Telegram linked${r.name?" for "+r.name:""}. Check Telegram for a confirmation.`:(r.info||"Couldn't link Telegram."));bgStatus()}
+    catch(e){toast(e.message==="http 404"?"The alert server is still updating. Try again in a minute.":"Couldn't reach the alert server.")}};
   bgStatus();
   $("bgOff").onclick=()=>{bgKey="";store.set("alertkey","");setBg()};
 }
@@ -1141,7 +1144,7 @@ function setBg(st){const b=$("bgA");if(!ALERT_SERVER){b.hidden=true;return}b.hid
 async function bgStatus(){const el=$("bgHealth");if(!el)return;
   try{const r=await bgCall("GET","/status"),now=Date.now(),m=r.lastrun?Math.round((now-r.lastrun)/60000):null,p=r.lastpush;
     el.textContent=(m==null?"Server timer has not run yet (check the Cron trigger).":m>15?`\u26a0 Server timer last ran ${m} min ago (it should run every minute; check the Cron trigger).`:"Server timer running")+
-      (p?` \u00b7 last ntfy send ${p.ok?"OK":"FAILED (code "+p.status+")"}`:"")+` \u00b7 ${r.alerts} alert${r.alerts===1?"":"s"} on server`}
+      (r.telegram?(r.tgLinked?" \u00b7 Telegram linked":" \u00b7 Telegram not linked yet"):"")+(p?` \u00b7 last send (${p.via||"ntfy"}) ${p.ok?"OK":"FAILED"+(p.status?" (code "+p.status+")":"")}`:"")+` \u00b7 ${r.alerts} alert${r.alerts===1?"":"s"} on server`}
   catch(e){el.textContent=e.message==="http 404"?"Update the alert server code to see its health here.":""}}
 setBg();bgSync();setInterval(bgSync,60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)bgSync()});

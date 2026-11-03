@@ -155,6 +155,22 @@ details summary{cursor:pointer;font-weight:600}
 .bt div{border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;gap:2px}
 .bt b{font:600 1.25rem var(--mono);font-variant-numeric:tabular-nums}
 .bt .good{color:var(--buy)} .bt .bad{color:var(--sell)}
+.calf{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.pill-sel{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:2px 4px 2px 12px;background:var(--bg)}
+.pill-sel select{border:0;background:transparent;padding:6px 8px 6px 0;width:auto;font:.85rem var(--display)}
+.cal{display:grid;gap:4px;margin-top:10px}
+.cday{font:600 .72rem var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 4px 4px;border-bottom:1px solid var(--line)}
+.cev{display:grid;grid-template-columns:40px minmax(0,1fr);gap:2px 12px;padding:10px 6px;border-bottom:1px solid var(--line);align-items:center}
+.cev .fl{grid-row:span 2;font-size:1.9rem;line-height:1;text-align:center}
+.cev .tt{font-weight:600;font-size:.95rem;min-width:0;overflow-wrap:anywhere}
+.cev .mt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font:.78rem var(--mono);color:var(--muted)}
+.cev .cc{font-weight:600;color:var(--fg);min-width:28px}
+.cev .fp{font:.72rem var(--mono);color:var(--muted)}
+.cev.past{opacity:.55} .cev.soon{background:var(--wait-bg);border-radius:6px} .cev.live{background:var(--sell-bg);border-radius:6px}
+.cev.rel .cc{color:var(--accent)}
+.imb{display:inline-flex;gap:2px;vertical-align:middle} .imb i{width:5px;height:14px;border-radius:1px;background:var(--line)}
+.imb.i1 i:nth-child(1),.imb.i2 i:nth-child(-n+2){background:#e0b000} .imb.i3 i{background:var(--sell)}
+.imb.i0 i{background:var(--line)}
 .news{display:grid;gap:6px;margin-top:10px}
 .nv{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.85rem}
 .nv .when{font:.8rem var(--mono);color:var(--muted)}
@@ -294,16 +310,17 @@ footer{font-size:.75rem;color:var(--muted);text-align:center}
     <p class="note" id="sessNote">All times are in IST (Indian Standard Time) and adjust automatically for daylight saving in London, New York and Sydney. Gold and forex move most during the London–New York overlap; the Asian session is usually quieter.</p>
   </section>
 
-  <section class="panel" aria-label="High-impact news">
+  <section class="panel" aria-label="Economic calendar">
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline">
-      <h2>High-impact news</h2><span class="status" id="newsNow"></span>
+      <h2>Economic calendar</h2><span class="status" id="newsNow"></span>
     </div>
-    <div class="bar" style="margin-top:8px">
-      <div class="seg small" role="group" aria-label="News filter" id="newsF"><button data-f="all" aria-pressed="true">All countries</button><button data-f="rel">Affects this market</button></div>
-      <span class="note" id="newsRel"></span>
+    <div class="calf">
+      <label class="pill-sel" for="calCountry"><span aria-hidden="true">🌐</span><select id="calCountry"></select></label>
+      <div class="seg small" role="group" aria-label="Impact" id="calImp"><button data-i="1">All</button><button data-i="2">Medium +</button><button data-i="3">High</button></div>
     </div>
-    <div class="news" id="news"></div>
-    <p class="note" id="newsSrc">High-impact releases from every major economy: US, Eurozone, UK, Japan, China, Australia, Canada, New Zealand and Switzerland. Highlighted rows can move the selected market, and the signal switches to WAIT from 30 minutes before until 30 minutes after them. Source: ForexFactory calendar, refreshed hourly.</p>
+    <div class="cal" id="news"></div>
+    <button class="btn small" type="button" id="calMore" hidden>Show more</button>
+    <p class="note" id="newsSrc">Times in IST. Bars show expected impact: <span class="imb i1"><i></i><i></i><i></i></span> low, <span class="imb i2"><i></i><i></i><i></i></span> medium, <span class="imb i3"><i></i><i></i><i></i></span> high. High-impact releases that move the selected market switch the signal to WAIT from 30 minutes before until 30 minutes after. Source: ForexFactory calendar, refreshed hourly.</p>
   </section>
 
   <section hidden>
@@ -760,35 +777,62 @@ const NEWS=[
 function nfpDates(now){const out=[],t=new Date(now);for(let k=0;k<4;k++){const y=t.getUTCFullYear(),mo=t.getUTCMonth()+k;const f=new Date(Date.UTC(y,mo,1));while(f.getUTCDay()!==5)f.setUTCDate(f.getUTCDate()+1);out.push({d:f.toISOString().slice(0,10),h:8,m:30,n:"US jobs report (NFP)",est:true})}return out}
 // live calendar (all countries) saved hourly by the GitHub job; the fixed US list is only a fallback
 const CAL_URL="https://raw.githubusercontent.com/drkaushik-DNB/FOREX/main/data/calendar.json";
-let CAL=null,newsFilter="all";
+let CAL=null,newsFilter="all",calCountry=store.get("calc","all"),calImp=store.get("cali",1),calLimit=30;
 async function loadCal(){try{const r=await fetch(CAL_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const j=await r.json();
   if(j&&Array.isArray(j.events)&&j.events.length){CAL=j;renderNews()}}catch(e){}}
 const REL={XAUUSD:["USD","CNY","ALL"],BTCUSD:["USD"],EURUSD:["EUR","USD"],GBPUSD:["GBP","USD"]};
 const relevant=e=>(REL[MK]||["USD"]).includes(e.cur);
+const imOf=e=>e.im==null?3:e.im;
+const FLAG={USD:"🇺🇸",EUR:"🇪🇺",GBP:"🇬🇧",JPY:"🇯🇵",AUD:"🇦🇺",NZD:"🇳🇿",CAD:"🇨🇦",CHF:"🇨🇭",CNY:"🇨🇳",ALL:"🌐"};
+const CCODE={USD:"US",EUR:"EU",GBP:"GB",JPY:"JP",AUD:"AU",NZD:"NZ",CAD:"CA",CHF:"CH",CNY:"CN",ALL:"ALL"};
+const CNAME={USD:"United States",EUR:"Eurozone",GBP:"United Kingdom",JPY:"Japan",AUD:"Australia",NZD:"New Zealand",CAD:"Canada",CHF:"Switzerland",CNY:"China",ALL:"Global"};
 function newsEvents(now){
   const fixed=[...NEWS,...nfpDates(now)].map(e=>{const [y,mo,d]=e.d.split("-").map(Number);return{...e,cur:"USD",t:zoned("America/New_York",y,mo,d,e.h)+e.m*60000}});
-  let ev=fixed;
-  if(CAL){const end=Math.max(...CAL.events.map(e=>e.t));ev=[...CAL.events.map(e=>({...e})),...fixed.filter(e=>e.t>end+864e5)]}
+  let ev=fixed.filter(e=>e.t<now+45*864e5);
+  if(CAL){const end=Math.max(...CAL.events.map(e=>e.t));ev=[...CAL.events.map(e=>({...e})),...fixed.filter(e=>e.t>end+864e5&&e.t<now+45*864e5)]}
   // merge releases from the same country at the same minute into one row
-  const g=new Map();ev.filter(e=>e.t>now-36e5*2).forEach(e=>{const k=e.t+"|"+e.cur;const x=g.get(k);
+  const g=new Map();ev.filter(e=>e.t>now-36e5*6).forEach(e=>{const k=e.t+"|"+e.cur+"|"+imOf(e);const x=g.get(k);
     if(x){if(!x.n.includes(e.n))x.n+=" · "+e.n}else g.set(k,{...e})});
   return [...g.values()].sort((a,b)=>a.t-b.t);
 }
-function newsLock(now){return newsEvents(now).find(e=>relevant(e)&&Math.abs(e.t-now)<=30*60000)||null}
+function newsLock(now){return newsEvents(now).find(e=>imOf(e)===3&&relevant(e)&&Math.abs(e.t-now)<=30*60000)||null}
 function renderNews(){
-  const now=Date.now(),all=newsEvents(now),ev=all.filter(e=>newsFilter==="all"||relevant(e)).slice(0,8),box=$("news");box.innerHTML="";
-  const lock=newsLock(now),soon=all.find(e=>relevant(e)&&e.t>now&&e.t-now<864e5);
-  $("newsRel").textContent=`${M().name} reacts to: ${(REL[MK]||[]).map(c=>c==="ALL"?"global":c).join(", ")}`;
-  if(!ev.length)box.innerHTML='<p class="note">No high-impact releases scheduled in the coming days.</p>';
-  $("newsNow").innerHTML=lock?`<span class="dot off"></span>News window: no new trades`:soon?`<span class="dot"></span>${soon.n} in ${dur(soon.t-now)}`:`<span class="dot live"></span>No major release in the next 24 hours`;
-  ev.forEach(e=>{const el=document.createElement("div");const rel=relevant(e),live=rel&&Math.abs(e.t-now)<=30*60000,sn=rel&&!live&&e.t>now&&e.t-now<864e5;
-    el.className="nv"+(rel?" rel":"")+(live?" live":sn?" soon":"");
-    el.innerHTML=`<span class="nm"><span class="cur"></span><span class="tt"></span></span><span class="when"></span>`;
-    el.querySelector(".cur").textContent=e.cur==="ALL"?"GLOBAL":e.cur;
-    el.querySelector(".tt").textContent=e.n+(e.est?" (usual date)":"")+(e.f?` · forecast ${e.f}`:"")+(e.p?` · prev ${e.p}`:"");
-    el.querySelector(".when").textContent=new Date(e.t).toLocaleString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase())+" IST"+(e.t>now?` · in ${dur(e.t-now)}`:" · just released");
+  const now=Date.now(),all=newsEvents(now),box=$("news");
+  const lock=newsLock(now),soon=all.find(e=>imOf(e)===3&&relevant(e)&&e.t>now&&e.t-now<864e5);
+  $("newsNow").innerHTML=lock?`<span class="dot off"></span>News window: no new trades`:soon?`<span class="dot"></span>${soon.n} in ${dur(soon.t-now)}`:`<span class="dot live"></span>No high-impact release in the next 24 hours`;
+  // country list
+  const sel=$("calCountry"),curs=[...new Set(all.map(e=>e.cur))].sort();
+  const want=["all","rel",...curs].join();if(sel.dataset.k!==want){sel.dataset.k=want;
+    sel.innerHTML=`<option value="all">All countries</option><option value="rel">Affects ${M().name}</option>`+curs.map(c=>`<option value="${c}">${FLAG[c]||""} ${CNAME[c]||c}</option>`).join("")}
+  sel.options[1].textContent=`Affects ${M().name}`;sel.value=[...sel.options].some(o=>o.value===calCountry)?calCountry:"all";
+  [...$("calImp").children].forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===calImp));
+  const list=all.filter(e=>(calCountry==="all"||(calCountry==="rel"?relevant(e):e.cur===calCountry))&&(imOf(e)>=calImp||(calImp===1&&imOf(e)===0)));
+  box.innerHTML="";
+  if(!list.length){box.innerHTML='<p class="note">No events match these filters in the loaded weeks.</p>';$("calMore").hidden=true;return}
+  const dayKey=t=>Math.floor((t+19800e3)/864e5),today=dayKey(now);
+  const past=list.filter(e=>e.t<now-30*60000),up=list.filter(e=>e.t>=now-30*60000);
+  const shown=[...past.slice(-5),...up.slice(0,calLimit)];
+  let lastHead="";
+  shown.forEach(e=>{
+    const isPast=e.t<now-30*60000,dk=dayKey(e.t);
+    const head=isPast?"Past":dk===today?"Today":dk===today+1?"Tomorrow":new Date(e.t).toLocaleDateString("en-IN",{timeZone:"Asia/Kolkata",weekday:"long",day:"numeric",month:"short"});
+    if(head!==lastHead){const h=document.createElement("div");h.className="cday";h.textContent=head;box.appendChild(h);lastHead=head}
+    const rel=relevant(e),im=imOf(e),live=im===3&&rel&&Math.abs(e.t-now)<=30*60000,sn=!live&&e.t>now&&e.t-now<36e5;
+    const el=document.createElement("div");el.className="cev"+(rel?" rel":"")+(isPast?" past":"")+(live?" live":sn?" soon":"");
+    const tm=new Date(e.t).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"numeric",minute:"2-digit",hour12:true}).replace(/\b(am|pm)\b/,m=>m.toUpperCase());
+    const rem=e.t>now?(e.t-now<36e5?`In ${Math.max(1,Math.round((e.t-now)/60000))} minutes`:(e.t-now<48*36e5?`In ${Math.round((e.t-now)/36e5)} hours`:`In ${Math.round((e.t-now)/864e5)} days`)):(now-e.t<36e5?"Now":"Released");
+    el.innerHTML=`<span class="fl"></span><span class="tt"></span><span class="mt"><span class="cc"></span><span class="imb i${im}"><i></i><i></i><i></i></span><span class="tm"></span><span class="fp"></span></span>`;
+    el.querySelector(".fl").textContent=FLAG[e.cur]||"\U0001f310";
+    el.querySelector(".tt").textContent=e.n+(e.est?" (usual date)":"")+(im===0?" (bank holiday)":"");
+    el.querySelector(".cc").textContent=CCODE[e.cur]||e.cur;
+    el.querySelector(".tm").textContent=`${tm} – ${rem}`;
+    el.querySelector(".fp").textContent=[e.a?`Actual ${e.a}`:"",e.f?`Fcst ${e.f}`:"",e.p?`Prev ${e.p}`:""].filter(Boolean).join(" · ");
     box.appendChild(el)});
+  $("calMore").hidden=up.length<=calLimit;
 }
+$("calCountry").addEventListener("change",()=>{calCountry=$("calCountry").value;store.set("calc",calCountry);calLimit=30;renderNews()});
+$("calImp").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;calImp=+b.dataset.i;store.set("cali",calImp);calLimit=30;renderNews()});
+$("calMore").onclick=()=>{calLimit+=30;renderNews()};
 /* ---------- liquidity ---------- */
 function liquidity(now){
   const W=SESS.map(s=>({s,...sessWindow(s,now)})),open=W.filter(w=>w.open).map(w=>w.s.n);
@@ -812,7 +856,7 @@ function applyFilters(a){
   // news
   const lock=newsLock(now);
   if(lock){chips.push({c:"sell",t:`News: ${lock.n}`});if(a.verdict!=="WAIT"){a.why=`${a.verdict} setup, but ${lock.n} is within 30 minutes. Wait for the spike to settle.`;a.verdict="WAIT"}}
-  else{const nx=newsEvents(now).find(e=>e.t>now&&relevant(e));if(nx&&nx.t-now<864e5)chips.push({c:"warn",t:`${nx.n} in ${dur(nx.t-now)}`})}
+  else{const nx=newsEvents(now).find(e=>e.t>now&&imOf(e)===3&&relevant(e));if(nx&&nx.t-now<864e5)chips.push({c:"warn",t:`${nx.n} in ${dur(nx.t-now)}`})}
   // liquidity (crypto trades 24/7, so the weekend note only applies to gold and forex)
   const lq=liquidity(now);
   if(!(lq.lvl==="closed"&&MK==="BTCUSD"))chips.push({c:lq.lvl==="high"?"buy":lq.lvl==="low"||lq.lvl==="closed"?"warn":"",t:lq.txt});
@@ -882,7 +926,6 @@ function renderSessions(){
 }
 renderSessions();renderNews();setInterval(()=>{renderSessions();renderNews()},30000);
 loadCal();setInterval(loadCal,30*60000);
-$("newsF").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;newsFilter=b.dataset.f;[...$("newsF").children].forEach(x=>x.setAttribute("aria-pressed",x===b));renderNews()});
 $("mkt").addEventListener("click",()=>setTimeout(renderNews,0));
 
 load();

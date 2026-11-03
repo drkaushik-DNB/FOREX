@@ -994,8 +994,13 @@ function startStream(f){
   const key=MK+TF+f.s;if(ws&&wsKey===key)return;stopStream();$("ba").innerHTML="";lastBA=null;lastTradeMs=lastQuoteMs=0;if(f.x==="oanda"){wsKey=key;startOanda(f,key);return}if(f.x!=="binance"&&f.x!=="binancef")return;
   wsKey=key;const sym=f.s.toLowerCase();
   const fut=f.x==="binancef";
-  try{ws=new WebSocket(fut?`wss://fstream.binance.com/stream?streams=${sym}@aggTrade/${sym}@bookTicker/${sym}@kline_${TF}`:`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`)}catch(e){wsKey="";return}
-  ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}if(!m||!m.data||wsKey!==MK+TF+f.s||source!=="live")return;
+  // Binance futures moved to split addresses in 2026: quotes on /public, trades and candles on /market
+  const urls=fut?[`wss://fstream.binance.com/public/stream?streams=${sym}@bookTicker`,`wss://fstream.binance.com/market/stream?streams=${sym}@aggTrade/${sym}@kline_${TF}`]
+    :[`wss://data-stream.binance.vision/stream?streams=${sym}@trade/${sym}@bookTicker/${sym}@kline_${TF}`];
+  const socks=[];let lastMsg=Date.now(),dog=0;
+  const grp={onclose:null,get readyState(){return socks.some(x=>x.readyState===1)?1:0},close(){clearInterval(dog);socks.forEach(x=>{x.onclose=null;try{x.close()}catch(e){}})}};
+  ws=grp;
+  const onMsg=ev=>{lastMsg=Date.now();let m;try{m=JSON.parse(ev.data)}catch(e){return}if(!m||!m.data||wsKey!==MK+TF+f.s||source!=="live")return;
     const d=m.data,st=m.stream||"",last=candles[candles.length-1],A=adjOf(f);tickCount++;
     // price shown = middle of best bid and ask: it moves on every quote change, far more often than trades
     if(st.endsWith("@trade")||st.endsWith("@aggTrade")){const p=+d.p-A;lastTradeMs=d.T||Date.now();if(last){last.h=Math.max(last.h,p);last.l=Math.min(last.l,p)}if(!lastBA){if(last)last.c=p;showTick(p)}else showTick(null)}
@@ -1004,8 +1009,14 @@ function startStream(f){
       if(last&&last.t===c.t)candles[candles.length-1]=c;else if(!last||c.t>last.t){candles.push(c);if(candles.length>600)candles.shift()}}
     const now=Date.now(),rate=Math.round(tickCount*60000/Math.max(1000,now-tickWin));if(now-tickWin>60000){tickWin=now;tickCount=0}
     status("live",`Streaming · ${rate} updates/min`);chartTick();scheduleRender()};
-  ws.onclose=()=>{if(wsKey!==key)return;ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},5000)};
+  const restart=d=>{if(wsKey!==key||ws!==grp)return;grp.close();ws=null;wsKey="";setTimeout(()=>{if(source==="live"&&MK+TF+f.s===key)startStream(f)},d)};
+  try{urls.forEach(u=>{const x=new WebSocket(u);x.onmessage=onMsg;x.onclose=()=>restart(3000);socks.push(x)})}catch(e){grp.close();ws=null;wsKey="";return}
+  // watchdog: a phone that slept or a stalled connection goes quiet without closing, so reconnect after 12 s of silence
+  dog=setInterval(()=>{if(Date.now()-lastMsg>12000)restart(0)},4000);
+  grp.kick=()=>{if(Date.now()-lastMsg>4000)restart(0)};
 }
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&ws&&ws.kick)ws.kick()});
+window.addEventListener("online",()=>{if(ws&&ws.kick)ws.kick()});
 const streaming=()=>ws&&ws.readyState===1;
 // OANDA price stream (one JSON line per price change), read through the Worker
 function startOanda(f,key){

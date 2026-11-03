@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793728310121,
+ "fetchedAt": 1793731904266,
  "source": "ForexFactory",
  "events": [
   {
@@ -364,6 +364,15 @@
   },
   {
    "t": 1793725200000,
+   "cur": "EUR",
+   "n": "German Buba President Nagel Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1793728800000,
    "cur": "EUR",
    "n": "German Buba President Nagel Speaks",
    "im": 1,

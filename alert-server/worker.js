@@ -82,41 +82,84 @@ async function prices(mk) {
   return { rows, now };
 }
 
-async function check(env) {
-  const list = await getAlerts(env);
-  if (!list.length) return;
+const msgFor = (a, now) => `${a.mk === "XAUUSD" ? "" : MARKETS[a.mk].name + " "}${a.dir > 0 ? "Above" : "Below"} ${+Number(a.p).toFixed(MARKETS[a.mk].dp)} Now ${fmt(a.mk, now)}`;
+const tagFor = (a) => (a.dir > 0 ? "chart_with_upwards_trend" : "chart_with_downwards_trend");
+const hit = (a, hi, lo) => (a.dir > 0 ? hi >= alertTarget(a) : lo <= alertTarget(a));
+const after = (a) => (a.rep ? { ...a, dir: -a.dir, n: (a.n || 0) + 1, since: Date.now() } : null); // repeat alerts re-arm the other way
+
+// save the alerts that changed, keeping any added or removed by the page meanwhile
+async function save(env, changed) {
+  const latest = await getAlerts(env);
+  return putAlerts(env, latest.map((a) => (changed.has(a.id) ? changed.get(a.id) : a)).filter(Boolean));
+}
+
+// catch-up pass: touches inside the last few 1-minute candles (covers any gap between runs)
+async function catchUp(env, list) {
   const data = {};
   for (const mk of new Set(list.map((a) => a.mk))) { try { data[mk] = await prices(mk); } catch {} }
-  const keep = []; let fired = 0;
+  const changed = new Map();
   for (const a of list) {
-    const d = data[a.mk];
-    if (!d) { keep.push(a); continue; }
+    const d = data[a.mk]; if (!d) continue;
     let hi = d.now, lo = d.now;
-    // only candles after the alert was set (or after it last fired, for repeating alerts)
     for (const k of d.rows) if (a.since ? k.t * 1000 >= a.since : (k.t + 60) * 1000 > a.id) { hi = Math.max(hi, k.h); lo = Math.min(lo, k.l); }
-    const target = alertTarget(a);
-    if (a.dir > 0 ? hi >= target : lo <= target) {
-      fired++;
-      const nm = MARKETS[a.mk].name;
-      // short format: market, which side of the level, current price
-      // one line: "Below 3940 Now 3935.90" (gold needs no name; other markets get theirs in front)
-      await push(env, "", `${a.mk === "XAUUSD" ? "" : nm + " "}${a.dir > 0 ? "Above" : "Below"} ${+Number(a.p).toFixed(MARKETS[a.mk].dp)} Now ${fmt(a.mk, d.now)}`,
-        a.dir > 0 ? "chart_with_upwards_trend" : "chart_with_downwards_trend");
-      if (a.rep) { // stay active and wait for the next crossing the other way
-        keep.push({ ...a, dir: -a.dir, n: (a.n || 0) + 1, since: Math.ceil(Date.now() / 60000) * 60000 });
-      }
-    } else keep.push(a);
+    if (hit(a, hi, lo)) { await push(env, "", msgFor(a, d.now), tagFor(a)); changed.set(a.id, after(a)); }
   }
-  if (fired) {
-    // re-read so an alert added or removed during this check is respected
-    const latest = await getAlerts(env), mine = new Map(keep.map((a) => [a.id, a])), seen = new Set(list.map((a) => a.id));
-    await putAlerts(env, latest.filter((a) => !seen.has(a.id) || mine.has(a.id)).map((a) => mine.get(a.id) || a));
+  if (changed.size) await save(env, changed);
+  return changed.size;
+}
+
+// live quotes for the watch loop
+async function goldSpot() { const g = await (await fetch("https://api.gold-api.com/price/XAU")).json(); return +g.price > 0 ? +g.price : null; }
+async function okxGold() {
+  const j = await (await fetch("https://www.okx.com/api/v5/market/ticker?instId=XAU-USDT-SWAP")).json();
+  const t = j && j.data && j.data[0]; return t ? (+t.bidPx + +t.askPx) / 2 : null;
+}
+async function krakenNow(mks) {
+  const pairs = mks.map((m) => MARKETS[m].kraken).join(",");
+  const j = await (await fetch(`https://api.kraken.com/0/public/Ticker?pair=${pairs}`)).json();
+  const out = {}, keys = Object.keys(j.result || {});
+  for (const mk of mks) {
+    const tag = { BTCUSD: "XBT", EURUSD: "EUR", GBPUSD: "GBP" }[mk];
+    const k = keys.find((x) => x.includes(tag)); if (!k) continue;
+    const r = j.result[k]; out[mk] = (+r.b[0] + +r.a[0]) / 2;
+  }
+  return out;
+}
+
+// one run per minute: a catch-up pass, then watch the live price every 2-3 seconds for about 50 seconds
+async function run(env) {
+  const t0 = Date.now(), END = t0 + 50000;
+  let list = await getAlerts(env);
+  if (!list.length) return;
+  await catchUp(env, list);
+  list = await getAlerts(env);
+  if (!list.length) return;
+  let spot = null, off = null, spotAt = 0, lastRead = Date.now(), budget = 36; // stay well under 50 outbound requests per run
+  const mks = () => [...new Set(list.map((a) => a.mk))];
+  while (Date.now() < END && budget > 0) {
+    const m = mks(), price = {};
+    const wantGold = m.includes("XAUUSD"), others = m.filter((x) => x !== "XAUUSD");
+    try {
+      if (wantGold) {
+        const g = await okxGold(); budget--;
+        if (g && (off === null || Date.now() - spotAt > 25000)) { try { spot = await goldSpot(); budget--; if (spot) { off = g - spot; spotAt = Date.now(); } } catch {} }
+        if (g && off !== null) price.XAUUSD = g - off;
+      }
+      if (others.length) { Object.assign(price, await krakenNow(others)); budget--; }
+    } catch {}
+    const changed = new Map();
+    for (const a of list) { const p = price[a.mk]; if (p != null && hit(a, p, p)) { await push(env, "", msgFor(a, p), tagFor(a)); budget--; changed.set(a.id, after(a)); } }
+    if (changed.size) { await save(env, changed); list = await getAlerts(env); lastRead = Date.now(); if (!list.length) return; }
+    else if (Date.now() - lastRead > 15000) { list = await getAlerts(env); lastRead = Date.now(); if (!list.length) return; }
+    const ticksLeft = Math.max(1, Math.floor(budget / (1 + (others.length ? 1 : 0) + (wantGold ? 0.1 : 0))));
+    const wait = Math.max(2000, (END - Date.now()) / ticksLeft);
+    await new Promise((r) => setTimeout(r, wait));
   }
 }
 
 export default {
   // note the check time every 10 minutes only (the free plan allows 1,000 storage writes a day)
-  async scheduled(event, env, ctx) { ctx.waitUntil((async () => { if (new Date().getUTCMinutes() % 10 === 0) await env.ALERTS.put("lastrun", String(Date.now())); await check(env); })()); },
+  async scheduled(event, env, ctx) { ctx.waitUntil((async () => { if (new Date().getUTCMinutes() % 10 === 0) await env.ALERTS.put("lastrun", String(Date.now())); await run(env); })()); },
 
   async fetch(req, env) {
     const origin = req.headers.get("Origin") || "";

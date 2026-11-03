@@ -112,7 +112,21 @@ async function catchUp(env, list) {
 async function goldSpot() { const g = await (await fetch("https://api.gold-api.com/price/XAU")).json(); return +g.price > 0 ? +g.price : null; }
 async function okxGold() {
   const j = await (await fetch("https://www.okx.com/api/v5/market/ticker?instId=XAU-USDT-SWAP")).json();
-  const t = j && j.data && j.data[0]; return t ? (+t.bidPx + +t.askPx) / 2 : null;
+  const t = j && j.data && j.data[0]; const v = t ? (+t.bidPx + +t.askPx) / 2 : NaN; return v > 0 ? v : null;
+}
+async function binanceGold() {
+  const j = await (await fetch("https://fapi.binance.com/fapi/v1/ticker/bookTicker?symbol=XAUUSDT")).json();
+  const v = j ? (+j.bidPrice + +j.askPrice) / 2 : NaN; return v > 0 ? v : null;
+}
+// fast gold contract price: first source that answers; remembers which one worked
+let goldSrc = 0;
+const GOLD_SRCS = [["okx", okxGold], ["binance", binanceGold]];
+async function fastGold() {
+  for (let i = 0; i < GOLD_SRCS.length; i++) {
+    const k = (goldSrc + i) % GOLD_SRCS.length;
+    try { const v = await GOLD_SRCS[k][1](); if (v) { goldSrc = k; return v; } } catch {}
+  }
+  return null;
 }
 async function krakenNow(mks) {
   const pairs = mks.map((m) => MARKETS[m].kraken).join(",");
@@ -141,9 +155,10 @@ async function run(env) {
     const wantGold = m.includes("XAUUSD"), others = m.filter((x) => x !== "XAUUSD");
     try {
       if (wantGold) {
-        const g = await okxGold(); budget--;
+        const g = await fastGold(); budget--;
         if (g && (off === null || Date.now() - spotAt > 25000)) { try { spot = await goldSpot(); budget--; if (spot) { off = g - spot; spotAt = Date.now(); } } catch {} }
         if (g && off !== null) price.XAUUSD = g - off;
+        else { try { const sp = await goldSpot(); budget--; if (sp) price.XAUUSD = sp; } catch {} } // no fast source: use spot itself every tick
       }
       if (others.length) { Object.assign(price, await krakenNow(others)); budget--; }
     } catch {}
@@ -176,6 +191,13 @@ export default {
     if (url.pathname === "/") {
       const missing = ["APP_KEY", "NTFY_TOPIC"].filter((k) => !env[k]).concat(env.ALERTS ? [] : ["ALERTS (KV binding)"]);
       return new Response(missing.length ? `Not ready. Missing: ${missing.join(", ")}` : "OK - alert server is running", { headers: { ...cors, "Content-Type": "text/plain" } });
+    }
+    // public check of each price source (prices only, nothing private)
+    if (url.pathname === "/probe") {
+      const out = {};
+      const time = async (k, f) => { const t = Date.now(); try { out[k] = { price: await f(), ms: Date.now() - t }; } catch (e) { out[k] = { error: String(e.message || e).slice(0, 80), ms: Date.now() - t }; } };
+      await Promise.all([time("okx", okxGold), time("binance", binanceGold), time("goldapi", goldSpot), time("kraken", () => krakenNow(["BTCUSD"]).then((r) => r.BTCUSD || null))]);
+      return json(out);
     }
     if (!env.APP_KEY || req.headers.get("X-Key") !== env.APP_KEY) return json({ error: "Wrong or missing key" }, 401);
 

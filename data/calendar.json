@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793749305252,
+ "fetchedAt": 1793753999183,
  "source": "ForexFactory",
  "events": [
   {
@@ -583,7 +583,7 @@
    "cur": "USD",
    "n": "Crude Oil Inventories",
    "im": 1,
-   "f": "-0.1M",
+   "f": "-1.7M",
    "p": "-1.9M",
    "a": ""
   },
@@ -817,7 +817,7 @@
    "cur": "USD",
    "n": "Natural Gas Storage",
    "im": 1,
-   "f": "",
+   "f": "81B",
    "p": "80B",
    "a": ""
   },

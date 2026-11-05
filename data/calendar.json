@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1793890727451,
+ "fetchedAt": 1793894398776,
  "source": "ForexFactory",
  "events": [
   {
@@ -337,15 +337,6 @@
   },
   {
    "t": 1793719620000,
-   "cur": "NZD",
-   "n": "GDT Price Index",
-   "im": 1,
-   "f": "",
-   "p": "2.5%",
-   "a": ""
-  },
-  {
-   "t": 1793721060000,
    "cur": "NZD",
    "n": "GDT Price Index",
    "im": 1,

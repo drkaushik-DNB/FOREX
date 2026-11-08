@@ -1,844 +1,7 @@
 {
- "fetchedAt": 1794113622829,
+ "fetchedAt": 1794117036412,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793516400000,
-   "cur": "CAD",
-   "n": "Daylight Saving Time Shift",
-   "im": 0,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793516400000,
-   "cur": "USD",
-   "n": "Daylight Saving Time Shift",
-   "im": 0,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793577600000,
-   "cur": "AUD",
-   "n": "MI Inflation Gauge m/m",
-   "im": 1,
-   "f": "",
-   "p": "0.3%",
-   "a": ""
-  },
-  {
-   "t": 1793579400000,
-   "cur": "AUD",
-   "n": "Building Approvals m/m",
-   "im": 1,
-   "f": "1.8%",
-   "p": "-6.1%",
-   "a": ""
-  },
-  {
-   "t": 1793579400000,
-   "cur": "JPY",
-   "n": "Final Manufacturing PMI",
-   "im": 1,
-   "f": "53.3",
-   "p": "53.3",
-   "a": ""
-  },
-  {
-   "t": 1793583900000,
-   "cur": "CNY",
-   "n": "RatingDog Manufacturing PMI",
-   "im": 1,
-   "f": "52.0",
-   "p": "52.1",
-   "a": ""
-  },
-  {
-   "t": 1793597400000,
-   "cur": "AUD",
-   "n": "Commodity Prices y/y",
-   "im": 1,
-   "f": "",
-   "p": "15.5%",
-   "a": ""
-  },
-  {
-   "t": 1793602800000,
-   "cur": "EUR",
-   "n": "German Retail Sales m/m",
-   "im": 1,
-   "f": "0.4%",
-   "p": "1.3%",
-   "a": ""
-  },
-  {
-   "t": 1793604780000,
-   "cur": "CHF",
-   "n": "Retail Sales y/y",
-   "im": 1,
-   "f": "3.0%",
-   "p": "3.2%",
-   "a": ""
-  },
-  {
-   "t": 1793607300000,
-   "cur": "EUR",
-   "n": "Spanish Manufacturing PMI",
-   "im": 1,
-   "f": "50.4",
-   "p": "51.0",
-   "a": ""
-  },
-  {
-   "t": 1793608200000,
-   "cur": "CHF",
-   "n": "Manufacturing PMI",
-   "im": 1,
-   "f": "55.3",
-   "p": "55.3",
-   "a": ""
-  },
-  {
-   "t": 1793609100000,
-   "cur": "EUR",
-   "n": "Italian Manufacturing PMI",
-   "im": 1,
-   "f": "49.9",
-   "p": "50.4",
-   "a": ""
-  },
-  {
-   "t": 1793609400000,
-   "cur": "EUR",
-   "n": "French Final Manufacturing PMI",
-   "im": 1,
-   "f": "49.3",
-   "p": "49.3",
-   "a": ""
-  },
-  {
-   "t": 1793609700000,
-   "cur": "EUR",
-   "n": "German Final Manufacturing PMI",
-   "im": 1,
-   "f": "54.2",
-   "p": "54.2",
-   "a": ""
-  },
-  {
-   "t": 1793610000000,
-   "cur": "EUR",
-   "n": "Final Manufacturing PMI",
-   "im": 1,
-   "f": "52.4",
-   "p": "52.4",
-   "a": ""
-  },
-  {
-   "t": 1793611800000,
-   "cur": "GBP",
-   "n": "Final Manufacturing PMI",
-   "im": 1,
-   "f": "52.8",
-   "p": "52.8",
-   "a": ""
-  },
-  {
-   "t": 1793620800000,
-   "cur": "EUR",
-   "n": "German Buba President Nagel Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793629800000,
-   "cur": "CAD",
-   "n": "Manufacturing PMI",
-   "im": 1,
-   "f": "",
-   "p": "51.5",
-   "a": ""
-  },
-  {
-   "t": 1793630700000,
-   "cur": "USD",
-   "n": "Final Manufacturing PMI",
-   "im": 1,
-   "f": "56.0",
-   "p": "56.0",
-   "a": ""
-  },
-  {
-   "t": 1793631600000,
-   "cur": "USD",
-   "n": "ISM Manufacturing PMI",
-   "im": 2,
-   "f": "54.5",
-   "p": "54.5",
-   "a": ""
-  },
-  {
-   "t": 1793631600000,
-   "cur": "USD",
-   "n": "Construction Spending m/m",
-   "im": 1,
-   "f": "0.4%",
-   "p": "0.9%",
-   "a": ""
-  },
-  {
-   "t": 1793631600000,
-   "cur": "USD",
-   "n": "ISM Manufacturing Prices",
-   "im": 1,
-   "f": "77.2",
-   "p": "77.9",
-   "a": ""
-  },
-  {
-   "t": 1793646000000,
-   "cur": "USD",
-   "n": "Loan Officer Survey",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793655900000,
-   "cur": "NZD",
-   "n": "Building Consents m/m",
-   "im": 1,
-   "f": "",
-   "p": "5.6%",
-   "a": ""
-  },
-  {
-   "t": 1793664000000,
-   "cur": "JPY",
-   "n": "Bank Holiday",
-   "im": 0,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793676600000,
-   "cur": "AUD",
-   "n": "Cash Rate",
-   "im": 3,
-   "f": "4.85%",
-   "p": "4.60%",
-   "a": ""
-  },
-  {
-   "t": 1793676600000,
-   "cur": "AUD",
-   "n": "RBA Monetary Policy Statement",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793676600000,
-   "cur": "AUD",
-   "n": "RBA Rate Statement",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793680200000,
-   "cur": "AUD",
-   "n": "RBA Press Conference",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793691000000,
-   "cur": "CHF",
-   "n": "CPI m/m",
-   "im": 2,
-   "f": "0.0%",
-   "p": "0.0%",
-   "a": ""
-  },
-  {
-   "t": 1793691900000,
-   "cur": "EUR",
-   "n": "French Gov Budget Balance",
-   "im": 1,
-   "f": "",
-   "p": "-159.6B",
-   "a": ""
-  },
-  {
-   "t": 1793696400000,
-   "cur": "USD",
-   "n": "RCM/TIPP Economic Optimism",
-   "im": 1,
-   "f": "46.2",
-   "p": "46.8",
-   "a": ""
-  },
-  {
-   "t": 1793700120000,
-   "cur": "GBP",
-   "n": "10-y Bond Auction",
-   "im": 1,
-   "f": "",
-   "p": "5.42|3.6",
-   "a": ""
-  },
-  {
-   "t": 1793718000000,
-   "cur": "USD",
-   "n": "JOLTS Job Openings",
-   "im": 2,
-   "f": "7.15M",
-   "p": "7.08M",
-   "a": ""
-  },
-  {
-   "t": 1793718000000,
-   "cur": "USD",
-   "n": "Factory Orders m/m",
-   "im": 1,
-   "f": "1.2%",
-   "p": "0.1%",
-   "a": ""
-  },
-  {
-   "t": 1793718900000,
-   "cur": "USD",
-   "n": "Omdia Total Vehicle Sales",
-   "im": 1,
-   "f": "15.8M",
-   "p": "16.0M",
-   "a": ""
-  },
-  {
-   "t": 1793718960000,
-   "cur": "USD",
-   "n": "Congressional Elections",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793719620000,
-   "cur": "NZD",
-   "n": "GDT Price Index",
-   "im": 1,
-   "f": "",
-   "p": "2.5%",
-   "a": ""
-  },
-  {
-   "t": 1793721600000,
-   "cur": "CAD",
-   "n": "BOC Gov Macklem Speaks",
-   "im": 2,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793728800000,
-   "cur": "EUR",
-   "n": "German Buba President Nagel Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793741400000,
-   "cur": "USD",
-   "n": "API Weekly Statistical Bulletin",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793742300000,
-   "cur": "NZD",
-   "n": "Employment Change q/q",
-   "im": 3,
-   "f": "0.4%",
-   "p": "0.5%",
-   "a": ""
-  },
-  {
-   "t": 1793742300000,
-   "cur": "NZD",
-   "n": "Unemployment Rate",
-   "im": 3,
-   "f": "5.5%",
-   "p": "5.6%",
-   "a": ""
-  },
-  {
-   "t": 1793742300000,
-   "cur": "NZD",
-   "n": "Labor Cost Index q/q",
-   "im": 1,
-   "f": "0.5%",
-   "p": "0.7%",
-   "a": ""
-  },
-  {
-   "t": 1793749800000,
-   "cur": "JPY",
-   "n": "Monetary Base y/y",
-   "im": 1,
-   "f": "-14.0%",
-   "p": "-15.2%",
-   "a": ""
-  },
-  {
-   "t": 1793750400000,
-   "cur": "NZD",
-   "n": "ANZ Commodity Prices m/m",
-   "im": 1,
-   "f": "",
-   "p": "0.6%",
-   "a": ""
-  },
-  {
-   "t": 1793752200000,
-   "cur": "AUD",
-   "n": "Household Spending m/m",
-   "im": 1,
-   "f": "0.2%",
-   "p": "0.0%",
-   "a": ""
-  },
-  {
-   "t": 1793756700000,
-   "cur": "CNY",
-   "n": "RatingDog Services PMI",
-   "im": 1,
-   "f": "51.7",
-   "p": "51.6",
-   "a": ""
-  },
-  {
-   "t": 1793779200000,
-   "cur": "EUR",
-   "n": "Spanish Unemployment Change",
-   "im": 1,
-   "f": "18.7K",
-   "p": "23.6K",
-   "a": ""
-  },
-  {
-   "t": 1793780100000,
-   "cur": "EUR",
-   "n": "Spanish Services PMI",
-   "im": 1,
-   "f": "57.6",
-   "p": "58.3",
-   "a": ""
-  },
-  {
-   "t": 1793781900000,
-   "cur": "EUR",
-   "n": "Italian Services PMI",
-   "im": 1,
-   "f": "51.4",
-   "p": "51.7",
-   "a": ""
-  },
-  {
-   "t": 1793782200000,
-   "cur": "EUR",
-   "n": "French Final Services PMI",
-   "im": 1,
-   "f": "48.4",
-   "p": "48.4",
-   "a": ""
-  },
-  {
-   "t": 1793782500000,
-   "cur": "EUR",
-   "n": "German Final Services PMI",
-   "im": 1,
-   "f": "51.7",
-   "p": "51.7",
-   "a": ""
-  },
-  {
-   "t": 1793782800000,
-   "cur": "EUR",
-   "n": "Final Services PMI",
-   "im": 1,
-   "f": "51.7",
-   "p": "51.7",
-   "a": ""
-  },
-  {
-   "t": 1793784600000,
-   "cur": "GBP",
-   "n": "Final Services PMI",
-   "im": 1,
-   "f": "53.1",
-   "p": "53.1",
-   "a": ""
-  },
-  {
-   "t": 1793786400000,
-   "cur": "EUR",
-   "n": "Core CPI Flash Estimate y/y",
-   "im": 2,
-   "f": "2.5%",
-   "p": "2.5%",
-   "a": ""
-  },
-  {
-   "t": 1793786400000,
-   "cur": "EUR",
-   "n": "CPI Flash Estimate y/y",
-   "im": 2,
-   "f": "4.0%",
-   "p": "3.8%",
-   "a": ""
-  },
-  {
-   "t": 1793798100000,
-   "cur": "USD",
-   "n": "ADP Non-Farm Employment Change",
-   "im": 1,
-   "f": "67K",
-   "p": "90K",
-   "a": ""
-  },
-  {
-   "t": 1793799000000,
-   "cur": "CAD",
-   "n": "Trade Balance",
-   "im": 1,
-   "f": "4.8B",
-   "p": "4.2B",
-   "a": ""
-  },
-  {
-   "t": 1793799000000,
-   "cur": "USD",
-   "n": "Trade Balance",
-   "im": 1,
-   "f": "-107.9B",
-   "p": "-105.6B",
-   "a": ""
-  },
-  {
-   "t": 1793803500000,
-   "cur": "USD",
-   "n": "Final Services PMI",
-   "im": 1,
-   "f": "57.9",
-   "p": "57.9",
-   "a": ""
-  },
-  {
-   "t": 1793804400000,
-   "cur": "USD",
-   "n": "ISM Services PMI",
-   "im": 2,
-   "f": "54.8",
-   "p": "54.9",
-   "a": ""
-  },
-  {
-   "t": 1793806200000,
-   "cur": "USD",
-   "n": "Crude Oil Inventories",
-   "im": 1,
-   "f": "-1.7M",
-   "p": "-1.9M",
-   "a": ""
-  },
-  {
-   "t": 1793836200000,
-   "cur": "JPY",
-   "n": "Monetary Policy Meeting Minutes",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793838600000,
-   "cur": "AUD",
-   "n": "Goods Trade Balance",
-   "im": 1,
-   "f": "0.94B",
-   "p": "0.50B",
-   "a": ""
-  },
-  {
-   "t": 1793849700000,
-   "cur": "JPY",
-   "n": "10-y Bond Auction",
-   "im": 1,
-   "f": "",
-   "p": "3.10|3.8",
-   "a": ""
-  },
-  {
-   "t": 1793861100000,
-   "cur": "AUD",
-   "n": "RBA Deputy Gov Hauser Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793862000000,
-   "cur": "EUR",
-   "n": "German Factory Orders m/m",
-   "im": 1,
-   "f": "4.6%",
-   "p": "-10.6%",
-   "a": ""
-  },
-  {
-   "t": 1793864700000,
-   "cur": "EUR",
-   "n": "French Industrial Production m/m",
-   "im": 1,
-   "f": "0.3%",
-   "p": "-0.3%",
-   "a": ""
-  },
-  {
-   "t": 1793865600000,
-   "cur": "CHF",
-   "n": "Unemployment Rate",
-   "im": 1,
-   "f": "3.1%",
-   "p": "3.1%",
-   "a": ""
-  },
-  {
-   "t": 1793869200000,
-   "cur": "EUR",
-   "n": "Italian Retail Sales m/m",
-   "im": 1,
-   "f": "0.0%",
-   "p": "0.3%",
-   "a": ""
-  },
-  {
-   "t": 1793871000000,
-   "cur": "GBP",
-   "n": "Construction PMI",
-   "im": 1,
-   "f": "46.4",
-   "p": "46.1",
-   "a": ""
-  },
-  {
-   "t": 1793871540000,
-   "cur": "EUR",
-   "n": "Spanish 10-y Bond Auction",
-   "im": 1,
-   "f": "",
-   "p": "4.18|1.6",
-   "a": ""
-  },
-  {
-   "t": 1793872500000,
-   "cur": "EUR",
-   "n": "French 10-y Bond Auction",
-   "im": 1,
-   "f": "",
-   "p": "4.93|2.0",
-   "a": ""
-  },
-  {
-   "t": 1793872800000,
-   "cur": "EUR",
-   "n": "PPI m/m",
-   "im": 1,
-   "f": "2.5%",
-   "p": "1.9%",
-   "a": ""
-  },
-  {
-   "t": 1793874600000,
-   "cur": "USD",
-   "n": "Challenger Job Cuts y/y",
-   "im": 1,
-   "f": "",
-   "p": "-19.9%",
-   "a": ""
-  },
-  {
-   "t": 1793880000000,
-   "cur": "GBP",
-   "n": "BOE Monetary Policy Report",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793880000000,
-   "cur": "GBP",
-   "n": "Monetary Policy Summary",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793880000000,
-   "cur": "GBP",
-   "n": "MPC Official Bank Rate Votes",
-   "im": 3,
-   "f": "7-0-2",
-   "p": "3-0-6",
-   "a": ""
-  },
-  {
-   "t": 1793880000000,
-   "cur": "GBP",
-   "n": "Official Bank Rate",
-   "im": 3,
-   "f": "4.00%",
-   "p": "3.75%",
-   "a": ""
-  },
-  {
-   "t": 1793881800000,
-   "cur": "GBP",
-   "n": "BOE Gov Bailey Speaks",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793882400000,
-   "cur": "CHF",
-   "n": "SNB Chairman Schlegel Speaks",
-   "im": 2,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793885400000,
-   "cur": "USD",
-   "n": "Unemployment Claims",
-   "im": 2,
-   "f": "197K",
-   "p": "194K",
-   "a": ""
-  },
-  {
-   "t": 1793885400000,
-   "cur": "USD",
-   "n": "Prelim Nonfarm Productivity q/q",
-   "im": 1,
-   "f": "2.8%",
-   "p": "1.4%",
-   "a": ""
-  },
-  {
-   "t": 1793885400000,
-   "cur": "USD",
-   "n": "Prelim Unit Labor Costs q/q",
-   "im": 1,
-   "f": "0.3%",
-   "p": "1.3%",
-   "a": ""
-  },
-  {
-   "t": 1793886600000,
-   "cur": "USD",
-   "n": "FOMC Member Hammack Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793887800000,
-   "cur": "USD",
-   "n": "FOMC Member Barkin Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793892600000,
-   "cur": "CAD",
-   "n": "BOC Gov Macklem Speaks",
-   "im": 2,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793892600000,
-   "cur": "USD",
-   "n": "Natural Gas Storage",
-   "im": 1,
-   "f": "81B",
-   "p": "80B",
-   "a": ""
-  },
-  {
-   "t": 1793900700000,
-   "cur": "EUR",
-   "n": "German Buba President Nagel Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793901600000,
-   "cur": "EUR",
-   "n": "ECB President Lagarde Speaks",
-   "im": 2,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793912400000,
-   "cur": "CAD",
-   "n": "Annual Budget Release",
-   "im": 2,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793921400000,
-   "cur": "JPY",
-   "n": "Average Cash Earnings y/y",
-   "im": 1,
-   "f": "3.8%",
-   "p": "3.8%",
-   "a": ""
-  },
   {
    "t": 1793948400000,
    "cur": "EUR",
@@ -1042,6 +205,915 @@
    "cur": "NZD",
    "n": "Parliamentary Elections",
    "im": 3,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794177000000,
+   "cur": "AUD",
+   "n": "RBA Assist Gov Hunter Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794187800000,
+   "cur": "CNY",
+   "n": "CPI y/y",
+   "im": 1,
+   "f": "0.8%",
+   "p": "0.9%",
+   "a": ""
+  },
+  {
+   "t": 1794187800000,
+   "cur": "CNY",
+   "n": "PPI y/y",
+   "im": 1,
+   "f": "5.3%",
+   "p": "5.0%",
+   "a": ""
+  },
+  {
+   "t": 1794200400000,
+   "cur": "JPY",
+   "n": "Leading Indicators",
+   "im": 1,
+   "f": "116.7%",
+   "p": "118.0%",
+   "a": ""
+  },
+  {
+   "t": 1794207600000,
+   "cur": "EUR",
+   "n": "German Trade Balance",
+   "im": 1,
+   "f": "19.2B",
+   "p": "19.5B",
+   "a": ""
+  },
+  {
+   "t": 1794214980000,
+   "cur": "CNY",
+   "n": "M2 Money Supply y/y",
+   "im": 1,
+   "f": "7.3%",
+   "p": "7.2%",
+   "a": ""
+  },
+  {
+   "t": 1794214980000,
+   "cur": "CNY",
+   "n": "New Loans",
+   "im": 1,
+   "f": "80B",
+   "p": "1080B",
+   "a": ""
+  },
+  {
+   "t": 1794216600000,
+   "cur": "EUR",
+   "n": "Sentix Investor Confidence",
+   "im": 1,
+   "f": "2.1",
+   "p": "2.7",
+   "a": ""
+  },
+  {
+   "t": 1794219300000,
+   "cur": "EUR",
+   "n": "ECOFIN Meetings",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794219300000,
+   "cur": "EUR",
+   "n": "Eurogroup Meetings",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794231600000,
+   "cur": "USD",
+   "n": "FOMC Member Bowman Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794236400000,
+   "cur": "USD",
+   "n": "Final Wholesale Inventories m/m",
+   "im": 1,
+   "f": "0.6%",
+   "p": "0.6%",
+   "a": ""
+  },
+  {
+   "t": 1794236400000,
+   "cur": "USD",
+   "n": "FOMC Member Goolsbee Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794244500000,
+   "cur": "USD",
+   "n": "FOMC Member Barkin Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794245100000,
+   "cur": "GBP",
+   "n": "BOE Gov Bailey Speaks",
+   "im": 2,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794267000000,
+   "cur": "AUD",
+   "n": "Westpac Consumer Sentiment",
+   "im": 1,
+   "f": "",
+   "p": "-4.7%",
+   "a": ""
+  },
+  {
+   "t": 1794267000000,
+   "cur": "JPY",
+   "n": "Household Spending y/y",
+   "im": 1,
+   "f": "-3.1%",
+   "p": "-3.1%",
+   "a": ""
+  },
+  {
+   "t": 1794268200000,
+   "cur": "JPY",
+   "n": "Bank Lending y/y",
+   "im": 1,
+   "f": "5.4%",
+   "p": "5.3%",
+   "a": ""
+  },
+  {
+   "t": 1794268200000,
+   "cur": "JPY",
+   "n": "BOJ Summary of Opinions",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794268200000,
+   "cur": "JPY",
+   "n": "Current Account",
+   "im": 1,
+   "f": "2.81T",
+   "p": "2.98T",
+   "a": ""
+  },
+  {
+   "t": 1794268860000,
+   "cur": "GBP",
+   "n": "BRC Retail Sales Monitor y/y",
+   "im": 1,
+   "f": "1.2%",
+   "p": "1.0%",
+   "a": ""
+  },
+  {
+   "t": 1794270600000,
+   "cur": "AUD",
+   "n": "NAB Business Confidence",
+   "im": 1,
+   "f": "",
+   "p": "-13",
+   "a": ""
+  },
+  {
+   "t": 1794279780000,
+   "cur": "CNY",
+   "n": "Trade Balance",
+   "im": 1,
+   "f": "859B",
+   "p": "906B",
+   "a": ""
+  },
+  {
+   "t": 1794279840000,
+   "cur": "CNY",
+   "n": "USD-Denominated Trade Balance",
+   "im": 1,
+   "f": "126.5B",
+   "p": "133.5B",
+   "a": ""
+  },
+  {
+   "t": 1794281700000,
+   "cur": "JPY",
+   "n": "30-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "4.11|3.9",
+   "a": ""
+  },
+  {
+   "t": 1794286800000,
+   "cur": "JPY",
+   "n": "Economy Watchers Sentiment",
+   "im": 1,
+   "f": "46.9",
+   "p": "47.0",
+   "a": ""
+  },
+  {
+   "t": 1794299400000,
+   "cur": "GBP",
+   "n": "MPC Member Breeden Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794301200000,
+   "cur": "USD",
+   "n": "FOMC Member Waller Speaks",
+   "im": 2,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794308400000,
+   "cur": "USD",
+   "n": "NFIB Small Business Index",
+   "im": 1,
+   "f": "97.7",
+   "p": "97.9",
+   "a": ""
+  },
+  {
+   "t": 1794310320000,
+   "cur": "GBP",
+   "n": "30-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "5.52|3.8",
+   "a": ""
+  },
+  {
+   "t": 1794313800000,
+   "cur": "GBP",
+   "n": "MPC Member Lombardelli Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794316500000,
+   "cur": "USD",
+   "n": "ADP Weekly Employment Change",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794316560000,
+   "cur": "USD",
+   "n": "ADP Weekly Employment Change",
+   "im": 1,
+   "f": "",
+   "p": "16.8K",
+   "a": ""
+  },
+  {
+   "t": 1794317400000,
+   "cur": "USD",
+   "n": "Core CPI m/m",
+   "im": 3,
+   "f": "0.2%",
+   "p": "0.3%",
+   "a": ""
+  },
+  {
+   "t": 1794317400000,
+   "cur": "USD",
+   "n": "CPI m/m",
+   "im": 3,
+   "f": "0.3%",
+   "p": "0.6%",
+   "a": ""
+  },
+  {
+   "t": 1794325800000,
+   "cur": "USD",
+   "n": "FOMC Member Logan Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794333660000,
+   "cur": "USD",
+   "n": "10-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "5.30|2.8",
+   "a": ""
+  },
+  {
+   "t": 1794335400000,
+   "cur": "CAD",
+   "n": "BOC Summary of Deliberations",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794335400000,
+   "cur": "GBP",
+   "n": "MPC Member Pill Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794335400000,
+   "cur": "USD",
+   "n": "FOMC Member Schmid Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794342600000,
+   "cur": "USD",
+   "n": "FOMC Member Bowman Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794346200000,
+   "cur": "USD",
+   "n": "API Weekly Statistical Bulletin",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794353400000,
+   "cur": "USD",
+   "n": "FOMC Member Bowman Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794353400000,
+   "cur": "USD",
+   "n": "FOMC Member Paulson Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794354600000,
+   "cur": "JPY",
+   "n": "M2 Money Stock y/y",
+   "im": 1,
+   "f": "2.1%",
+   "p": "2.0%",
+   "a": ""
+  },
+  {
+   "t": 1794376800000,
+   "cur": "JPY",
+   "n": "Prelim Machine Tool Orders y/y",
+   "im": 1,
+   "f": "",
+   "p": "60.4%",
+   "a": ""
+  },
+  {
+   "t": 1794380400000,
+   "cur": "EUR",
+   "n": "German Final CPI m/m",
+   "im": 1,
+   "f": "-0.2%",
+   "p": "-0.2%",
+   "a": ""
+  },
+  {
+   "t": 1794380460000,
+   "cur": "EUR",
+   "n": "French Bank Holiday",
+   "im": 0,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794385200000,
+   "cur": "EUR",
+   "n": "German Buba President Nagel Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794387600000,
+   "cur": "EUR",
+   "n": "Italian Industrial Production m/m",
+   "im": 1,
+   "f": "0.7%",
+   "p": "-1.3%",
+   "a": ""
+  },
+  {
+   "t": 1794393240000,
+   "cur": "EUR",
+   "n": "German 30-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "3.80|1.4",
+   "a": ""
+  },
+  {
+   "t": 1794402000000,
+   "cur": "CAD",
+   "n": "Bank Holiday",
+   "im": 0,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794402000000,
+   "cur": "USD",
+   "n": "Bank Holiday",
+   "im": 0,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794433500000,
+   "cur": "NZD",
+   "n": "Visitor Arrivals m/m",
+   "im": 1,
+   "f": "",
+   "p": "2.8%",
+   "a": ""
+  },
+  {
+   "t": 1794441000000,
+   "cur": "JPY",
+   "n": "PPI y/y",
+   "im": 1,
+   "f": "6.5%",
+   "p": "6.8%",
+   "a": ""
+  },
+  {
+   "t": 1794441600000,
+   "cur": "AUD",
+   "n": "MI Inflation Expectations",
+   "im": 1,
+   "f": "",
+   "p": "5.3%",
+   "a": ""
+  },
+  {
+   "t": 1794441660000,
+   "cur": "GBP",
+   "n": "RICS House Price Balance",
+   "im": 1,
+   "f": "-32%",
+   "p": "-32%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "GDP m/m",
+   "im": 3,
+   "f": "0.0%",
+   "p": "0.1%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Prelim GDP q/q",
+   "im": 2,
+   "f": "0.7%",
+   "p": "0.5%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Construction Output m/m",
+   "im": 1,
+   "f": "0.0%",
+   "p": "-0.2%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Goods Trade Balance",
+   "im": 1,
+   "f": "-19.2B",
+   "p": "-18.0B",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Index of Services 3m/3m",
+   "im": 1,
+   "f": "0.9%",
+   "p": "0.9%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Industrial Production m/m",
+   "im": 1,
+   "f": "-0.4%",
+   "p": "0.8%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Manufacturing Production m/m",
+   "im": 1,
+   "f": "-0.5%",
+   "p": "1.2%",
+   "a": ""
+  },
+  {
+   "t": 1794466800000,
+   "cur": "GBP",
+   "n": "Prelim Business Investment q/q",
+   "im": 1,
+   "f": "-0.3%",
+   "p": "1.7%",
+   "a": ""
+  },
+  {
+   "t": 1794474000000,
+   "cur": "EUR",
+   "n": "ECB Economic Bulletin",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794477600000,
+   "cur": "EUR",
+   "n": "EU Economic Forecasts",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794490200000,
+   "cur": "CAD",
+   "n": "Building Permits m/m",
+   "im": 1,
+   "f": "-3.9%",
+   "p": "8.8%",
+   "a": ""
+  },
+  {
+   "t": 1794490200000,
+   "cur": "USD",
+   "n": "Unemployment Claims",
+   "im": 2,
+   "f": "194K",
+   "p": "189K",
+   "a": ""
+  },
+  {
+   "t": 1794492000000,
+   "cur": "USD",
+   "n": "FOMC Member Hammack Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794495600000,
+   "cur": "USD",
+   "n": "Existing Home Sales",
+   "im": 1,
+   "f": "3.86M",
+   "p": "3.99M",
+   "a": ""
+  },
+  {
+   "t": 1794495600000,
+   "cur": "USD",
+   "n": "FOMC Member Barr Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794495600000,
+   "cur": "USD",
+   "n": "Mortgage Delinquencies",
+   "im": 1,
+   "f": "",
+   "p": "4.37%",
+   "a": ""
+  },
+  {
+   "t": 1794497400000,
+   "cur": "AUD",
+   "n": "CB Leading Index m/m",
+   "im": 1,
+   "f": "",
+   "p": "-0.3%",
+   "a": ""
+  },
+  {
+   "t": 1794501000000,
+   "cur": "USD",
+   "n": "FOMC Member Goolsbee Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794502800000,
+   "cur": "USD",
+   "n": "Crude Oil Inventories",
+   "im": 1,
+   "f": "",
+   "p": "-0.9M",
+   "a": ""
+  },
+  {
+   "t": 1794506460000,
+   "cur": "USD",
+   "n": "30-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "5.62|2.5",
+   "a": ""
+  },
+  {
+   "t": 1794507000000,
+   "cur": "USD",
+   "n": "FOMC Member Daly Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794508200000,
+   "cur": "USD",
+   "n": "FOMC Member Schmid Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794510000000,
+   "cur": "USD",
+   "n": "Federal Budget Balance",
+   "im": 1,
+   "f": "",
+   "p": "-26.9B",
+   "a": ""
+  },
+  {
+   "t": 1794511800000,
+   "cur": "EUR",
+   "n": "ECB President Lagarde Speaks",
+   "im": 2,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794519000000,
+   "cur": "NZD",
+   "n": "BusinessNZ Manufacturing Index",
+   "im": 1,
+   "f": "",
+   "p": "56.5",
+   "a": ""
+  },
+  {
+   "t": 1794526200000,
+   "cur": "USD",
+   "n": "FOMC Member Williams Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794553200000,
+   "cur": "EUR",
+   "n": "German WPI m/m",
+   "im": 1,
+   "f": "0.4%",
+   "p": "1.9%",
+   "a": ""
+  },
+  {
+   "t": 1794555000000,
+   "cur": "CHF",
+   "n": "PPI m/m",
+   "im": 1,
+   "f": "0.2%",
+   "p": "0.3%",
+   "a": ""
+  },
+  {
+   "t": 1794555900000,
+   "cur": "EUR",
+   "n": "French Final CPI m/m",
+   "im": 1,
+   "f": "0.4%",
+   "p": "0.4%",
+   "a": ""
+  },
+  {
+   "t": 1794560400000,
+   "cur": "EUR",
+   "n": "Italian Trade Balance",
+   "im": 1,
+   "f": "1.85B",
+   "p": "1.77B",
+   "a": ""
+  },
+  {
+   "t": 1794564000000,
+   "cur": "EUR",
+   "n": "Flash Employment Change q/q",
+   "im": 1,
+   "f": "0.2%",
+   "p": "0.1%",
+   "a": ""
+  },
+  {
+   "t": 1794564000000,
+   "cur": "EUR",
+   "n": "Flash GDP q/q",
+   "im": 1,
+   "f": "0.4%",
+   "p": "0.4%",
+   "a": ""
+  },
+  {
+   "t": 1794564000000,
+   "cur": "EUR",
+   "n": "Trade Balance",
+   "im": 1,
+   "f": "-4.5B",
+   "p": "-6.8B",
+   "a": ""
+  },
+  {
+   "t": 1794576600000,
+   "cur": "CAD",
+   "n": "Manufacturing Sales m/m",
+   "im": 1,
+   "f": "0.1%",
+   "p": "1.5%",
+   "a": ""
+  },
+  {
+   "t": 1794576600000,
+   "cur": "CAD",
+   "n": "Wholesale Sales m/m",
+   "im": 1,
+   "f": "0.5%",
+   "p": "-1.6%",
+   "a": ""
+  },
+  {
+   "t": 1794576600000,
+   "cur": "USD",
+   "n": "Core PPI m/m",
+   "im": 3,
+   "f": "0.3%",
+   "p": "0.7%",
+   "a": ""
+  },
+  {
+   "t": 1794576600000,
+   "cur": "USD",
+   "n": "PPI m/m",
+   "im": 3,
+   "f": "0.4%",
+   "p": "1.3%",
+   "a": ""
+  },
+  {
+   "t": 1794579000000,
+   "cur": "USD",
+   "n": "FOMC Member Collins Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794580200000,
+   "cur": "GBP",
+   "n": "CB Leading Index m/m",
+   "im": 1,
+   "f": "",
+   "p": "-0.1%",
+   "a": ""
+  },
+  {
+   "t": 1794583800000,
+   "cur": "USD",
+   "n": "Natural Gas Storage",
+   "im": 1,
+   "f": "",
+   "p": "77B",
+   "a": ""
+  },
+  {
+   "t": 1794585000000,
+   "cur": "USD",
+   "n": "FOMC Member Bowman Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794589200000,
+   "cur": "USD",
+   "n": "FOMC Member Daly Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794614400000,
+   "cur": "USD",
+   "n": "FOMC Member Jefferson Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794654000000,
+   "cur": "GBP",
+   "n": "MPC Member Greene Speaks",
+   "im": 1,
    "f": "",
    "p": "",
    "a": ""

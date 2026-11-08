@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794159439488,
+ "fetchedAt": 1794163397440,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793988000000,
-   "cur": "USD",
-   "n": "FOMC Member Daly Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1793995200000,
    "cur": "USD",

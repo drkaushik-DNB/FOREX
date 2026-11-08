@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794167066285,
+ "fetchedAt": 1794173906414,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793995200000,
-   "cur": "USD",
-   "n": "Consumer Credit m/m",
-   "im": 1,
-   "f": "13.4B",
-   "p": "8.3B",
-   "a": ""
-  },
   {
    "t": 1794001500000,
    "cur": "NZD",

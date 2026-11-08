@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794152284573,
+ "fetchedAt": 1794155989999,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793980800000,
-   "cur": "JPY",
-   "n": "BOJ Gov Ueda Speaks",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1793985300000,
    "cur": "USD",

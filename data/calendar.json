@@ -1,52 +1,7 @@
 {
- "fetchedAt": 1794121028960,
+ "fetchedAt": 1794124874320,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793948400000,
-   "cur": "EUR",
-   "n": "German Industrial Production m/m",
-   "im": 1,
-   "f": "0.0%",
-   "p": "2.0%",
-   "a": ""
-  },
-  {
-   "t": 1793948400000,
-   "cur": "GBP",
-   "n": "Lloyds HPI m/m",
-   "im": 1,
-   "f": "0.0%",
-   "p": "0.0%",
-   "a": ""
-  },
-  {
-   "t": 1793951100000,
-   "cur": "EUR",
-   "n": "French Trade Balance",
-   "im": 1,
-   "f": "-5.8B",
-   "p": "-6.1B",
-   "a": ""
-  },
-  {
-   "t": 1793952000000,
-   "cur": "CHF",
-   "n": "Foreign Currency Reserves",
-   "im": 1,
-   "f": "",
-   "p": "770B",
-   "a": ""
-  },
-  {
-   "t": 1793952000000,
-   "cur": "CHF",
-   "n": "SECO Consumer Climate",
-   "im": 1,
-   "f": "-35",
-   "p": "-36",
-   "a": ""
-  },
   {
    "t": 1793957400000,
    "cur": "USD",

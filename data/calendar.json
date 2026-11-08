@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794134660774,
+ "fetchedAt": 1794137998296,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793962800000,
-   "cur": "CHF",
-   "n": "Gov Board Member Tschudin Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1793967300000,
    "cur": "GBP",

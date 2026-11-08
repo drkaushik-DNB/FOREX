@@ -1,43 +1,7 @@
 {
- "fetchedAt": 1794145846941,
+ "fetchedAt": 1794152284573,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793974200000,
-   "cur": "USD",
-   "n": "FOMC Member Musalem Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1793977200000,
-   "cur": "CAD",
-   "n": "Ivey PMI",
-   "im": 2,
-   "f": "57.7",
-   "p": "58.2",
-   "a": ""
-  },
-  {
-   "t": 1793977200000,
-   "cur": "USD",
-   "n": "Prelim UoM Consumer Sentiment",
-   "im": 2,
-   "f": "48.1",
-   "p": "46.3",
-   "a": ""
-  },
-  {
-   "t": 1793977200000,
-   "cur": "USD",
-   "n": "Prelim UoM Inflation Expectations",
-   "im": 2,
-   "f": "",
-   "p": "4.7%",
-   "a": ""
-  },
   {
    "t": 1793980800000,
    "cur": "JPY",

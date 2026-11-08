@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794131354020,
+ "fetchedAt": 1794134660774,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793959200000,
-   "cur": "EUR",
-   "n": "Retail Sales m/m",
-   "im": 1,
-   "f": "-0.1%",
-   "p": "0.1%",
-   "a": ""
-  },
   {
    "t": 1793962800000,
    "cur": "CHF",

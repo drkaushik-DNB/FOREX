@@ -1,52 +1,7 @@
 {
- "fetchedAt": 1794142196405,
+ "fetchedAt": 1794145846941,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793971800000,
-   "cur": "CAD",
-   "n": "Employment Change",
-   "im": 3,
-   "f": "14.6K",
-   "p": "-68.3K",
-   "a": ""
-  },
-  {
-   "t": 1793971800000,
-   "cur": "CAD",
-   "n": "Unemployment Rate",
-   "im": 3,
-   "f": "6.5%",
-   "p": "6.5%",
-   "a": ""
-  },
-  {
-   "t": 1793971800000,
-   "cur": "USD",
-   "n": "Average Hourly Earnings m/m",
-   "im": 3,
-   "f": "0.3%",
-   "p": "0.1%",
-   "a": ""
-  },
-  {
-   "t": 1793971800000,
-   "cur": "USD",
-   "n": "Non-Farm Employment Change",
-   "im": 3,
-   "f": "65K",
-   "p": "29K",
-   "a": ""
-  },
-  {
-   "t": 1793971800000,
-   "cur": "USD",
-   "n": "Unemployment Rate",
-   "im": 3,
-   "f": "4.2%",
-   "p": "4.2%",
-   "a": ""
-  },
   {
    "t": 1793974200000,
    "cur": "USD",

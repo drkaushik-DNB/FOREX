@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794173906414,
+ "fetchedAt": 1794177569827,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794001500000,
-   "cur": "NZD",
-   "n": "Parliamentary Elections",
-   "im": 3,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1794177000000,
    "cur": "AUD",

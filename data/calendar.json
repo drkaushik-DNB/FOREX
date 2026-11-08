@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794124874320,
+ "fetchedAt": 1794131354020,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793957400000,
-   "cur": "USD",
-   "n": "FOMC Member Williams Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1793959200000,
    "cur": "EUR",

@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794137998296,
+ "fetchedAt": 1794142196405,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793967300000,
-   "cur": "GBP",
-   "n": "MPC Member Pill Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1793971800000,
    "cur": "CAD",

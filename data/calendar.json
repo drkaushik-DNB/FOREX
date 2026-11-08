@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794155989999,
+ "fetchedAt": 1794159439488,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1793985300000,
-   "cur": "USD",
-   "n": "FOMC Member Bowman Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1793988000000,
    "cur": "USD",

@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794257641066,
+ "fetchedAt": 1794261024683,
  "source": "ForexFactory",
  "events": [
   {
@@ -214,7 +214,7 @@
    "cur": "CNY",
    "n": "Trade Balance",
    "im": 1,
-   "f": "859B",
+   "f": "855B",
    "p": "906B",
    "a": ""
   },
@@ -241,7 +241,7 @@
    "cur": "JPY",
    "n": "Economy Watchers Sentiment",
    "im": 1,
-   "f": "46.9",
+   "f": "47.1",
    "p": "47.0",
    "a": ""
   },
@@ -268,7 +268,7 @@
    "cur": "CNY",
    "n": "M2 Money Supply y/y",
    "im": 1,
-   "f": "7.3%",
+   "f": "7.2%",
    "p": "7.2%",
    "a": ""
   },
@@ -295,7 +295,7 @@
    "cur": "USD",
    "n": "NFIB Small Business Index",
    "im": 1,
-   "f": "97.7",
+   "f": "98.0",
    "p": "97.9",
    "a": ""
   },
@@ -565,7 +565,7 @@
    "cur": "GBP",
    "n": "RICS House Price Balance",
    "im": 1,
-   "f": "-32%",
+   "f": "-33%",
    "p": "-32%",
    "a": ""
   },
@@ -637,7 +637,7 @@
    "cur": "GBP",
    "n": "Prelim Business Investment q/q",
    "im": 1,
-   "f": "-0.3%",
+   "f": "0.4%",
    "p": "1.7%",
    "a": ""
   },
@@ -664,7 +664,7 @@
    "cur": "CAD",
    "n": "Building Permits m/m",
    "im": 1,
-   "f": "-3.9%",
+   "f": "-4.0%",
    "p": "8.8%",
    "a": ""
   },
@@ -960,6 +960,15 @@
    "t": 1794585000000,
    "cur": "USD",
    "n": "FOMC Member Bowman Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794585600000,
+   "cur": "EUR",
+   "n": "German Buba President Nagel Speaks",
    "im": 1,
    "f": "",
    "p": "",

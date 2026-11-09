@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794254203687,
+ "fetchedAt": 1794257641066,
  "source": "ForexFactory",
  "events": [
   {
@@ -471,6 +471,15 @@
    "a": ""
   },
   {
+   "t": 1794384900000,
+   "cur": "EUR",
+   "n": "German Buba President Nagel Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
    "t": 1794385200000,
    "cur": "EUR",
    "n": "German Buba President Nagel Speaks",
@@ -669,6 +678,15 @@
    "a": ""
   },
   {
+   "t": 1794490200000,
+   "cur": "USD",
+   "n": "FOMC Member Hammack Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
    "t": 1794492000000,
    "cur": "USD",
    "n": "FOMC Member Hammack Speaks",
@@ -714,6 +732,15 @@
    "a": ""
   },
   {
+   "t": 1794500100000,
+   "cur": "USD",
+   "n": "FOMC Member Goolsbee Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
    "t": 1794501000000,
    "cur": "USD",
    "n": "FOMC Member Goolsbee Speaks",
@@ -729,6 +756,15 @@
    "im": 1,
    "f": "",
    "p": "-0.9M",
+   "a": ""
+  },
+  {
+   "t": 1794504600000,
+   "cur": "EUR",
+   "n": "German Buba President Nagel Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
    "a": ""
   },
   {

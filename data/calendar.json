@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794261024683,
+ "fetchedAt": 1794264391883,
  "source": "ForexFactory",
  "events": [
   {
@@ -700,7 +700,7 @@
    "cur": "USD",
    "n": "Existing Home Sales",
    "im": 1,
-   "f": "3.86M",
+   "f": "3.89M",
    "p": "3.99M",
    "a": ""
   },
@@ -799,7 +799,7 @@
    "cur": "USD",
    "n": "Federal Budget Balance",
    "im": 1,
-   "f": "",
+   "f": "-286.3B",
    "p": "-26.9B",
    "a": ""
   },
@@ -862,7 +862,7 @@
    "cur": "EUR",
    "n": "Italian Trade Balance",
    "im": 1,
-   "f": "1.85B",
+   "f": "2.84B",
    "p": "1.77B",
    "a": ""
   },

@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794362555379,
+ "fetchedAt": 1794369363864,
  "source": "ForexFactory",
  "events": [
   {
@@ -808,7 +808,7 @@
    "cur": "USD",
    "n": "Crude Oil Inventories",
    "im": 1,
-   "f": "",
+   "f": "-0.6M",
    "p": "-0.9M",
    "a": ""
   },
@@ -853,7 +853,7 @@
    "cur": "USD",
    "n": "Federal Budget Balance",
    "im": 1,
-   "f": "-286.3B",
+   "f": "-298.6B",
    "p": "-26.9B",
    "a": ""
   },
@@ -1002,11 +1002,20 @@
    "a": ""
   },
   {
+   "t": 1794580800000,
+   "cur": "USD",
+   "n": "FOMC Member Logan Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
    "t": 1794583800000,
    "cur": "USD",
    "n": "Natural Gas Storage",
    "im": 1,
-   "f": "",
+   "f": "65B",
    "p": "77B",
    "a": ""
   },

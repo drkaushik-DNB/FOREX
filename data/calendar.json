@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794509718324,
+ "fetchedAt": 1794513321888,
  "source": "ForexFactory",
  "events": [
   {
@@ -1008,6 +1008,15 @@
    "im": 1,
    "f": "",
    "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794582900000,
+   "cur": "USD",
+   "n": "Mortgage Delinquencies",
+   "im": 1,
+   "f": "",
+   "p": "4.37%",
    "a": ""
   },
   {

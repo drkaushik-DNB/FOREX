@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794451963702,
+ "fetchedAt": 1794455782866,
  "source": "ForexFactory",
  "events": [
   {
@@ -207,24 +207,6 @@
    "im": 1,
    "f": "855B",
    "p": "906B",
-   "a": ""
-  },
-  {
-   "t": 1794279780000,
-   "cur": "CNY",
-   "n": "Trade Balance",
-   "im": 1,
-   "f": "855B",
-   "p": "906B",
-   "a": ""
-  },
-  {
-   "t": 1794279840000,
-   "cur": "CNY",
-   "n": "USD-Denominated Trade Balance",
-   "im": 1,
-   "f": "126.5B",
-   "p": "133.5B",
    "a": ""
   },
   {

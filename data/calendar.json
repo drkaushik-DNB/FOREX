@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794489063572,
+ "fetchedAt": 1794495366062,
  "source": "ForexFactory",
  "events": [
   {
@@ -297,15 +297,6 @@
    "im": 1,
    "f": "",
    "p": "19.5K",
-   "a": ""
-  },
-  {
-   "t": 1794316560000,
-   "cur": "USD",
-   "n": "ADP Weekly Employment Change",
-   "im": 1,
-   "f": "",
-   "p": "16.8K",
    "a": ""
   },
   {
@@ -733,6 +724,15 @@
   },
   {
    "t": 1794495600000,
+   "cur": "USD",
+   "n": "Mortgage Delinquencies",
+   "im": 1,
+   "f": "",
+   "p": "4.37%",
+   "a": ""
+  },
+  {
+   "t": 1794496860000,
    "cur": "USD",
    "n": "Mortgage Delinquencies",
    "im": 1,

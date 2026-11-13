@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794603250321,
+ "fetchedAt": 1794606553616,
  "source": "ForexFactory",
  "events": [
   {
@@ -1044,6 +1044,15 @@
    "im": 1,
    "f": "",
    "p": "4.37%",
+   "a": ""
+  },
+  {
+   "t": 1794603600000,
+   "cur": "USD",
+   "n": "FOMC Financial Stability Report",
+   "im": 1,
+   "f": "",
+   "p": "",
    "a": ""
   },
   {

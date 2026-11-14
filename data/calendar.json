@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794649646151,
+ "fetchedAt": 1794653035763,
  "source": "ForexFactory",
  "events": [
   {
@@ -600,15 +600,6 @@
    "t": 1794474000000,
    "cur": "EUR",
    "n": "ECB Economic Bulletin",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1794477600000,
-   "cur": "EUR",
-   "n": "EU Economic Forecasts",
    "im": 1,
    "f": "",
    "p": "",

@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794670804480,
+ "fetchedAt": 1794674514527,
  "source": "ForexFactory",
  "events": [
   {
@@ -660,25 +660,7 @@
    "a": ""
   },
   {
-   "t": 1794500040000,
-   "cur": "USD",
-   "n": "Mortgage Delinquencies",
-   "im": 1,
-   "f": "",
-   "p": "4.37%",
-   "a": ""
-  },
-  {
    "t": 1794500100000,
-   "cur": "USD",
-   "n": "FOMC Member Goolsbee Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1794501000000,
    "cur": "USD",
    "n": "FOMC Member Goolsbee Speaks",
    "im": 1,

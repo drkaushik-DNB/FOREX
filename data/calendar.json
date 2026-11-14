@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794664410666,
+ "fetchedAt": 1794670804480,
  "source": "ForexFactory",
  "events": [
   {
@@ -633,15 +633,6 @@
    "a": ""
   },
   {
-   "t": 1794492000000,
-   "cur": "USD",
-   "n": "FOMC Member Hammack Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
    "t": 1794495600000,
    "cur": "USD",
    "n": "Existing Home Sales",
@@ -657,24 +648,6 @@
    "im": 1,
    "f": "",
    "p": "",
-   "a": ""
-  },
-  {
-   "t": 1794495600000,
-   "cur": "USD",
-   "n": "Mortgage Delinquencies",
-   "im": 1,
-   "f": "",
-   "p": "4.37%",
-   "a": ""
-  },
-  {
-   "t": 1794496860000,
-   "cur": "USD",
-   "n": "Mortgage Delinquencies",
-   "im": 1,
-   "f": "",
-   "p": "4.37%",
    "a": ""
   },
   {

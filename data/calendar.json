@@ -1,25 +1,7 @@
 {
- "fetchedAt": 1794757266532,
+ "fetchedAt": 1794761005260,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794585000000,
-   "cur": "USD",
-   "n": "FOMC Member Bowman Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1794585600000,
-   "cur": "EUR",
-   "n": "German Buba President Nagel Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1794589200000,
    "cur": "USD",

@@ -1,34 +1,7 @@
 {
- "fetchedAt": 1794730123432,
+ "fetchedAt": 1794736076490,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794560400000,
-   "cur": "EUR",
-   "n": "Italian Trade Balance",
-   "im": 1,
-   "f": "2.84B",
-   "p": "1.77B",
-   "a": ""
-  },
-  {
-   "t": 1794560400000,
-   "cur": "CNY",
-   "n": "M2 Money Supply y/y",
-   "im": 1,
-   "f": "7.2%",
-   "p": "7.2%",
-   "a": ""
-  },
-  {
-   "t": 1794560400000,
-   "cur": "CNY",
-   "n": "New Loans",
-   "im": 1,
-   "f": "80B",
-   "p": "1080B",
-   "a": ""
-  },
   {
    "t": 1794564000000,
    "cur": "EUR",

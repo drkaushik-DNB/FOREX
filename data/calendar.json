@@ -1,52 +1,7 @@
 {
- "fetchedAt": 1794750859585,
+ "fetchedAt": 1794757266532,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794579000000,
-   "cur": "USD",
-   "n": "FOMC Member Collins Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1794580200000,
-   "cur": "GBP",
-   "n": "CB Leading Index m/m",
-   "im": 1,
-   "f": "",
-   "p": "-0.1%",
-   "a": ""
-  },
-  {
-   "t": 1794580800000,
-   "cur": "USD",
-   "n": "FOMC Member Logan Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1794582900000,
-   "cur": "USD",
-   "n": "Mortgage Delinquencies",
-   "im": 1,
-   "f": "",
-   "p": "4.37%",
-   "a": ""
-  },
-  {
-   "t": 1794583800000,
-   "cur": "USD",
-   "n": "Natural Gas Storage",
-   "im": 1,
-   "f": "65B",
-   "p": "77B",
-   "a": ""
-  },
   {
    "t": 1794585000000,
    "cur": "USD",

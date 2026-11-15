@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794722073367,
+ "fetchedAt": 1794726100801,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794553200000,
-   "cur": "EUR",
-   "n": "German WPI m/m",
-   "im": 1,
-   "f": "0.4%",
-   "p": "1.9%",
-   "a": ""
-  },
   {
    "t": 1794555000000,
    "cur": "CHF",

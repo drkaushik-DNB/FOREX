@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794786391479,
+ "fetchedAt": 1794792220486,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794614400000,
-   "cur": "USD",
-   "n": "FOMC Member Jefferson Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1794654000000,
    "cur": "GBP",
@@ -582,7 +573,7 @@
    "t": 1794987000000,
    "cur": "GBP",
    "n": "BOE Gov Bailey Speaks",
-   "im": 3,
+   "im": 2,
    "f": "",
    "p": "",
    "a": ""
@@ -1032,7 +1023,7 @@
    "t": 1795181100000,
    "cur": "USD",
    "n": "FOMC Member Waller Speaks",
-   "im": 2,
+   "im": 1,
    "f": "",
    "p": "",
    "a": ""

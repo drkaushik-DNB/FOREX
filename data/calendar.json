@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794792220486,
+ "fetchedAt": 1794797854385,
  "source": "ForexFactory",
  "events": [
   {
@@ -205,6 +205,15 @@
    "cur": "USD",
    "n": "Fed Chairman Warsh Speaks",
    "im": 3,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794856500000,
+   "cur": "USD",
+   "n": "FOMC Member Hammack Speaks",
+   "im": 1,
    "f": "",
    "p": "",
    "a": ""

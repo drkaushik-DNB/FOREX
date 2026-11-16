@@ -1,16 +1,7 @@
 {
- "fetchedAt": 1794822094564,
+ "fetchedAt": 1794828315506,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1794654000000,
-   "cur": "GBP",
-   "n": "MPC Member Greene Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1794778200000,
    "cur": "NZD",

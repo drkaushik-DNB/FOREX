@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794841547025,
+ "fetchedAt": 1794847437910,
  "source": "ForexFactory",
  "events": [
   {
@@ -180,6 +180,15 @@
    "im": 1,
    "f": "",
    "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794840300000,
+   "cur": "USD",
+   "n": "Cleveland Fed Inflation Expectations",
+   "im": 1,
+   "f": "",
+   "p": "3.3%",
    "a": ""
   },
   {
@@ -890,7 +899,7 @@
    "n": "Natural Gas Storage",
    "im": 1,
    "f": "",
-   "p": "",
+   "p": "61B",
    "a": ""
   },
   {

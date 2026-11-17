@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794925491087,
+ "fetchedAt": 1794931024241,
  "source": "ForexFactory",
  "events": [
   {
@@ -444,6 +444,15 @@
    "a": ""
   },
   {
+   "t": 1794925740000,
+   "cur": "NZD",
+   "n": "GDT Price Index",
+   "im": 1,
+   "f": "",
+   "p": "3.0%",
+   "a": ""
+  },
+  {
    "t": 1794925800000,
    "cur": "USD",
    "n": "FOMC Member Hammack Speaks",
@@ -700,7 +709,7 @@
    "cur": "USD",
    "n": "Pending Home Sales m/m",
    "im": 1,
-   "f": "-2.1%",
+   "f": "-1.8%",
    "p": "-7.3%",
    "a": ""
   },
@@ -709,7 +718,7 @@
    "cur": "USD",
    "n": "Crude Oil Inventories",
    "im": 1,
-   "f": "-0.5M",
+   "f": "-0.3M",
    "p": "4.7M",
    "a": ""
   },

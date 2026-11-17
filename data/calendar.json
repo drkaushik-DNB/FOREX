@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794872670291,
+ "fetchedAt": 1794877668857,
  "source": "ForexFactory",
  "events": [
   {
@@ -259,6 +259,15 @@
    "cur": "USD",
    "n": "FOMC Member Goolsbee Speaks",
    "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
+   "t": 1794873600000,
+   "cur": "NZD",
+   "n": "RBNZ Gov Breman Speaks",
+   "im": 2,
    "f": "",
    "p": "",
    "a": ""

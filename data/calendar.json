@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1794946043356,
+ "fetchedAt": 1794952523124,
  "source": "ForexFactory",
  "events": [
   {
@@ -709,7 +709,7 @@
    "cur": "USD",
    "n": "Pending Home Sales m/m",
    "im": 1,
-   "f": "-1.8%",
+   "f": "-2.0%",
    "p": "-7.3%",
    "a": ""
   },
@@ -718,7 +718,7 @@
    "cur": "USD",
    "n": "Crude Oil Inventories",
    "im": 1,
-   "f": "-0.3M",
+   "f": "0.4M",
    "p": "4.7M",
    "a": ""
   },
@@ -871,7 +871,7 @@
    "cur": "CAD",
    "n": "IPPI m/m",
    "im": 1,
-   "f": "1.2%",
+   "f": "0.4%",
    "p": "2.0%",
    "a": ""
   },
@@ -880,7 +880,7 @@
    "cur": "CAD",
    "n": "RMPI m/m",
    "im": 1,
-   "f": "2.0%",
+   "f": "0.9%",
    "p": "4.8%",
    "a": ""
   },
@@ -898,7 +898,7 @@
    "cur": "USD",
    "n": "Philly Fed Manufacturing Index",
    "im": 2,
-   "f": "19.2",
+   "f": "20.6",
    "p": "20.9",
    "a": ""
   },
@@ -907,7 +907,7 @@
    "cur": "USD",
    "n": "Unemployment Claims",
    "im": 2,
-   "f": "199K",
+   "f": "198K",
    "p": "200K",
    "a": ""
   },
@@ -952,7 +952,7 @@
    "cur": "USD",
    "n": "Natural Gas Storage",
    "im": 1,
-   "f": "",
+   "f": "25B",
    "p": "61B",
    "a": ""
   },
@@ -1123,7 +1123,7 @@
    "cur": "USD",
    "n": "Revised UoM Consumer Sentiment",
    "im": 2,
-   "f": "52.1",
+   "f": "51.7",
    "p": "51.0",
    "a": ""
   },

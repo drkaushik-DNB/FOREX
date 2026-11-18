@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795017612312,
+ "fetchedAt": 1795021633916,
  "source": "ForexFactory",
  "events": [
   {
@@ -1071,6 +1071,15 @@
    "im": 1,
    "f": "18.0B",
    "p": "24.5B",
+   "a": ""
+  },
+  {
+   "t": 1795158120000,
+   "cur": "CNY",
+   "n": "Foreign Direct Investment ytd/y",
+   "im": 1,
+   "f": "",
+   "p": "-4.3%",
    "a": ""
   },
   {

@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795007622648,
+ "fetchedAt": 1795013801636,
  "source": "ForexFactory",
  "events": [
   {
@@ -184,15 +184,6 @@
   },
   {
    "t": 1794840300000,
-   "cur": "USD",
-   "n": "Cleveland Fed Inflation Expectations",
-   "im": 1,
-   "f": "",
-   "p": "3.3%",
-   "a": ""
-  },
-  {
-   "t": 1794840480000,
    "cur": "USD",
    "n": "Cleveland Fed Inflation Expectations",
    "im": 1,

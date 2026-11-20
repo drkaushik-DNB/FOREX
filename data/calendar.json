@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795180336293,
+ "fetchedAt": 1795186581583,
  "source": "ForexFactory",
  "events": [
   {
@@ -1152,6 +1152,15 @@
    "im": 2,
    "f": "",
    "p": "4.3%",
+   "a": ""
+  },
+  {
+   "t": 1795194000000,
+   "cur": "USD",
+   "n": "President Trump Speaks",
+   "im": 2,
+   "f": "",
+   "p": "",
    "a": ""
   },
   {

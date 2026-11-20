@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795176137421,
+ "fetchedAt": 1795180336293,
  "source": "ForexFactory",
  "events": [
   {
@@ -306,6 +306,15 @@
    "im": 1,
    "f": "25.4K",
    "p": "30.3K",
+   "a": ""
+  },
+  {
+   "t": 1794898800000,
+   "cur": "GBP",
+   "n": "HMRC Payrolls Change",
+   "im": 1,
+   "f": "9K",
+   "p": "13K",
    "a": ""
   },
   {

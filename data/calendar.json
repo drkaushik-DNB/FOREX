@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795253955296,
+ "fetchedAt": 1795281809181,
  "source": "ForexFactory",
  "events": [
   {
@@ -921,15 +921,6 @@
    "a": ""
   },
   {
-   "t": 1795101300000,
-   "cur": "USD",
-   "n": "Mortgage Delinquencies",
-   "im": 1,
-   "f": "",
-   "p": "4.37%",
-   "a": ""
-  },
-  {
    "t": 1795102200000,
    "cur": "USD",
    "n": "Natural Gas Storage",
@@ -940,15 +931,6 @@
   },
   {
    "t": 1795103160000,
-   "cur": "USD",
-   "n": "Mortgage Delinquencies",
-   "im": 1,
-   "f": "",
-   "p": "4.37%",
-   "a": ""
-  },
-  {
-   "t": 1795105800000,
    "cur": "USD",
    "n": "Mortgage Delinquencies",
    "im": 1,

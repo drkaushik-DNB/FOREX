@@ -1,88 +1,7 @@
 {
- "fetchedAt": 1795345845026,
+ "fetchedAt": 1795375722915,
  "source": "ForexFactory",
  "events": [
-  {
-   "t": 1795179600000,
-   "cur": "EUR",
-   "n": "German Buba President Nagel Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1795181100000,
-   "cur": "USD",
-   "n": "FOMC Member Waller Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1795181400000,
-   "cur": "CAD",
-   "n": "Core Retail Sales m/m",
-   "im": 1,
-   "f": "0.7%",
-   "p": "1.2%",
-   "a": ""
-  },
-  {
-   "t": 1795181400000,
-   "cur": "CAD",
-   "n": "Retail Sales m/m",
-   "im": 1,
-   "f": "0.7%",
-   "p": "1.2%",
-   "a": ""
-  },
-  {
-   "t": 1795186800000,
-   "cur": "EUR",
-   "n": "Consumer Confidence",
-   "im": 1,
-   "f": "-18",
-   "p": "-18",
-   "a": ""
-  },
-  {
-   "t": 1795186800000,
-   "cur": "USD",
-   "n": "Revised UoM Consumer Sentiment",
-   "im": 2,
-   "f": "51.7",
-   "p": "51.0",
-   "a": ""
-  },
-  {
-   "t": 1795186800000,
-   "cur": "USD",
-   "n": "Revised UoM Inflation Expectations",
-   "im": 2,
-   "f": "",
-   "p": "4.3%",
-   "a": ""
-  },
-  {
-   "t": 1795194000000,
-   "cur": "USD",
-   "n": "President Trump Speaks",
-   "im": 2,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
-  {
-   "t": 1795194900000,
-   "cur": "USD",
-   "n": "FOMC Member Cook Speaks",
-   "im": 1,
-   "f": "",
-   "p": "",
-   "a": ""
-  },
   {
    "t": 1795383900000,
    "cur": "NZD",
@@ -215,7 +134,7 @@
    "n": "Corporate Profits q/q",
    "im": 1,
    "f": "",
-   "p": "",
+   "p": "8.7%",
    "a": ""
   },
   {

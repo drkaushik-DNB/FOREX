@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795424148838,
+ "fetchedAt": 1795468514606,
  "source": "ForexFactory",
  "events": [
   {
@@ -138,6 +138,15 @@
    "a": ""
   },
   {
+   "t": 1795440720000,
+   "cur": "CAD",
+   "n": "Corporate Profits q/q",
+   "im": 1,
+   "f": "",
+   "p": "8.7%",
+   "a": ""
+  },
+  {
    "t": 1795445100000,
    "cur": "USD",
    "n": "Flash Manufacturing PMI",
@@ -187,7 +196,7 @@
    "cur": "EUR",
    "n": "German ifo Business Climate",
    "im": 1,
-   "f": "90.6",
+   "f": "90.5",
    "p": "90.2",
    "a": ""
   },
@@ -196,7 +205,7 @@
    "cur": "GBP",
    "n": "CBI Realized Sales",
    "im": 1,
-   "f": "-24",
+   "f": "-27",
    "p": "-10",
    "a": ""
   },
@@ -232,7 +241,7 @@
    "cur": "EUR",
    "n": "Belgian NBB Business Climate",
    "im": 1,
-   "f": "-9.3",
+   "f": "-9.4",
    "p": "-9.8",
    "a": ""
   },
@@ -259,7 +268,7 @@
    "cur": "USD",
    "n": "CB Consumer Confidence",
    "im": 2,
-   "f": "92.1",
+   "f": "92.4",
    "p": "91.7",
    "a": ""
   },
@@ -268,7 +277,7 @@
    "cur": "USD",
    "n": "Richmond Manufacturing Index",
    "im": 1,
-   "f": "-3",
+   "f": "-2",
    "p": "-2",
    "a": ""
   },
@@ -313,7 +322,7 @@
    "cur": "AUD",
    "n": "CPI y/y",
    "im": 3,
-   "f": "4.8%",
+   "f": "4.7%",
    "p": "4.3%",
    "a": ""
   },
@@ -402,7 +411,7 @@
    "t": 1795613400000,
    "cur": "USD",
    "n": "Unemployment Claims",
-   "im": 2,
+   "im": 1,
    "f": "201K",
    "p": "203K",
    "a": ""
@@ -421,7 +430,7 @@
    "cur": "USD",
    "n": "Durable Goods Orders m/m",
    "im": 1,
-   "f": "0.5%",
+   "f": "0.7%",
    "p": "1.8%",
    "a": ""
   },
@@ -448,7 +457,7 @@
    "cur": "USD",
    "n": "New Home Sales",
    "im": 1,
-   "f": "649K",
+   "f": "650K",
    "p": "676K",
    "a": ""
   },
@@ -466,7 +475,7 @@
    "cur": "USD",
    "n": "Natural Gas Storage",
    "im": 1,
-   "f": "",
+   "f": "-19B",
    "p": "20B",
    "a": ""
   },
@@ -484,7 +493,7 @@
    "cur": "AUD",
    "n": "Private Capital Expenditure q/q",
    "im": 1,
-   "f": "4.4%",
+   "f": "4.5%",
    "p": "-3.6%",
    "a": ""
   },

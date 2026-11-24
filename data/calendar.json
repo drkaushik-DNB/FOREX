@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795468514606,
+ "fetchedAt": 1795499773839,
  "source": "ForexFactory",
  "events": [
   {
@@ -583,7 +583,7 @@
    "cur": "JPY",
    "n": "Tokyo Core CPI y/y",
    "im": 2,
-   "f": "2.9%",
+   "f": "3.0%",
    "p": "2.6%",
    "a": ""
   },
@@ -592,7 +592,7 @@
    "cur": "EUR",
    "n": "French Consumer Spending m/m",
    "im": 1,
-   "f": "0.2%",
+   "f": "0.1%",
    "p": "-0.5%",
    "a": ""
   },
@@ -610,7 +610,7 @@
    "cur": "EUR",
    "n": "French Prelim CPI m/m",
    "im": 1,
-   "f": "-0.1%",
+   "f": "-0.2%",
    "p": "0.4%",
    "a": ""
   },
@@ -628,7 +628,7 @@
    "cur": "EUR",
    "n": "Spanish Flash CPI y/y",
    "im": 1,
-   "f": "4.8%",
+   "f": "4.7%",
    "p": "4.9%",
    "a": ""
   },
@@ -664,7 +664,7 @@
    "cur": "CAD",
    "n": "Current Account",
    "im": 1,
-   "f": "9.6B",
+   "f": "9.5B",
    "p": "8.8B",
    "a": ""
   },
@@ -673,7 +673,7 @@
    "cur": "USD",
    "n": "Goods Trade Balance",
    "im": 1,
-   "f": "-134.4B",
+   "f": "-135.9B",
    "p": "-134.9B",
    "a": ""
   },
@@ -682,7 +682,7 @@
    "cur": "USD",
    "n": "Prelim Wholesale Inventories m/m",
    "im": 1,
-   "f": "0.7%",
+   "f": "0.5%",
    "p": "0.6%",
    "a": ""
   }

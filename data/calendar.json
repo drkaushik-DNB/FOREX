@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795573139232,
+ "fetchedAt": 1795610429469,
  "source": "ForexFactory",
  "events": [
   {
@@ -381,6 +381,15 @@
    "a": ""
   },
   {
+   "t": 1795602720000,
+   "cur": "EUR",
+   "n": "German 10-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "3.37|1.1",
+   "a": ""
+  },
+  {
    "t": 1795603320000,
    "cur": "EUR",
    "n": "German 10-y Bond Auction",
@@ -484,7 +493,7 @@
    "cur": "USD",
    "n": "Crude Oil Inventories",
    "im": 1,
-   "f": "",
+   "f": "2.0M",
    "p": "3.4M",
    "a": ""
   },

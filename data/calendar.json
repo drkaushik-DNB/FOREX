@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795541536069,
+ "fetchedAt": 1795573139232,
  "source": "ForexFactory",
  "events": [
   {
@@ -390,6 +390,15 @@
    "a": ""
   },
   {
+   "t": 1795609500000,
+   "cur": "USD",
+   "n": "FOMC Member Bowman Speaks",
+   "im": 1,
+   "f": "",
+   "p": "",
+   "a": ""
+  },
+  {
    "t": 1795613400000,
    "cur": "USD",
    "n": "Core PCE Price Index m/m",
@@ -656,7 +665,7 @@
    "n": "Italian 10-y Bond Auction",
    "im": 1,
    "f": "",
-   "p": "",
+   "p": "4.49|1.6",
    "a": ""
   },
   {

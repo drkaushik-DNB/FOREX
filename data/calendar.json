@@ -1,5 +1,5 @@
 {
- "fetchedAt": 1795767146387,
+ "fetchedAt": 1795805529860,
  "source": "ForexFactory",
  "events": [
   {
@@ -363,15 +363,6 @@
    "a": ""
   },
   {
-   "t": 1795603320000,
-   "cur": "EUR",
-   "n": "German 10-y Bond Auction",
-   "im": 1,
-   "f": "",
-   "p": "3.37|1.1",
-   "a": ""
-  },
-  {
    "t": 1795609500000,
    "cur": "USD",
    "n": "FOMC Member Bowman Speaks",
@@ -410,15 +401,6 @@
   {
    "t": 1795613400000,
    "cur": "USD",
-   "n": "Unemployment Claims",
-   "im": 1,
-   "f": "201K",
-   "p": "203K",
-   "a": ""
-  },
-  {
-   "t": 1795613400000,
-   "cur": "USD",
    "n": "Core Durable Goods Orders m/m",
    "im": 1,
    "f": "0.5%",
@@ -450,6 +432,15 @@
    "im": 1,
    "f": "0.4%",
    "p": "0.5%",
+   "a": ""
+  },
+  {
+   "t": 1795613400000,
+   "cur": "USD",
+   "n": "Unemployment Claims",
+   "im": 1,
+   "f": "201K",
+   "p": "203K",
    "a": ""
   },
   {
@@ -657,6 +648,15 @@
    "im": 1,
    "f": "5K",
    "p": "4K",
+   "a": ""
+  },
+  {
+   "t": 1795773900000,
+   "cur": "EUR",
+   "n": "Italian 10-y Bond Auction",
+   "im": 1,
+   "f": "",
+   "p": "4.49|1.6",
    "a": ""
   },
   {
